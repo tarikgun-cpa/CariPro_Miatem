@@ -3,13 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CariPro: 🫧🫧 MİATEM</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧹</text></svg>">
+    <title>CariPro: MİATEM Sürümü</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
     <style>
-        body { padding: 20px; background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        
+        /* GİRİŞ EKRANI TASARIMI */
+        #loginScreen {
+            height: 100vh;
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            display: flex;
+        }
+        #loginCard {
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border: none;
+        }
+
+        /* ANA UYGULAMA TASARIMLARI */
+        .app-container { padding: 20px; }
         .card { box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; border: none; border-radius: 12px; }
         .nav-tabs { margin-bottom: 20px; border-bottom: 2px solid #e9ecef; }
         .nav-tabs .nav-link { border: none; color: #6c757d; padding: 10px 20px; border-radius: 8px 8px 0 0; }
@@ -58,7 +77,7 @@
             .no-print { display: none !important; }
             .print-header-only { display: block !important; text-align: center; margin-bottom: 20px; }
             
-            body.print-dashboard .container-fluid > .d-flex:first-child,
+            body.print-dashboard .app-container > .d-flex:first-child,
             body.print-dashboard .nav-tabs,
             body.print-dashboard .tab-content > .tab-pane:not(#dashboard),
             body.print-dashboard .input-group,
@@ -66,7 +85,7 @@
             body.print-dashboard .summary-card { display: none !important; }
             body.print-dashboard .company-badge { border: 1px solid #ddd; box-shadow: none !important; break-inside: avoid; }
             
-            body.print-ekstre .container-fluid { display: none !important; }
+            body.print-ekstre .app-container { display: none !important; }
             body.print-ekstre .modal-backdrop { display: none !important; }
             body.print-ekstre #ekstreModal { position: relative; display: block !important; padding: 0 !important; overflow: visible !important; height: auto !important; }
             body.print-ekstre .modal-dialog { max-width: 100% !important; width: 100% !important; margin: 0 !important; height: auto !important; }
@@ -83,19 +102,38 @@
             body.print-ekstre .table { border-color: #000 !important; }
             body.print-ekstre th, body.print-ekstre td { color: #000 !important; }
         }
-        
         .print-header-only { display: none; }
     </style>
 </head>
 <body>
 
-<div class="container-fluid">
+<div id="loginScreen" class="justify-content-center align-items-center">
+    <div class="card p-5 bg-white" id="loginCard" style="width: 420px;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold" style="color: #4e73df;"><i class="fas fa-shield-alt"></i> MİATEM</h2>
+            <h5 class="text-muted">CariPro Yönetim Paneli</h5>
+        </div>
+        <div id="loginError" class="alert alert-danger d-none small text-center"></div>
+        <div class="mb-3">
+            <label class="form-label fw-bold text-secondary">E-Posta Adresi</label>
+            <input type="email" id="loginEmail" class="form-control form-control-lg" placeholder="ornek@miatem.com" onkeyup="checkEnter(event)">
+        </div>
+        <div class="mb-4">
+            <label class="form-label fw-bold text-secondary">Şifre</label>
+            <input type="password" id="loginPassword" class="form-control form-control-lg" placeholder="••••••••" onkeyup="checkEnter(event)">
+        </div>
+        <button class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" onclick="sistemeGirisYap()">Sisteme Giriş Yap <i class="fas fa-arrow-right ms-2"></i></button>
+    </div>
+</div>
+
+<div id="mainApp" style="display: none;" class="app-container">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2><i class="fas fa-shield-alt" style="color: #6a82fb;"></i> <strong>CariPro:</strong> MİATEM Sürümü <span class="badge bg-success fs-6 align-middle">V14.2</span></h2>
+        <h2><i class="fas fa-chart-pie" style="color: #6a82fb;"></i> <strong>CariPro:</strong> MİATEM Sürümü <span class="badge bg-success fs-6 align-middle">V15 Korumalı</span></h2>
         <div>
             <strong>Aktif Yıl: </strong> <span id="currentPeriod" class="badge bg-primary fs-5 shadow-sm">2026 Yılı</span>
             <button class="btn btn-warning ms-3 fw-bold text-dark shadow-sm" onclick="donemKapat()"><i class="fas fa-calendar-check"></i> Yılı Devret</button>
             <button class="btn btn-danger ms-2 fw-bold shadow-sm" onclick="resetData()"><i class="fas fa-trash-alt"></i> Sıfırla</button>
+            <button class="btn btn-outline-dark ms-3 fw-bold shadow-sm" onclick="sistemdenCikisYap()"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
         </div>
     </div>
 
@@ -413,6 +451,72 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // ==========================================
+    // 1. FIREBASE KİMLİK DOĞRULAMA AYARLARI
+    // ==========================================
+    
+    const firebaseConfig = {
+  apiKey: "AIzaSyBLt8opleyD8E-CYmm5v7TqV66CkJvIub8",
+  authDomain: "caripro-miatem.firebaseapp.com",
+  projectId: "caripro-miatem",
+  storageBucket: "caripro-miatem.firebasestorage.app",
+  messagingSenderId: "990804871808",
+  appId: "1:990804871808:web:6ce9cf62ad1963fdf17465"
+};
+
+    let auth;
+
+    // Firebase ayarları girilmişse sistemi korumaya al
+    if(firebaseConfig.apiKey !== "SİZİN_API_KEY_BURAYA") {
+        firebase.initializeApp(firebaseConfig);
+        auth = firebase.auth();
+
+        // Oturum durumunu dinle
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Giriş yapılmışsa ana programı göster
+                document.getElementById("loginScreen").classList.replace("d-flex", "d-none");
+                document.getElementById("mainApp").style.display = "block";
+            } else {
+                // Giriş yapılmamışsa giriş ekranını göster
+                document.getElementById("mainApp").style.display = "none";
+                document.getElementById("loginScreen").classList.replace("d-none", "d-flex");
+            }
+        });
+    } else {
+        // Eğer kodları girmeyi unuttuysanız test için sistemi kilitleme, uyar:
+        document.getElementById("loginScreen").classList.replace("d-flex", "d-none");
+        document.getElementById("mainApp").style.display = "block";
+        alert("Lütfen Firebase ayarlarınızı HTML kodunun alt kısmından ('firebaseConfig') güncelleyin!");
+    }
+
+    function sistemeGirisYap() {
+        if(!auth) return alert("Firebase kurulu değil.");
+        let email = document.getElementById("loginEmail").value;
+        let pass = document.getElementById("loginPassword").value;
+        let errBox = document.getElementById("loginError");
+        
+        auth.signInWithEmailAndPassword(email, pass).then(() => {
+            errBox.classList.add("d-none");
+        }).catch((error) => {
+            errBox.innerText = "Hatalı E-posta veya Şifre! Lütfen kontrol edin.";
+            errBox.classList.remove("d-none");
+        });
+    }
+
+    function sistemdenCikisYap() {
+        if(!auth) return;
+        auth.signOut();
+    }
+
+    // Giriş yaparken Enter tuşuna basılmasını algılama
+    function checkEnter(e) {
+        if(e.key === 'Enter') sistemeGirisYap();
+    }
+
+    // ==========================================
+    // 2. CARİ TAKİP PROGRAMI DEĞİŞKENLERİ VE MOTORU
+    // ==========================================
     let companies = {}; 
     let unmatchedTransactions = [];
     let cancelledInvoices = []; 
@@ -426,7 +530,6 @@
     function generateId() { return Math.random().toString(36).substr(2, 9); }
     function formatMoney(amount) { return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount); }
 
-    // --- GELİŞMİŞ EXCEL OKUYUCU (BINARY + CELL DATES DESTEĞİ) ---
     function readExcel(file, callback) {
         if (typeof XLSX === "undefined") {
             alert("Excel kütüphanesi yüklenemedi. Lütfen internet bağlantınızı kontrol edin.");
@@ -466,22 +569,18 @@
         if(str.includes(',') && str.includes('.')) {
             if (str.lastIndexOf(',') > str.lastIndexOf('.')) str = str.replace(/\./g, '').replace(',', '.');
             else str = str.replace(/,/g, '');
-        } else if (str.includes(',')) { str = str.replace(',', '.'); }
-        let val = parseFloat(str); return isNaN(val) ? 0 : val;
+        } else if (str.includes(',')) {
+            str = str.replace(',', '.');
+        }
+        let val = parseFloat(str);
+        return isNaN(val) ? 0 : val;
     }
 
-    // --- YENİ TARİH PARSER'I: Karmaşık İngilizce tarihleri GG.AA.YYYY formatına çevirir ---
     function parseExcelDate(dateVal) {
         if(!dateVal) return "-";
-        
         let dateStr = dateVal.toString().trim();
-        
-        // Eğer zaten GG.AA.YYYY veya GG/AA/YYYY ise
-        if (/^\d{1,2}[\.\/]\d{1,2}[\.\/]\d{4}/.test(dateStr)) {
-            return dateStr.replace(/\//g, '.');
-        }
+        if (/^\d{1,2}[\.\/]\d{1,2}[\.\/]\d{4}/.test(dateStr)) return dateStr.replace(/\//g, '.');
 
-        // Eğer GMT+0300 (Javascript Date Obj string) formatındaysa
         if (dateStr.includes("GMT") || dateStr.includes("Thu") || dateStr.includes("Feb") || dateStr.includes("UTC")) {
             let parsed = new Date(dateStr);
             if (!isNaN(parsed)) {
@@ -491,7 +590,6 @@
                 return `${d}.${m}.${y}`;
             }
         }
-        
         return dateStr;
     }
 
@@ -558,14 +656,14 @@
                 document.getElementById("currentPeriod").innerText = periodYear + " Yılı";
                 updateAllViews();
                 var dt = new bootstrap.Tab(document.getElementById('dashboard-tab')); dt.show();
-                logMessage("Yedek başarıyla geri yüklendi.", "success"); fileInput.value = "";
-            } catch (err) { alert("Yedek dosyası bozuk veya geçersiz!"); console.error(err); }
+                logMessage("Sistem yedeği başarıyla geri yüklendi. Kaldığınız yerden devam edebilirsiniz.", "success"); fileInput.value = "";
+            } catch (err) { alert("Yedek dosyası bozuk veya geçersiz!"); }
         };
         reader.readAsText(fileInput.files[0]);
     }
 
     function resetData() {
-        if(confirm("DİKKAT: Tüm verileri silip SIFIRDAN başlamak istediğinize emin misiniz?")) {
+        if(confirm("DİKKAT: Tüm verileri silip SIFIRDAN başlamak istediğinize emin misiniz? Yedek almadıysanız veriler kalıcı olarak silinir!")) {
             companies = {}; unmatchedTransactions = []; cancelledInvoices = []; globalSonBankaTarihi = ""; globalSonFaturaNo = ""; globalMaxBankDateObj = new Date(1900, 0, 1); currentEkstreVkn = null;
             document.getElementById("devirFile").value = ""; document.getElementById("invoiceFile").value = ""; document.getElementById("bankFile").value = ""; document.getElementById("importFile").value = "";
             updateAllViews(); document.getElementById("uploadLog").classList.add("hidden");
@@ -975,7 +1073,7 @@
                     } else if (aciklama) { unmatchedTransactions.push({ tarih: tarih || "-", aciklama: aciklama, tutar: tutar }); }
                 });
 
-                updateAllViews(); logMessage(`${matchedCount} hareket eşleşti. ${unmatchedTransactions.length} işlem manuel atanmayı bekliyor.`, "success"); btn.innerText = "Banka Hareketlerini İşle"; btn.disabled = false;
+                updateAllViews(); logMessage(`${matchedCount} hareket eşleşti.`, "success"); btn.innerText = "Banka Hareketlerini İşle"; btn.disabled = false;
                 var dt = new bootstrap.Tab(document.getElementById('dashboard-tab')); dt.show();
             });
         }, 50);
