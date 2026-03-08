@@ -78,7 +78,7 @@
 
 <div id="mainApp" style="display: none;" class="app-container">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-        <h2><i class="fas fa-chart-pie" style="color: #6a82fb;"></i> <strong>CariPro</strong> Ⓜ️ MİATEM <span class="badge bg-success fs-6 align-middle">💎 CPA-FTC Pro</span></h2>
+        <h2><i class="fas fa-chart-pie" style="color: #6a82fb;"></i> <strong>CariPro</strong> Ⓜ️ MİATEM <span class="badge bg-success fs-6 align-middle">💎 CPA-FTC</span></h2>
         <div class="d-flex align-items-center flex-wrap mt-2 mt-md-0">
             <span id="cloudSaveIndicator" class="badge bg-white text-dark border me-3 py-2 px-3 shadow-sm"><i class="fas fa-cloud text-secondary"></i> Bulut Bekleniyor...</span>
             <strong>Aktif Yıl: </strong> <span id="currentPeriod" class="badge bg-primary fs-5 shadow-sm ms-2">2026 Yılı</span>
@@ -216,7 +216,7 @@
 
     </div>
     <div class="text-center mt-5 mb-3 text-muted no-print" style="font-size: 0.85rem; border-top: 1px solid #ddd; padding-top: 15px;">
-        <i class="fas fa-shield-alt text-primary"></i> <strong>CariPro Ⓜ️ MİATEM</strong> &copy; 2026 <br> SMMM Tarık GÜN Tüm Hakları Saklıdır.
+        <i class="fas fa-shield-alt text-primary"></i> <strong>CariPro: MİATEM Sürümü</strong> &copy; 2026 <br> SMMM Tarık GÜN Tüm Hakları Saklıdır.
     </div>
 </div>
 
@@ -316,24 +316,17 @@
         let val = parseFloat(str); return isNaN(val) ? 0 : val;
     }
 
-    // YENİ VE GÜÇLÜ TARİH PARSERI
     function parseExcelDate(dateVal) {
         if(!dateVal) return "-";
-        
-        // 1. JS Date formatıysa (SheetJS sayesinde)
         if (dateVal instanceof Date && !isNaN(dateVal)) {
-            let d = String(dateVal.getDate()).padStart(2, '0'); let m = String(dateVal.getMonth() + 1).padStart(2, '0'); let y = dateVal.getFullYear();
-            return `${d}.${m}.${y}`;
+            let d = String(dateVal.getDate()).padStart(2, '0'); let m = String(dateVal.getMonth() + 1).padStart(2, '0'); let y = dateVal.getFullYear(); return `${d}.${m}.${y}`;
         }
         let dateStr = dateVal.toString().trim();
-        // 2. Zaten TR formatındaysa
         if (/^\d{1,2}[\.\/]\d{1,2}[\.\/]\d{4}/.test(dateStr)) return dateStr.replace(/\//g, '.');
-        // 3. Uzun İngilizce formatıysa (GMT/UTC)
         if (dateStr.includes("GMT") || dateStr.includes("UTC") || /[a-zA-Z]/.test(dateStr)) {
             let parsed = new Date(dateStr);
             if (!isNaN(parsed)) { let d = String(parsed.getDate()).padStart(2, '0'); let m = String(parsed.getMonth() + 1).padStart(2, '0'); let y = parsed.getFullYear(); return `${d}.${m}.${y}`; }
         }
-        // 4. Excel Seri Numarası ise (örn 45000)
         if (!isNaN(dateStr) && Number(dateStr) > 20000) {
             let parsed = new Date((Number(dateStr) - (25567 + 2)) * 86400 * 1000);
             if (!isNaN(parsed)) { let d = String(parsed.getDate()).padStart(2, '0'); let m = String(parsed.getMonth() + 1).padStart(2, '0'); let y = parsed.getFullYear(); return `${d}.${m}.${y}`; }
@@ -359,15 +352,12 @@
     const stopWordsRegex = new RegExp("\\b(" + stopWords.map(w => w.replace(/\./g, '\\.')).join("|") + ")\\b", "gi");
 
     function getSearchWords(text) {
-        if(!text) return [];
-        let cleaned = normalizeText(text).replace(stopWordsRegex, " ").replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+        if(!text) return []; let cleaned = normalizeText(text).replace(stopWordsRegex, " ").replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
         return cleaned.split(" ").filter(w => w.length > 1);
     }
 
     function findColumnKey(row, keywords) {
-        let keys = Object.keys(row);
-        for (let key of keys) { let lowerKey = key.toLowerCase(); for (let word of keywords) if (lowerKey.includes(word)) return key; }
-        return null;
+        let keys = Object.keys(row); for (let key of keys) { let lowerKey = key.toLowerCase(); for (let word of keywords) if (lowerKey.includes(word)) return key; } return null;
     }
 
     function exportData() {
@@ -416,33 +406,73 @@
     function updateVade(vkn, value) { companies[vkn].vadeGun = parseInt(value) || 0; updateAllViews(); }
     function updateDevir(vkn, value) { companies[vkn].devirBakiye = parseAmount(value) || 0; updateAllViews(); }
 
+    // DÜZELTİLMİŞ VADE ANALİZ MOTORU
     function renderSimpleAnalytics() {
         let totalOverdue = 0; let totalNotDue = 0; let overdueFirms = []; let notDueFirms = []; let today = new Date();
+
         for (let vkn in companies) {
             let c = companies[vkn]; let bakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar;
             if (bakiye <= 0) continue; 
+
             let timeline = [...c.hareketler];
-            if (c.devirBakiye > 0) { timeline.push({ tur: "Fatura", tarih: "01.01.2026", aciklama: "Devir", tutar: c.devirBakiye, date: new Date(periodYear-1, 11, 31) }); }
-            timeline.forEach(t => { if(!t.date) t.date = parseTRDate(t.tarih); });
-            let invoices = timeline.filter(t => t.tur === "Fatura").sort((a,b) => a.date - b.date);
-            let paymentRemaining = c.odemeTutar; let compOverdue = 0; let compNotDue = 0; let vadeGunu = c.vadeGun !== undefined ? c.vadeGun : 30; 
+            
+            // FIREBASE UYUŞMAZLIĞINI ÇÖZEN KISIM: 
+            // Her işlem için o an tertemiz bir JS Date objesi üret.
+            timeline.forEach(t => { 
+                t.realDateObj = parseTRDate(t.tarih); 
+            });
+
+            // Devir bakiyesi bir borçsa, onu geçen senenin son günü gibi kabul et.
+            if (c.devirBakiye > 0) { 
+                timeline.push({ tur: "Fatura", tarih: "01.01.2026", aciklama: "Devir", tutar: c.devirBakiye, realDateObj: new Date(periodYear-1, 11, 31) }); 
+            }
+
+            // Gerçek tarih objesine göre sıraya diz (En eski borç en önde)
+            let invoices = timeline.filter(t => t.tur === "Fatura").sort((a,b) => a.realDateObj - b.realDateObj);
+            
+            let paymentRemaining = c.odemeTutar; 
+            let compOverdue = 0; let compNotDue = 0; 
+            let vadeGunu = c.vadeGun !== undefined ? c.vadeGun : 30; 
 
             invoices.forEach(inv => {
                 let invRem = inv.tutar;
-                if (paymentRemaining >= invRem) { paymentRemaining -= invRem; invRem = 0; } else if (paymentRemaining > 0) { invRem -= paymentRemaining; paymentRemaining = 0; }
-                if (invRem > 0) { let daysOld = Math.floor((today - inv.date) / (1000 * 60 * 60 * 24)); if (daysOld > vadeGunu) compOverdue += invRem; else compNotDue += invRem; }
+                // Eğer bu fatura için içeride ödeme parası varsa, önce bu faturayı kapat.
+                if (paymentRemaining >= invRem) { 
+                    paymentRemaining -= invRem; 
+                    invRem = 0; 
+                } 
+                // Ödeme parası faturanın sadece bir kısmına yetiyorsa, faturanın kalanını hesapla
+                else if (paymentRemaining > 0) { 
+                    invRem -= paymentRemaining; 
+                    paymentRemaining = 0; 
+                }
+
+                // Faturanın Kapanmayan Bir Tutarı (Borç) Kaldıysa:
+                if (invRem > 0) { 
+                    // Faturanın kesildiği günden bugüne kaç gün geçmiş?
+                    let daysOld = Math.floor((today - inv.realDateObj) / (1000 * 60 * 60 * 24)); 
+                    
+                    // Vadesini aşmış mı?
+                    if (daysOld > vadeGunu) {
+                        compOverdue += invRem; // Kırmızı Bölge (Gecikmiş)
+                    } else {
+                        compNotDue += invRem;  // Mavi Bölge (Güncel)
+                    }
+                }
             });
+
             if (compOverdue > 0) { totalOverdue += compOverdue; overdueFirms.push({ unvan: c.unvan, amount: compOverdue, vkn: vkn }); }
             if (compNotDue > 0) { totalNotDue += compNotDue; notDueFirms.push({ unvan: c.unvan, amount: compNotDue, vkn: vkn }); }
         }
 
-        document.getElementById("dashTotalOverdue").innerText = formatMoney(totalOverdue) + " ₺"; document.getElementById("dashTotalNotDue").innerText = formatMoney(totalNotDue) + " ₺";
+        document.getElementById("dashTotalOverdue").innerText = formatMoney(totalOverdue) + " ₺"; 
+        document.getElementById("dashTotalNotDue").innerText = formatMoney(totalNotDue) + " ₺";
 
         let overHtml = "";
         overdueFirms.sort((a,b) => b.amount - a.amount).forEach(f => {
             overHtml += `<div class="col-xl-6 col-sm-12"><div class="card p-2 border-danger border-start border-4 shadow-sm" style="cursor:pointer;" onclick="openEkstre('${f.vkn}')"><div class="text-truncate fw-bold text-dark" style="font-size:0.85rem;" title="${f.unvan}">${f.unvan}</div><div class="text-danger fw-bold">${formatMoney(f.amount)} ₺</div></div></div>`;
         });
-        if (!overHtml) overHtml = `<div class="col-12"><div class="alert alert-success w-100 py-2">Mükemmel! Gecikmiş alacak bulunmuyor.</div></div>`;
+        if (!overHtml) overHtml = `<div class="col-12"><div class="alert alert-success w-100 py-2">Mükemmel! Gecikmiş (vadesi geçmiş) hiçbir alacağınız bulunmuyor.</div></div>`;
         document.getElementById("overdueContainer").innerHTML = overHtml;
 
         let notDueHtml = "";
