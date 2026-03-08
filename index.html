@@ -3,31 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CariPro: 🫧 MİATEM</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧹</text></svg>">
+    <title>CariPro: MİATEM Sürümü</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
         body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
         
-        /* GİRİŞ EKRANI TASARIMI */
-        #loginScreen {
-            height: 100vh;
-            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-            display: flex;
-        }
-        #loginCard {
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            border: none;
-        }
+        #loginScreen { height: 100vh; background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); display: flex; }
+        #loginCard { border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: none; }
 
-        /* ANA UYGULAMA TASARIMLARI */
         .app-container { padding: 20px; }
         .card { box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; border: none; border-radius: 12px; }
         .nav-tabs { margin-bottom: 20px; border-bottom: 2px solid #e9ecef; }
@@ -36,7 +28,6 @@
         .table-responsive { max-height: 550px; overflow-y: auto; }
         .hidden { display: none !important; }
         .download-link { font-size: 0.85em; cursor: pointer; text-decoration: underline; color: #6c757d; transition: color 0.2s; }
-        .download-link:hover { color: #4e73df; }
         
         .summary-card { border-radius: 12px; color: white; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .bg-gradient-primary { background: linear-gradient(135deg, #6a82fb, #fc5c7d); }
@@ -45,17 +36,9 @@
         .bg-gradient-danger { background: linear-gradient(135deg, #e74a3b, #962115); color: #fff !important; }
         
         .company-badge {
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-left: 5px solid #ccc;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 12px 15px; 
+            cursor: pointer; transition: all 0.2s ease; border-left: 5px solid #ccc; background-color: #ffffff;
+            border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.04); height: 100%; display: flex;
+            flex-direction: column; justify-content: center; padding: 12px 15px; 
         }
         .company-badge:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
         .company-badge.debt { border-left-color: #ff9a9e; } 
@@ -80,8 +63,7 @@
             body.print-dashboard .app-container > .d-flex:first-child,
             body.print-dashboard .nav-tabs,
             body.print-dashboard .tab-content > .tab-pane:not(#dashboard),
-            body.print-dashboard .input-group,
-            body.print-dashboard .btn,
+            body.print-dashboard .input-group, body.print-dashboard .btn,
             body.print-dashboard .summary-card { display: none !important; }
             body.print-dashboard .company-badge { border: 1px solid #ddd; box-shadow: none !important; break-inside: avoid; }
             
@@ -94,10 +76,8 @@
             body.print-ekstre .table-responsive { overflow: visible !important; max-height: none !important; height: auto !important; }
             body.print-ekstre .modal-body { overflow: visible !important; height: auto !important; padding: 0 !important; }
             
-            body.print-ekstre .modal-header .btn-close,
-            body.print-ekstre .modal-header button,
-            body.print-ekstre .modal-footer,
-            body.print-ekstre .islem-col,
+            body.print-ekstre .modal-header .btn-close, body.print-ekstre .modal-header button,
+            body.print-ekstre .modal-footer, body.print-ekstre .islem-col,
             body.print-ekstre #tahsilatFormContainer { display: none !important; }
             body.print-ekstre .table { border-color: #000 !important; }
             body.print-ekstre th, body.print-ekstre td { color: #000 !important; }
@@ -111,7 +91,7 @@
     <div class="card p-5 bg-white" id="loginCard" style="width: 420px;">
         <div class="text-center mb-4">
             <h2 class="fw-bold" style="color: #4e73df;"><i class="fas fa-shield-alt"></i> MİATEM</h2>
-            <h5 class="text-muted">CariPro Yönetim Paneli</h5>
+            <h5 class="text-muted">CariPro Bulut Sistemi</h5>
         </div>
         <div id="loginError" class="alert alert-danger d-none small text-center"></div>
         <div class="mb-3">
@@ -127,13 +107,15 @@
 </div>
 
 <div id="mainApp" style="display: none;" class="app-container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2><i class="fas fa-chart-pie" style="color: #6a82fb;"></i> <strong>CariPro:</strong> MİATEM Sürümü <span class="badge bg-success fs-6 align-middle">CPA-FTC Pro 💎</span></h2>
-        <div>
-            <strong>Aktif Yıl: </strong> <span id="currentPeriod" class="badge bg-primary fs-5 shadow-sm">2026 Yılı</span>
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+        <h2><i class="fas fa-chart-pie" style="color: #6a82fb;"></i> <strong>CariPro:</strong> MİATEM Sürümü <span class="badge bg-success fs-6 align-middle">V16 BULUT ☁️</span></h2>
+        <div class="d-flex align-items-center flex-wrap mt-2 mt-md-0">
+            <span id="cloudSaveIndicator" class="badge bg-white text-dark border me-3 py-2 px-3 shadow-sm"><i class="fas fa-cloud text-secondary"></i> Bulut Bekleniyor...</span>
+            
+            <strong>Aktif Yıl: </strong> <span id="currentPeriod" class="badge bg-primary fs-5 shadow-sm ms-2">2026 Yılı</span>
             <button class="btn btn-warning ms-3 fw-bold text-dark shadow-sm" onclick="donemKapat()"><i class="fas fa-calendar-check"></i> Yılı Devret</button>
             <button class="btn btn-danger ms-2 fw-bold shadow-sm" onclick="resetData()"><i class="fas fa-trash-alt"></i> Sıfırla</button>
-            <button class="btn btn-outline-dark ms-3 fw-bold shadow-sm" onclick="sistemdenCikisYap()"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
+            <button class="btn btn-outline-dark ms-3 fw-bold shadow-sm" onclick="sistemdenCikisYap()"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
         </div>
     </div>
 
@@ -164,15 +146,15 @@
             <div class="card p-3 mb-4 bg-light" style="border: 2px dashed #4e73df;">
                 <div class="row align-items-center">
                     <div class="col-md-6">
-                        <h5 class="text-primary mb-1"><i class="fas fa-save"></i> Güvenli Sistem Yedeği</h5>
-                        <p class="text-muted small mb-0">Manuel eklediğiniz nakitler, iptaller veya firmaların kaybolmaması için gün sonunda yedeğinizi bilgisayarınıza indirin.</p>
+                        <h5 class="text-primary mb-1"><i class="fas fa-save"></i> Manuel Bilgisayar Yedeği (Opsiyonel)</h5>
+                        <p class="text-muted small mb-0">Verileriniz artık Buluta (Firebase) otomatik kaydedilmektedir. Ancak isterseniz geçmişe dönük fiziksel bir JSON yedeği bilgisayarınıza indirebilirsiniz.</p>
                     </div>
                     <div class="col-md-3 text-center border-start">
-                        <button class="btn btn-primary w-100 fw-bold shadow-sm" onclick="exportData()"><i class="fas fa-download"></i> Mevcut Durumu Yedekle</button>
+                        <button class="btn btn-primary w-100 fw-bold shadow-sm" onclick="exportData()"><i class="fas fa-download"></i> PC'ye Yedek İndir</button>
                     </div>
                     <div class="col-md-3 text-center border-start">
                         <input type="file" id="importFile" class="form-control form-control-sm mb-1" accept=".json">
-                        <button class="btn btn-success btn-sm w-100 fw-bold shadow-sm" onclick="importData()"><i class="fas fa-upload"></i> Yedeği Geri Yükle</button>
+                        <button class="btn btn-success btn-sm w-100 fw-bold shadow-sm" onclick="importData()"><i class="fas fa-upload"></i> Eski Yedeği Buluta Aktar</button>
                     </div>
                 </div>
             </div>
@@ -216,29 +198,23 @@
             <div class="print-header-only">
                 <h2 style="font-weight: 800; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">MİATEM TEMİZLİK ALACAK LİSTESİ</h2>
             </div>
-
             <div class="row mb-4">
                 <div class="col-md-4">
                     <div class="card summary-card bg-gradient-primary">
-                        <h6>Toplam Piyasa Alacağı</h6>
-                        <h3 id="dashTotalAlacak">0,00 ₺</h3>
-                        <small>Müşterilerin toplam borcu</small>
+                        <h6>Toplam Piyasa Alacağı</h6><h3 id="dashTotalAlacak">0,00 ₺</h3><small>Müşterilerin toplam borcu</small>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card summary-card bg-gradient-success">
-                        <h6>Son Banka İşlem Tarihi</h6>
-                        <h3 id="dashSonBanka">Yüklenmedi</h3>
+                        <h6>Son Banka İşlem Tarihi</h6><h3 id="dashSonBanka">Yüklenmedi</h3>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card summary-card bg-gradient-warning">
-                        <h6>Son Kesilen Fatura No</h6>
-                        <h3 id="dashSonFatura">Yüklenmedi</h3>
+                        <h6>Son Kesilen Fatura No</h6><h3 id="dashSonFatura">Yüklenmedi</h3>
                     </div>
                 </div>
             </div>
-
             <div class="d-flex justify-content-between align-items-center mb-3 mt-4 flex-wrap gap-2">
                 <h4 class="text-secondary mb-0" style="font-weight: 600;"><i class="fas fa-building"></i> Tüm Firma Bakiyeleri</h4>
                 <div class="d-flex align-items-center gap-2">
@@ -249,7 +225,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="row g-3" id="dashboardBadges">
                 <div class="col-12"><div class="alert alert-light border text-center text-muted">Veri yükleyerek veya yedeği geri yükleyerek başlayın.</div></div>
             </div>
@@ -266,20 +241,13 @@
                         <input type="text" id="cariListeAraInput" class="form-control border-start-0 ps-0" placeholder="Cari Listede Ara..." onkeyup="filterCariListe()">
                     </div>
                 </div>
-                
-                <div class="alert alert-light border small text-muted"><i class="fas fa-info-circle"></i> Vade (Gün) sütunundaki rakamları değiştirerek firmaların ödeme sürelerini ayarlayabilirsiniz. Varsayılan vade 30 Gündür.</div>
-
+                <div class="alert alert-light border small text-muted"><i class="fas fa-info-circle"></i> Vade (Gün) sütunundaki rakamları değiştirerek firmaların ödeme sürelerini ayarlayabilirsiniz. Değişiklikler anında Buluta kaydedilir.</div>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle" id="cariTable">
                         <thead class="table-light">
                             <tr>
-                                <th>VKN / TCKN</th>
-                                <th>Firma Ünvanı (A-Z)</th>
-                                <th>Vade (Gün)</th>
-                                <th>Devir Bakiyesi (₺)</th>
-                                <th>Faturalar (₺)</th>
-                                <th>Ödemeler (₺)</th>
-                                <th>Güncel Bakiye (₺)</th>
+                                <th>VKN / TCKN</th><th>Firma Ünvanı (A-Z)</th><th>Vade (Gün)</th>
+                                <th>Devir Bakiyesi (₺)</th><th>Faturalar (₺)</th><th>Ödemeler (₺)</th><th>Güncel Bakiye (₺)</th>
                             </tr>
                         </thead>
                         <tbody id="cariTableBody"></tbody>
@@ -303,7 +271,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-md-6 border-end border-2 pe-4">
                     <h5 class="text-danger fw-bold border-bottom pb-2 mb-3"><i class="fas fa-fire"></i> Kırmızı Bölge (Tahsilatı Geciken Firmalar)</h5>
@@ -322,12 +289,7 @@
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle">
                         <thead class="table-danger">
-                            <tr>
-                                <th>Tarih</th>
-                                <th>Açıklama</th>
-                                <th>Tutar (₺)</th>
-                                <th style="width: 250px;">Manuel Eşleştir</th>
-                            </tr>
+                            <tr><th>Tarih</th><th>Açıklama</th><th>Tutar (₺)</th><th style="width: 250px;">Manuel Eşleştir</th></tr>
                         </thead>
                         <tbody id="unmatchedTableBody"></tbody>
                     </table>
@@ -341,12 +303,7 @@
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-dark">
-                            <tr>
-                                <th>İptal Edilen Firma / Cari</th>
-                                <th>Fatura Tarihi</th>
-                                <th>Evrak No / Açıklama</th>
-                                <th>İptal Edilen Tutar (₺)</th>
-                            </tr>
+                            <tr><th>İptal Edilen Firma / Cari</th><th>Fatura Tarihi</th><th>Evrak No / Açıklama</th><th>İptal Edilen Tutar (₺)</th></tr>
                         </thead>
                         <tbody id="cancelledTableBody"></tbody>
                     </table>
@@ -355,10 +312,8 @@
         </div>
 
     </div>
-    
     <div class="text-center mt-5 mb-3 text-muted no-print" style="font-size: 0.85rem; border-top: 1px solid #ddd; padding-top: 15px;">
-        <i class="fas fa-shield-alt text-primary"></i> <strong>CariPro: MİATEM Sürümü</strong> &copy; 2026 <br>
-        SMMM Tarık GÜN Tüm Hakları Saklıdır.
+        <i class="fas fa-shield-alt text-primary"></i> <strong>CariPro: MİATEM Sürümü</strong> &copy; 2026 <br> SMMM Tarık GÜN Tüm Hakları Saklıdır.
     </div>
 </div>
 
@@ -370,20 +325,10 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-          <div class="mb-3">
-              <label class="form-label fw-bold">Firma Ünvanı / Adı Soyadı</label>
-              <input type="text" id="yeniCariUnvan" class="form-control" placeholder="Örn: X TEKSTİL SANAYİ">
-          </div>
-          <div class="mb-3">
-              <label class="form-label fw-bold">Geçmiş Dönem Devir Bakiyesi (₺)</label>
-              <input type="text" id="yeniCariBakiye" class="form-control" placeholder="Örn: 15.000,00">
-              <small class="text-muted">Alacaklıysanız pozitif, borçluysanız eksi (-) koyarak yazın.</small>
-          </div>
+          <div class="mb-3"><label class="form-label fw-bold">Firma Ünvanı / Adı Soyadı</label><input type="text" id="yeniCariUnvan" class="form-control" placeholder="Örn: X TEKSTİL SANAYİ"></div>
+          <div class="mb-3"><label class="form-label fw-bold">Geçmiş Dönem Devir Bakiyesi (₺)</label><input type="text" id="yeniCariBakiye" class="form-control" placeholder="Örn: 15.000,00"><small class="text-muted">Alacaklıysanız pozitif, borçluysanız eksi (-) koyarak yazın.</small></div>
       </div>
-      <div class="modal-footer bg-light border-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-        <button type="button" class="btn btn-primary" onclick="saveManuelCari()">Cariyi Kaydet</button>
-      </div>
+      <div class="modal-footer bg-light border-0"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button><button type="button" class="btn btn-primary" onclick="saveManuelCari()">Cariyi Kaydet</button></div>
     </div>
   </div>
 </div>
@@ -396,28 +341,15 @@
         <button class="btn btn-sm btn-outline-light ms-3" onclick="toggleTahsilatForm()"><i class="fas fa-plus"></i> Nakit Tahsilat</button>
         <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
       </div>
-      
       <div class="bg-white p-3 border-bottom d-none" id="tahsilatFormContainer" style="border-top: 3px solid #1cc88a;">
           <h6 class="text-success mb-3"><i class="fas fa-money-bill-wave"></i> Hesaba Nakit / Elden Ödeme İşle</h6>
           <div class="row g-2 align-items-center">
-              <div class="col-md-3">
-                  <label class="form-label small text-muted mb-0">Tarih</label>
-                  <input type="date" id="tahsilatTarih" class="form-control form-control-sm">
-              </div>
-              <div class="col-md-3">
-                  <label class="form-label small text-muted mb-0">Tahsilat Tutarı (₺)</label>
-                  <input type="text" id="tahsilatTutar" class="form-control form-control-sm" placeholder="Örn: 5.000,00">
-              </div>
-              <div class="col-md-4">
-                  <label class="form-label small text-muted mb-0">İşlem Açıklaması</label>
-                  <input type="text" id="tahsilatAciklama" class="form-control form-control-sm" placeholder="Örn: Elden nakit alındı">
-              </div>
-              <div class="col-md-2 mt-auto">
-                  <button class="btn btn-success btn-sm w-100 fw-bold shadow-sm" onclick="saveTahsilat()"><i class="fas fa-save"></i> Kaydet</button>
-              </div>
+              <div class="col-md-3"><label class="form-label small text-muted mb-0">Tarih</label><input type="date" id="tahsilatTarih" class="form-control form-control-sm"></div>
+              <div class="col-md-3"><label class="form-label small text-muted mb-0">Tahsilat Tutarı (₺)</label><input type="text" id="tahsilatTutar" class="form-control form-control-sm" placeholder="Örn: 5.000,00"></div>
+              <div class="col-md-4"><label class="form-label small text-muted mb-0">İşlem Açıklaması</label><input type="text" id="tahsilatAciklama" class="form-control form-control-sm" placeholder="Örn: Elden nakit alındı"></div>
+              <div class="col-md-2 mt-auto"><button class="btn btn-success btn-sm w-100 fw-bold shadow-sm" onclick="saveTahsilat()"><i class="fas fa-save"></i> Kaydet</button></div>
           </div>
       </div>
-
       <div class="modal-body bg-light">
         <div class="row mb-3 text-center fw-bold bg-white p-3 rounded shadow-sm mx-1">
             <div class="col-4"><span class="text-muted">VKN/TCKN:</span> <br><span id="ekstreVkn" class="fs-5"></span></div>
@@ -427,15 +359,7 @@
         <div class="table-responsive bg-white p-2 rounded shadow-sm">
             <table class="table table-bordered table-striped table-sm text-center align-middle mb-0">
                 <thead class="table-secondary">
-                    <tr>
-                        <th style="width: 100px;">Tarih</th>
-                        <th style="width: 130px;">İşlem Tipi</th>
-                        <th>Evrak No / Açıklama</th>
-                        <th style="width: 120px;">Borç (Fatura) ₺</th>
-                        <th style="width: 120px;">Alacak (Ödeme) ₺</th>
-                        <th style="width: 120px; background-color: #e2e8f0;">Bakiye ₺</th>
-                        <th style="width: 60px;" class="islem-col">İşlem</th>
-                    </tr>
+                    <tr><th style="width: 100px;">Tarih</th><th style="width: 130px;">İşlem Tipi</th><th>Evrak No / Açıklama</th><th style="width: 120px;">Borç (Fatura) ₺</th><th style="width: 120px;">Alacak (Ödeme) ₺</th><th style="width: 120px; background-color: #e2e8f0;">Bakiye ₺</th><th style="width: 60px;" class="islem-col">İşlem</th></tr>
                 </thead>
                 <tbody id="ekstreTableBody"></tbody>
             </table>
@@ -452,42 +376,41 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // ==========================================
-    // 1. FIREBASE KİMLİK DOĞRULAMA AYARLARI
+    // 1. FIREBASE BULUT & KİMLİK DOĞRULAMA AYARLARI
     // ==========================================
-    
     const firebaseConfig = {
-  apiKey: "AIzaSyBLt8opleyD8E-CYmm5v7TqV66CkJvIub8",
-  authDomain: "caripro-miatem.firebaseapp.com",
-  projectId: "caripro-miatem",
-  storageBucket: "caripro-miatem.firebasestorage.app",
-  messagingSenderId: "990804871808",
-  appId: "1:990804871808:web:6ce9cf62ad1963fdf17465"
-};
+        apiKey: "SİZİN_API_KEY_BURAYA",
+        authDomain: "SİZİN_DOMAIN_BURAYA",
+        projectId: "SİZİN_PROJECTID_BURAYA",
+        storageBucket: "SİZİN_BUCKET_BURAYA",
+        messagingSenderId: "SİZİN_SENDER_BURAYA",
+        appId: "SİZİN_APPID_BURAYA"
+    };
 
     let auth;
+    let db;
 
-    // Firebase ayarları girilmişse sistemi korumaya al
     if(firebaseConfig.apiKey !== "SİZİN_API_KEY_BURAYA") {
         firebase.initializeApp(firebaseConfig);
         auth = firebase.auth();
+        db = firebase.firestore();
 
-        // Oturum durumunu dinle
         auth.onAuthStateChanged(user => {
             if (user) {
-                // Giriş yapılmışsa ana programı göster
                 document.getElementById("loginScreen").style.display = "none";
                 document.getElementById("mainApp").style.display = "block";
+                loadFromCloud(); // Sisteme girer girmez buluttaki verileri otomatik çek
             } else {
-                // Giriş yapılmamışsa giriş ekranını göster
                 document.getElementById("mainApp").style.display = "none";
                 document.getElementById("loginScreen").style.display = "flex";
+                // Çıkış yapıldığında başkası görmesin diye yerel hafızayı temizle
+                companies = {}; unmatchedTransactions = []; cancelledInvoices = [];
             }
         });
     } else {
-        // Eğer kodları girmeyi unuttuysanız test için sistemi kilitleme, uyar:
-        document.getElementById("loginScreen").classList.replace("d-flex", "d-none");
+        document.getElementById("loginScreen").style.display = "none";
         document.getElementById("mainApp").style.display = "block";
-        alert("Lütfen Firebase ayarlarınızı HTML kodunun alt kısmından ('firebaseConfig') güncelleyin!");
+        alert("Lütfen Firebase ayarlarınızı HTML kodunun alt kısmından güncelleyin!");
     }
 
     function sistemeGirisYap() {
@@ -503,58 +426,85 @@
             errBox.classList.remove("d-none");
         });
     }
-
-    function sistemdenCikisYap() {
-        if(!auth) return;
-        auth.signOut();
-    }
-
-    // Giriş yaparken Enter tuşuna basılmasını algılama
-    function checkEnter(e) {
-        if(e.key === 'Enter') sistemeGirisYap();
-    }
+    function sistemdenCikisYap() { if(auth) auth.signOut(); }
+    function checkEnter(e) { if(e.key === 'Enter') sistemeGirisYap(); }
 
     // ==========================================
-    // 2. CARİ TAKİP PROGRAMI DEĞİŞKENLERİ VE MOTORU
+    // 2. BULUT (CLOUD) OKUMA VE YAZMA MOTORU
     // ==========================================
-    let companies = {}; 
-    let unmatchedTransactions = [];
-    let cancelledInvoices = []; 
-    let periodYear = 2026;
+    let companies = {}; let unmatchedTransactions = []; let cancelledInvoices = []; 
+    let periodYear = 2026; let globalSonBankaTarihi = ""; let globalSonFaturaNo = ""; let globalMaxBankDateObj = new Date(1900, 0, 1); let currentEkstreVkn = null;
 
-    let globalSonBankaTarihi = "";
-    let globalSonFaturaNo = "";
-    let globalMaxBankDateObj = new Date(1900, 0, 1);
-    let currentEkstreVkn = null;
+    function saveToCloud() {
+        if(!auth || !auth.currentUser || !db) return;
+        const state = { companies: companies, unmatchedTransactions: unmatchedTransactions, cancelledInvoices: cancelledInvoices, periodYear: periodYear, globalSonBankaTarihi: globalSonBankaTarihi, globalSonFaturaNo: globalSonFaturaNo, sonGuncelleme: firebase.firestore.FieldValue.serverTimestamp() };
+        
+        let ind = document.getElementById("cloudSaveIndicator");
+        if(ind) ind.innerHTML = '<i class="fas fa-sync fa-spin text-warning"></i> Buluta Kaydediliyor...';
 
+        db.collection("MiatemData").doc("MainData").set(state).then(() => {
+            if(ind) ind.innerHTML = '<i class="fas fa-cloud-upload-alt text-success"></i> Buluta Kaydedildi';
+        }).catch((error) => {
+            if(ind) ind.innerHTML = '<i class="fas fa-exclamation-triangle text-danger"></i> Kayıt Hatası! (İzinleri Açın)';
+        });
+    }
+
+    function loadFromCloud() {
+        if(!auth || !auth.currentUser || !db) return;
+        let ind = document.getElementById("cloudSaveIndicator");
+        if(ind) ind.innerHTML = '<i class="fas fa-sync fa-spin text-primary"></i> Veriler İndiriliyor...';
+
+        db.collection("MiatemData").doc("MainData").get().then((doc) => {
+            if (doc.exists) {
+                let state = doc.data();
+                companies = state.companies || {}; unmatchedTransactions = state.unmatchedTransactions || []; cancelledInvoices = state.cancelledInvoices || [];
+                periodYear = state.periodYear || 2026; globalSonBankaTarihi = state.globalSonBankaTarihi || ""; globalSonFaturaNo = state.globalSonFaturaNo || "";
+                
+                for(let vkn in companies) { if(companies[vkn].vadeGun === undefined) companies[vkn].vadeGun = 30; }
+                document.getElementById("currentPeriod").innerText = periodYear + " Yılı";
+                
+                updateAllViews(false); // Ekranı çiz ama buluta tekrar kaydetme
+                if(ind) ind.innerHTML = '<i class="fas fa-cloud text-success"></i> Bulut Güncel';
+            } else {
+                if(ind) ind.innerHTML = '<i class="fas fa-cloud text-secondary"></i> Bulutta Kayıt Yok';
+                updateAllViews(false);
+            }
+        }).catch((error) => {
+            if(ind) ind.innerHTML = '<i class="fas fa-exclamation-triangle text-danger"></i> Bağlantı Hatası!';
+        });
+    }
+
+    // Ekranı her yenileyen işlem aynı zamanda BULUTA KAYDET tetikleyicisi gönderir
+    function updateAllViews(triggerCloudSave = true) {
+        renderDashboard(); renderCariTable(); renderUnmatchedTable(); renderCancelledTable(); renderSimpleAnalytics(); filterFirma(); filterCariListe();
+        document.getElementById("unmatched-count").innerText = unmatchedTransactions.length;
+        document.getElementById("cancelled-count").innerText = cancelledInvoices.length;
+        
+        // Her şey bittiğinde değişiklikleri Firebase'e yaz
+        if(triggerCloudSave) saveToCloud();
+    }
+
+
+    // ==========================================
+    // 3. CARİ TAKİP PROGRAMI DEĞİŞKENLERİ VE İŞLEMLER
+    // ==========================================
     function generateId() { return Math.random().toString(36).substr(2, 9); }
     function formatMoney(amount) { return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount); }
 
     function readExcel(file, callback) {
-        if (typeof XLSX === "undefined") {
-            alert("Excel kütüphanesi yüklenemedi. Lütfen internet bağlantınızı kontrol edin.");
-            callback(null); return;
-        }
+        if (typeof XLSX === "undefined") { alert("Excel kütüphanesi yüklenemedi. Lütfen internet bağlantınızı kontrol edin."); callback(null); return; }
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array', cellDates: true});
-                const firstSheet = workbook.SheetNames[0];
-                const excelRows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], { defval: "", raw: false, dateNF: "dd.mm.yyyy" });
-                callback(excelRows);
+                const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array', cellDates: true});
+                const firstSheet = workbook.SheetNames[0]; const excelRows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], { defval: "", raw: false, dateNF: "dd.mm.yyyy" }); callback(excelRows);
             } catch (err) {
                 const readerText = new FileReader();
                 readerText.onload = function(eText) {
                     try {
                         const workbookText = XLSX.read(eText.target.result, {type: 'binary', cellDates: true});
-                        const firstSheetText = workbookText.SheetNames[0];
-                        const excelRowsText = XLSX.utils.sheet_to_json(workbookText.Sheets[firstSheetText], { defval: "", raw: false, dateNF: "dd.mm.yyyy" });
-                        callback(excelRowsText);
-                    } catch (errText) {
-                        alert("Dosya okunamadı! Farklı Kaydet diyerek '.xlsx' olarak kaydedip tekrar yükleyin.");
-                        callback(null);
-                    }
+                        const firstSheetText = workbookText.SheetNames[0]; const excelRowsText = XLSX.utils.sheet_to_json(workbookText.Sheets[firstSheetText], { defval: "", raw: false, dateNF: "dd.mm.yyyy" }); callback(excelRowsText);
+                    } catch (errText) { alert("Dosya okunamadı! Farklı Kaydet diyerek '.xlsx' olarak kaydedip tekrar yükleyin."); callback(null); }
                 };
                 readerText.readAsBinaryString(file);
             }
@@ -567,27 +517,19 @@
         if (typeof amount === 'number') return amount;
         let str = amount.toString().replace(/"/g, '').trim();
         if(str.includes(',') && str.includes('.')) {
-            if (str.lastIndexOf(',') > str.lastIndexOf('.')) str = str.replace(/\./g, '').replace(',', '.');
-            else str = str.replace(/,/g, '');
-        } else if (str.includes(',')) {
-            str = str.replace(',', '.');
-        }
-        let val = parseFloat(str);
-        return isNaN(val) ? 0 : val;
+            if (str.lastIndexOf(',') > str.lastIndexOf('.')) str = str.replace(/\./g, '').replace(',', '.'); else str = str.replace(/,/g, '');
+        } else if (str.includes(',')) { str = str.replace(',', '.'); }
+        let val = parseFloat(str); return isNaN(val) ? 0 : val;
     }
 
     function parseExcelDate(dateVal) {
         if(!dateVal) return "-";
         let dateStr = dateVal.toString().trim();
         if (/^\d{1,2}[\.\/]\d{1,2}[\.\/]\d{4}/.test(dateStr)) return dateStr.replace(/\//g, '.');
-
         if (dateStr.includes("GMT") || dateStr.includes("Thu") || dateStr.includes("Feb") || dateStr.includes("UTC")) {
             let parsed = new Date(dateStr);
             if (!isNaN(parsed)) {
-                let d = String(parsed.getDate()).padStart(2, '0');
-                let m = String(parsed.getMonth() + 1).padStart(2, '0');
-                let y = parsed.getFullYear();
-                return `${d}.${m}.${y}`;
+                let d = String(parsed.getDate()).padStart(2, '0'); let m = String(parsed.getMonth() + 1).padStart(2, '0'); let y = parsed.getFullYear(); return `${d}.${m}.${y}`;
             }
         }
         return dateStr;
@@ -601,11 +543,8 @@
     }
 
     function normalizeText(text) {
-        if (!text) return "";
-        let t = text.toString();
-        t = t.replace(/i/g, "I").replace(/ı/g, "I").toUpperCase();
-        t = t.replace(/İ/g, "I").replace(/Ş/g, "S").replace(/Ğ/g, "G").replace(/Ç/g, "C").replace(/Ö/g, "O").replace(/Ü/g, "U");
-        return t.trim();
+        if (!text) return ""; let t = text.toString(); t = t.replace(/i/g, "I").replace(/ı/g, "I").toUpperCase();
+        t = t.replace(/İ/g, "I").replace(/Ş/g, "S").replace(/Ğ/g, "G").replace(/Ç/g, "C").replace(/Ö/g, "O").replace(/Ü/g, "U"); return t.trim();
     }
 
     const stopWords = [
@@ -625,10 +564,7 @@
 
     function findColumnKey(row, keywords) {
         let keys = Object.keys(row);
-        for (let key of keys) {
-            let lowerKey = key.toLowerCase();
-            for (let word of keywords) if (lowerKey.includes(word)) return key;
-        }
+        for (let key of keys) { let lowerKey = key.toLowerCase(); for (let word of keywords) if (lowerKey.includes(word)) return key; }
         return null;
     }
 
@@ -640,12 +576,12 @@
             let dateStr = new Date().toLocaleDateString('tr-TR').replace(/\./g, '-'); downloadAnchorNode.setAttribute("download", "Miatem_Yedek_" + dateStr + ".json");
             document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove();
             logMessage("Yedek başarıyla indirildi. Güvenli bir yerde saklayın.", "success");
-        } catch (error) { alert("Yedekleme sırasında bir hata oluştu."); console.error(error); }
+        } catch (error) { alert("Yedekleme sırasında bir hata oluştu."); }
     }
 
     function importData() {
         const fileInput = document.getElementById("importFile");
-        if (!fileInput.files || !fileInput.files.length) { alert("Lütfen Yedek (.json) dosyası seçin."); return; }
+        if (!fileInput.files || !fileInput.files.length) { alert("Lütfen daha önce indirdiğiniz bir Yedek (.json) dosyası seçin."); return; }
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
@@ -654,19 +590,21 @@
                 periodYear = state.periodYear || 2026; globalSonBankaTarihi = state.globalSonBankaTarihi || ""; globalSonFaturaNo = state.globalSonFaturaNo || "";
                 for(let vkn in companies) { if(companies[vkn].vadeGun === undefined) companies[vkn].vadeGun = 30; }
                 document.getElementById("currentPeriod").innerText = periodYear + " Yılı";
-                updateAllViews();
+                
+                // Yedeği yükleyince otomatik olarak Buluta da kaydeder (true)
+                updateAllViews(true); 
                 var dt = new bootstrap.Tab(document.getElementById('dashboard-tab')); dt.show();
-                logMessage("Sistem yedeği başarıyla geri yüklendi. Kaldığınız yerden devam edebilirsiniz.", "success"); fileInput.value = "";
+                logMessage("Yedek başarıyla geri yüklendi ve BULUTA EŞİTLENDİ.", "success"); fileInput.value = "";
             } catch (err) { alert("Yedek dosyası bozuk veya geçersiz!"); }
         };
         reader.readAsText(fileInput.files[0]);
     }
 
     function resetData() {
-        if(confirm("DİKKAT: Tüm verileri silip SIFIRDAN başlamak istediğinize emin misiniz? Yedek almadıysanız veriler kalıcı olarak silinir!")) {
+        if(confirm("DİKKAT: Tüm verileri silip SIFIRDAN başlamak istediğinize emin misiniz? Veriler BULUTTAN DA KALICI OLARAK silinir!")) {
             companies = {}; unmatchedTransactions = []; cancelledInvoices = []; globalSonBankaTarihi = ""; globalSonFaturaNo = ""; globalMaxBankDateObj = new Date(1900, 0, 1); currentEkstreVkn = null;
             document.getElementById("devirFile").value = ""; document.getElementById("invoiceFile").value = ""; document.getElementById("bankFile").value = ""; document.getElementById("importFile").value = "";
-            updateAllViews(); document.getElementById("uploadLog").classList.add("hidden");
+            updateAllViews(true); document.getElementById("uploadLog").classList.add("hidden");
             var dt = new bootstrap.Tab(document.getElementById('upload-tab')); dt.show();
             alert("Tüm veriler sıfırlandı. Tertemiz bir sisteme geçtiniz.");
         }
@@ -675,101 +613,58 @@
     function filterFirma() {
         let inputVal = normalizeText(document.getElementById("firmaAraInput").value);
         let badges = document.querySelectorAll(".firma-card-container");
-        badges.forEach(b => {
-            let unvan = normalizeText(b.getAttribute("data-unvan"));
-            if(unvan.includes(inputVal)) b.classList.remove("hidden"); else b.classList.add("hidden");
-        });
+        badges.forEach(b => { let unvan = normalizeText(b.getAttribute("data-unvan")); if(unvan.includes(inputVal)) b.classList.remove("hidden"); else b.classList.add("hidden"); });
     }
 
     function filterCariListe() {
         let inputVal = normalizeText(document.getElementById("cariListeAraInput").value);
         let rows = document.querySelectorAll(".cari-liste-row");
-        rows.forEach(r => {
-            let unvan = normalizeText(r.getAttribute("data-unvan"));
-            if(unvan.includes(inputVal)) r.classList.remove("hidden"); else r.classList.add("hidden");
-        });
-    }
-
-    function updateAllViews() {
-        renderDashboard(); renderCariTable(); renderUnmatchedTable(); renderCancelledTable(); renderSimpleAnalytics(); filterFirma(); filterCariListe();
-        document.getElementById("unmatched-count").innerText = unmatchedTransactions.length;
-        document.getElementById("cancelled-count").innerText = cancelledInvoices.length;
+        rows.forEach(r => { let unvan = normalizeText(r.getAttribute("data-unvan")); if(unvan.includes(inputVal)) r.classList.remove("hidden"); else r.classList.add("hidden"); });
     }
 
     function updateVade(vkn, value) { companies[vkn].vadeGun = parseInt(value) || 0; updateAllViews(); }
     function updateDevir(vkn, value) { companies[vkn].devirBakiye = parseAmount(value) || 0; updateAllViews(); }
 
     function renderSimpleAnalytics() {
-        let totalOverdue = 0; let totalNotDue = 0; let overdueFirms = []; let notDueFirms = [];
-        let today = new Date();
-
+        let totalOverdue = 0; let totalNotDue = 0; let overdueFirms = []; let notDueFirms = []; let today = new Date();
         for (let vkn in companies) {
-            let c = companies[vkn];
-            let bakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar;
+            let c = companies[vkn]; let bakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar;
             if (bakiye <= 0) continue; 
-
             let timeline = [...c.hareketler];
-            if (c.devirBakiye > 0) {
-                timeline.push({ tur: "Fatura", tarih: "01.01.2026", aciklama: "Devir", tutar: c.devirBakiye, date: new Date(periodYear-1, 11, 31) });
-            }
-
+            if (c.devirBakiye > 0) { timeline.push({ tur: "Fatura", tarih: "01.01.2026", aciklama: "Devir", tutar: c.devirBakiye, date: new Date(periodYear-1, 11, 31) }); }
             timeline.forEach(t => { if(!t.date) t.date = parseTRDate(t.tarih); });
             let invoices = timeline.filter(t => t.tur === "Fatura").sort((a,b) => a.date - b.date);
-
-            let paymentRemaining = c.odemeTutar;
-            let compOverdue = 0; let compNotDue = 0;
-            let vadeGunu = c.vadeGun !== undefined ? c.vadeGun : 30; 
+            let paymentRemaining = c.odemeTutar; let compOverdue = 0; let compNotDue = 0; let vadeGunu = c.vadeGun !== undefined ? c.vadeGun : 30; 
 
             invoices.forEach(inv => {
                 let invRem = inv.tutar;
-                if (paymentRemaining >= invRem) { paymentRemaining -= invRem; invRem = 0; } 
-                else if (paymentRemaining > 0) { invRem -= paymentRemaining; paymentRemaining = 0; }
-
-                if (invRem > 0) {
-                    let daysOld = Math.floor((today - inv.date) / (1000 * 60 * 60 * 24));
-                    if (daysOld > vadeGunu) compOverdue += invRem; else compNotDue += invRem;
-                }
+                if (paymentRemaining >= invRem) { paymentRemaining -= invRem; invRem = 0; } else if (paymentRemaining > 0) { invRem -= paymentRemaining; paymentRemaining = 0; }
+                if (invRem > 0) { let daysOld = Math.floor((today - inv.date) / (1000 * 60 * 60 * 24)); if (daysOld > vadeGunu) compOverdue += invRem; else compNotDue += invRem; }
             });
-
             if (compOverdue > 0) { totalOverdue += compOverdue; overdueFirms.push({ unvan: c.unvan, amount: compOverdue, vkn: vkn }); }
             if (compNotDue > 0) { totalNotDue += compNotDue; notDueFirms.push({ unvan: c.unvan, amount: compNotDue, vkn: vkn }); }
         }
 
-        document.getElementById("dashTotalOverdue").innerText = formatMoney(totalOverdue) + " ₺";
-        document.getElementById("dashTotalNotDue").innerText = formatMoney(totalNotDue) + " ₺";
+        document.getElementById("dashTotalOverdue").innerText = formatMoney(totalOverdue) + " ₺"; document.getElementById("dashTotalNotDue").innerText = formatMoney(totalNotDue) + " ₺";
 
         let overHtml = "";
         overdueFirms.sort((a,b) => b.amount - a.amount).forEach(f => {
-            overHtml += `
-            <div class="col-xl-6 col-sm-12">
-                <div class="card p-2 border-danger border-start border-4 shadow-sm" style="cursor:pointer;" onclick="openEkstre('${f.vkn}')">
-                    <div class="text-truncate fw-bold text-dark" style="font-size:0.85rem;" title="${f.unvan}">${f.unvan}</div>
-                    <div class="text-danger fw-bold">${formatMoney(f.amount)} ₺</div>
-                </div>
-            </div>`;
+            overHtml += `<div class="col-xl-6 col-sm-12"><div class="card p-2 border-danger border-start border-4 shadow-sm" style="cursor:pointer;" onclick="openEkstre('${f.vkn}')"><div class="text-truncate fw-bold text-dark" style="font-size:0.85rem;" title="${f.unvan}">${f.unvan}</div><div class="text-danger fw-bold">${formatMoney(f.amount)} ₺</div></div></div>`;
         });
         if (!overHtml) overHtml = `<div class="col-12"><div class="alert alert-success w-100 py-2">Mükemmel! Gecikmiş (vadesi geçmiş) hiçbir alacağınız bulunmuyor.</div></div>`;
         document.getElementById("overdueContainer").innerHTML = overHtml;
 
         let notDueHtml = "";
         notDueFirms.sort((a,b) => b.amount - a.amount).forEach(f => {
-            notDueHtml += `
-            <div class="col-xl-6 col-sm-12">
-                <div class="card p-2 border-primary border-start border-4 shadow-sm" style="cursor:pointer;" onclick="openEkstre('${f.vkn}')">
-                    <div class="text-truncate fw-bold text-dark" style="font-size:0.85rem;" title="${f.unvan}">${f.unvan}</div>
-                    <div class="text-primary fw-bold">${formatMoney(f.amount)} ₺</div>
-                </div>
-            </div>`;
+            notDueHtml += `<div class="col-xl-6 col-sm-12"><div class="card p-2 border-primary border-start border-4 shadow-sm" style="cursor:pointer;" onclick="openEkstre('${f.vkn}')"><div class="text-truncate fw-bold text-dark" style="font-size:0.85rem;" title="${f.unvan}">${f.unvan}</div><div class="text-primary fw-bold">${formatMoney(f.amount)} ₺</div></div></div>`;
         });
         if (!notDueHtml) notDueHtml = `<div class="col-12"><div class="alert alert-light border w-100 py-2">Vadesi beklenen güncel borç bulunmuyor.</div></div>`;
         document.getElementById("notDueContainer").innerHTML = notDueHtml;
     }
 
     function saveManuelCari() {
-        let unvan = document.getElementById("yeniCariUnvan").value.trim();
-        let bakiye = parseAmount(document.getElementById("yeniCariBakiye").value);
+        let unvan = document.getElementById("yeniCariUnvan").value.trim(); let bakiye = parseAmount(document.getElementById("yeniCariBakiye").value);
         if(!unvan) { alert("Lütfen firma ünvanını giriniz!"); return; }
-
         let vkn = "MANUEL-" + generateId(); let sWords = getSearchWords(unvan); let primaryWord = sWords.length > 0 ? sWords[0] : "";
         companies[vkn] = { vkn: vkn, unvan: unvan, devirBakiye: bakiye, faturaTutar: 0, odemeTutar: 0, vadeGun: 30, primaryWord: primaryWord, hareketler: [], faturaNolar: [] };
         bootstrap.Modal.getInstance(document.getElementById('manuelCariModal')).hide();
@@ -778,30 +673,19 @@
     }
 
     function renderDashboard() {
-        document.getElementById("dashSonBanka").innerText = globalSonBankaTarihi || "Yüklenmedi";
-        document.getElementById("dashSonFatura").innerText = globalSonFaturaNo || "Yüklenmedi";
-
+        document.getElementById("dashSonBanka").innerText = globalSonBankaTarihi || "Yüklenmedi"; document.getElementById("dashSonFatura").innerText = globalSonFaturaNo || "Yüklenmedi";
         let totalAlacak = 0; let cArray = [];
         for (let vkn in companies) {
             let c = companies[vkn]; let bakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar;
             if(bakiye > 0) totalAlacak += bakiye; cArray.push({ vkn: vkn, unvan: c.unvan, bakiye: bakiye });
         }
-
-        document.getElementById("dashTotalAlacak").innerText = formatMoney(totalAlacak) + " ₺";
-        cArray.sort((a, b) => b.bakiye - a.bakiye);
+        document.getElementById("dashTotalAlacak").innerText = formatMoney(totalAlacak) + " ₺"; cArray.sort((a, b) => b.bakiye - a.bakiye);
         const badgeContainer = document.getElementById("dashboardBadges"); badgeContainer.innerHTML = "";
-
         if(cArray.length === 0) { badgeContainer.innerHTML = `<div class="col-12"><div class="alert alert-light border text-center text-muted">Veri yükleyerek veya yedeği geri yükleyerek başlayın.</div></div>`; return; }
 
         cArray.forEach(c => {
             let badgeClass = c.bakiye > 0 ? "debt" : "credit"; let colorText = c.bakiye > 0 ? "text-pastel-danger" : "text-pastel-primary";
-            let html = `
-            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 firma-card-container" data-unvan="${c.unvan}">
-                <div class="company-badge ${badgeClass}" onclick="openEkstre('${c.vkn}')">
-                    <div class="text-truncate w-100 mb-1" title="${c.unvan}"><strong style="font-size: 0.85rem; color: #555;">${c.unvan}</strong></div>
-                    <div><h6 class="mb-0 fw-bold ${colorText}" style="font-size: 1.05rem;">${formatMoney(c.bakiye)} ₺</h6></div>
-                </div>
-            </div>`;
+            let html = `<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 firma-card-container" data-unvan="${c.unvan}"><div class="company-badge ${badgeClass}" onclick="openEkstre('${c.vkn}')"><div class="text-truncate w-100 mb-1" title="${c.unvan}"><strong style="font-size: 0.85rem; color: #555;">${c.unvan}</strong></div><div><h6 class="mb-0 fw-bold ${colorText}" style="font-size: 1.05rem;">${formatMoney(c.bakiye)} ₺</h6></div></div></div>`;
             badgeContainer.innerHTML += html;
         });
     }
@@ -809,20 +693,9 @@
     function renderCariTable() {
         const tbody = document.getElementById("cariTableBody"); tbody.innerHTML = "";
         let cArray = Object.values(companies).sort((a, b) => a.unvan.localeCompare(b.unvan, 'tr-TR'));
-        
         cArray.forEach(c => {
-            let vkn = c.vkn; let bakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar;
-            let vadeGunu = c.vadeGun !== undefined ? c.vadeGun : 30;
-            
-            let row = `<tr class="cari-liste-row" data-unvan="${c.unvan}">
-                <td class="text-muted small">${c.vkn}</td>
-                <td><strong style="color: #6a82fb; cursor:pointer;" onclick="openEkstre('${vkn}')">${c.unvan}</strong></td>
-                <td><input type="number" class="form-control form-control-sm text-center fw-bold text-primary" value="${vadeGunu}" onblur="updateVade('${vkn}', this.value)" style="width: 70px; border-color:#b8c7f9; background-color:#f8faff;"></td>
-                <td><input type="text" class="form-control form-control-sm text-end fw-bold" value="${formatMoney(c.devirBakiye)}" onblur="updateDevir('${vkn}', this.value)" style="width: 110px; border-color:#ccc; color:#555;"></td>
-                <td class="text-end text-pastel-danger fw-bold">${formatMoney(c.faturaTutar)}</td>
-                <td class="text-end text-pastel-success fw-bold">${formatMoney(c.odemeTutar)}</td>
-                <td class="text-end fw-bold ${bakiye >= 0 ? 'text-pastel-danger' : 'text-pastel-primary'}">${formatMoney(bakiye)}</td>
-            </tr>`;
+            let vkn = c.vkn; let bakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar; let vadeGunu = c.vadeGun !== undefined ? c.vadeGun : 30;
+            let row = `<tr class="cari-liste-row" data-unvan="${c.unvan}"><td class="text-muted small">${c.vkn}</td><td><strong style="color: #6a82fb; cursor:pointer;" onclick="openEkstre('${vkn}')">${c.unvan}</strong></td><td><input type="number" class="form-control form-control-sm text-center fw-bold text-primary" value="${vadeGunu}" onblur="updateVade('${vkn}', this.value)" style="width: 70px; border-color:#b8c7f9; background-color:#f8faff;"></td><td><input type="text" class="form-control form-control-sm text-end fw-bold" value="${formatMoney(c.devirBakiye)}" onblur="updateDevir('${vkn}', this.value)" style="width: 110px; border-color:#ccc; color:#555;"></td><td class="text-end text-pastel-danger fw-bold">${formatMoney(c.faturaTutar)}</td><td class="text-end text-pastel-success fw-bold">${formatMoney(c.odemeTutar)}</td><td class="text-end fw-bold ${bakiye >= 0 ? 'text-pastel-danger' : 'text-pastel-primary'}">${formatMoney(bakiye)}</td></tr>`;
             tbody.innerHTML += row;
         });
     }
@@ -830,15 +703,9 @@
     function renderUnmatchedTable() {
         const tbody = document.getElementById("unmatchedTableBody"); tbody.innerHTML = ""; 
         let cArray = Object.values(companies).sort((a, b) => a.unvan.localeCompare(b.unvan, 'tr-TR'));
-        let optionsHtml = `<option value="">-- Cari Seç --</option>`;
-        cArray.forEach(c => { optionsHtml += `<option value="${c.vkn}">${c.unvan}</option>`; });
-
+        let optionsHtml = `<option value="">-- Cari Seç --</option>`; cArray.forEach(c => { optionsHtml += `<option value="${c.vkn}">${c.unvan}</option>`; });
         unmatchedTransactions.forEach((t, index) => {
-            let row = `<tr>
-                <td class="text-muted">${t.tarih}</td><td><small>${t.aciklama}</small></td>
-                <td class="text-end text-pastel-primary fw-bold">${formatMoney(t.tutar)}</td>
-                <td><div class="input-group input-group-sm"><select class="form-select" id="manual_match_${index}">${optionsHtml}</select><button class="btn btn-outline-success" onclick="manualMatch(${index})"><i class="fas fa-check"></i> Atama Yap</button></div></td>
-            </tr>`;
+            let row = `<tr><td class="text-muted">${t.tarih}</td><td><small>${t.aciklama}</small></td><td class="text-end text-pastel-primary fw-bold">${formatMoney(t.tutar)}</td><td><div class="input-group input-group-sm"><select class="form-select" id="manual_match_${index}">${optionsHtml}</select><button class="btn btn-outline-success" onclick="manualMatch(${index})"><i class="fas fa-check"></i> Atama Yap</button></div></td></tr>`;
             tbody.innerHTML += row;
         });
     }
@@ -846,65 +713,38 @@
     function renderCancelledTable() {
         const tbody = document.getElementById("cancelledTableBody"); tbody.innerHTML = ""; 
         cancelledInvoices.forEach(t => {
-            let row = `<tr>
-                <td><strong class="text-secondary">${t.unvan}</strong></td><td class="text-muted">${t.tarih}</td>
-                <td><small>${t.aciklama}</small></td><td class="text-end text-danger fw-bold"><del>${formatMoney(t.tutar)}</del></td>
-            </tr>`;
+            let row = `<tr><td><strong class="text-secondary">${t.unvan}</strong></td><td class="text-muted">${t.tarih}</td><td><small>${t.aciklama}</small></td><td class="text-end text-danger fw-bold"><del>${formatMoney(t.tutar)}</del></td></tr>`;
             tbody.innerHTML += row;
         });
     }
 
     function logMessage(msg, type="info") {
         const log = document.getElementById("uploadLog"); log.classList.remove("hidden", "alert-info", "alert-success", "alert-warning", "alert-danger");
-        log.classList.add("alert-" + type); log.innerHTML = `<i class="fas fa-info-circle"></i> ` + msg;
-        setTimeout(() => log.classList.add("hidden"), 5000);
+        log.classList.add("alert-" + type); log.innerHTML = `<i class="fas fa-info-circle"></i> ` + msg; setTimeout(() => log.classList.add("hidden"), 5000);
     }
 
     function printEkstre() { document.body.classList.add("print-ekstre"); window.print(); setTimeout(() => document.body.classList.remove("print-ekstre"), 500); }
     function printDashboard() { document.body.classList.add("print-dashboard"); window.print(); setTimeout(() => document.body.classList.remove("print-dashboard"), 500); }
 
     const ekstreModal = new bootstrap.Modal(document.getElementById('ekstreModal'));
-    
     function openEkstre(vkn) {
-        currentEkstreVkn = vkn;
-        let c = companies[vkn]; let netBakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar;
+        currentEkstreVkn = vkn; let c = companies[vkn]; let netBakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar;
+        document.getElementById("ekstreUnvan").innerText = c.unvan; document.getElementById("ekstreVkn").innerText = c.vkn; document.getElementById("ekstreTopFatura").innerText = formatMoney(c.faturaTutar);
+        let bakiyeEl = document.getElementById("ekstreBakiye"); bakiyeEl.innerText = formatMoney(netBakiye); bakiyeEl.className = netBakiye >= 0 ? "text-pastel-danger fw-bold fs-4" : "text-pastel-primary fw-bold fs-4";
 
-        document.getElementById("ekstreUnvan").innerText = c.unvan; document.getElementById("ekstreVkn").innerText = c.vkn;
-        document.getElementById("ekstreTopFatura").innerText = formatMoney(c.faturaTutar);
-        let bakiyeEl = document.getElementById("ekstreBakiye");
-        bakiyeEl.innerText = formatMoney(netBakiye); bakiyeEl.className = netBakiye >= 0 ? "text-pastel-danger fw-bold fs-4" : "text-pastel-primary fw-bold fs-4";
-
-        const tbody = document.getElementById("ekstreTableBody"); tbody.innerHTML = "";
-        let currentBalance = c.devirBakiye || 0;
-
+        const tbody = document.getElementById("ekstreTableBody"); tbody.innerHTML = ""; let currentBalance = c.devirBakiye || 0;
         if(currentBalance !== 0) {
-            tbody.innerHTML += `<tr style="background-color: #fff9e6;">
-                <td class="text-muted">Dönem Başı</td><td><span class="badge bg-warning text-dark">Dönem Devri</span></td>
-                <td class="text-start fw-bold">Geçmiş Dönem Bakiyesi</td><td class="text-end text-pastel-danger">${currentBalance > 0 ? formatMoney(currentBalance) : ""}</td>
-                <td class="text-end text-pastel-success">${currentBalance < 0 ? formatMoney(Math.abs(currentBalance)) : ""}</td>
-                <td class="text-end fw-bold text-dark" style="background-color: #f1f5f9;">${formatMoney(currentBalance)}</td><td class="islem-col"></td>
-            </tr>`;
+            tbody.innerHTML += `<tr style="background-color: #fff9e6;"><td class="text-muted">Dönem Başı</td><td><span class="badge bg-warning text-dark">Dönem Devri</span></td><td class="text-start fw-bold">Geçmiş Dönem Bakiyesi</td><td class="text-end text-pastel-danger">${currentBalance > 0 ? formatMoney(currentBalance) : ""}</td><td class="text-end text-pastel-success">${currentBalance < 0 ? formatMoney(Math.abs(currentBalance)) : ""}</td><td class="text-end fw-bold text-dark" style="background-color: #f1f5f9;">${formatMoney(currentBalance)}</td><td class="islem-col"></td></tr>`;
         }
 
         if(c.hareketler && c.hareketler.length > 0) {
             let sortedHareketler = [...c.hareketler].sort((a,b) => parseTRDate(a.tarih) - parseTRDate(b.tarih));
             sortedHareketler.forEach(h => {
-                let isFatura = h.tur === "Fatura";
-                if (isFatura) currentBalance += h.tutar; else currentBalance -= h.tutar;
-
+                let isFatura = h.tur === "Fatura"; if (isFatura) currentBalance += h.tutar; else currentBalance -= h.tutar;
                 let badge = isFatura ? `<span class="badge" style="background-color:#fc5c7d;">Fatura (Borç)</span>` : `<span class="badge" style="background-color:#42e695; color:#115;">Ödeme (Alacak)</span>`;
-                let borcCol = isFatura ? formatMoney(h.tutar) : ""; let alacakCol = !isFatura ? formatMoney(h.tutar) : "";
-                let bakiyeRenk = currentBalance >= 0 ? "text-pastel-danger" : "text-pastel-primary";
-                
-                let islemCol = !isFatura ? `<button class="btn btn-sm btn-outline-danger py-0 px-2 shadow-sm" title="Ödemeyi İptal Et/Geri Al" onclick="unmatchTransaction('${vkn}', '${h.id}')"><i class="fas fa-times"></i></button>` 
-                                         : `<button class="btn btn-sm btn-outline-warning py-0 px-2 shadow-sm text-dark" title="Faturayı İptal Et / Çıkar" onclick="cancelFatura('${vkn}', '${h.id}')"><i class="fas fa-ban"></i></button>`;
-
-                tbody.innerHTML += `<tr>
-                    <td class="text-muted">${h.tarih}</td><td>${badge}</td><td class="text-start"><small>${h.aciklama}</small></td>
-                    <td class="text-end fw-bold text-pastel-danger">${borcCol}</td><td class="text-end fw-bold text-pastel-success">${alacakCol}</td>
-                    <td class="text-end fw-bold ${bakiyeRenk}" style="background-color: #f1f5f9; border-left: 2px solid #e2e8f0;">${formatMoney(currentBalance)}</td>
-                    <td class="text-center align-middle islem-col">${islemCol}</td>
-                </tr>`;
+                let borcCol = isFatura ? formatMoney(h.tutar) : ""; let alacakCol = !isFatura ? formatMoney(h.tutar) : ""; let bakiyeRenk = currentBalance >= 0 ? "text-pastel-danger" : "text-pastel-primary";
+                let islemCol = !isFatura ? `<button class="btn btn-sm btn-outline-danger py-0 px-2 shadow-sm" title="Ödemeyi İptal Et/Geri Al" onclick="unmatchTransaction('${vkn}', '${h.id}')"><i class="fas fa-times"></i></button>` : `<button class="btn btn-sm btn-outline-warning py-0 px-2 shadow-sm text-dark" title="Faturayı İptal Et / Çıkar" onclick="cancelFatura('${vkn}', '${h.id}')"><i class="fas fa-ban"></i></button>`;
+                tbody.innerHTML += `<tr><td class="text-muted">${h.tarih}</td><td>${badge}</td><td class="text-start"><small>${h.aciklama}</small></td><td class="text-end fw-bold text-pastel-danger">${borcCol}</td><td class="text-end fw-bold text-pastel-success">${alacakCol}</td><td class="text-end fw-bold ${bakiyeRenk}" style="background-color: #f1f5f9; border-left: 2px solid #e2e8f0;">${formatMoney(currentBalance)}</td><td class="text-center align-middle islem-col">${islemCol}</td></tr>`;
             });
         }
         document.getElementById("tahsilatFormContainer").classList.add("d-none"); ekstreModal.show();
@@ -929,11 +769,8 @@
         if(!confirm("İptal edip 'Eşleşmeyenler' sekmesine geri göndermek (Nakit ise silmek) istediğinize emin misiniz?")) return;
         let c = companies[vkn]; let targetIndex = c.hareketler.findIndex(h => h.id === id);
         if(targetIndex > -1) {
-            let h = c.hareketler[targetIndex];
-            if(h.orjTutar > 0) c.odemeTutar -= h.tutar; else c.odemeTutar += h.tutar;
-            if(!h.aciklama.includes("[NAKİT]")) {
-                let orjAciklama = h.aciklama.replace("[Manuel Atandı] ", ""); unmatchedTransactions.push({ tarih: h.tarih, aciklama: orjAciklama, tutar: h.orjTutar });
-            }
+            let h = c.hareketler[targetIndex]; if(h.orjTutar > 0) c.odemeTutar -= h.tutar; else c.odemeTutar += h.tutar;
+            if(!h.aciklama.includes("[NAKİT]")) { let orjAciklama = h.aciklama.replace("[Manuel Atandı] ", ""); unmatchedTransactions.push({ tarih: h.tarih, aciklama: orjAciklama, tutar: h.orjTutar }); }
             c.hareketler.splice(targetIndex, 1); updateAllViews(); openEkstre(vkn);
         }
     }
@@ -949,8 +786,7 @@
     }
 
     function processDevir() {
-        const fileInput = document.getElementById("devirFile");
-        if (!fileInput.files || !fileInput.files.length) { alert("Lütfen Devir Listesi Excel dosyasını seçin."); return; }
+        const fileInput = document.getElementById("devirFile"); if (!fileInput.files || !fileInput.files.length) { alert("Lütfen Devir Listesi Excel dosyasını seçin."); return; }
         let btn = document.getElementById("devirBtn"); btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> İşleniyor...`; btn.disabled = true;
 
         setTimeout(() => {
@@ -960,9 +796,7 @@
                 data.forEach((row, index) => {
                     if(index === 0 && Object.keys(row).length === 0) return;
                     let unvanKey = findColumnKey(row, ["ünvan", "unvan", "müşteri", "alıcı", "adı soyadı"]) || "Ünvanı/Adı Soyadı";
-                    let vknKey = findColumnKey(row, ["vkn", "tckn", "vergi"]) || "Vkn/Tckn";
-                    let devirKey = findColumnKey(row, ["devir", "bakiye"]) || "Devir Bakiyesi";
-
+                    let vknKey = findColumnKey(row, ["vkn", "tckn", "vergi"]) || "Vkn/Tckn"; let devirKey = findColumnKey(row, ["devir", "bakiye"]) || "Devir Bakiyesi";
                     let unvan = row[unvanKey]; let vkn = row[vknKey] ? row[vknKey].toString() : "MANUEL-"+Math.floor(Math.random()*1000); let devir = parseAmount(row[devirKey]);
 
                     if(unvan) {
@@ -973,14 +807,13 @@
                         processedCount++;
                     }
                 });
-                updateAllViews(); logMessage(`${processedCount} adet geçmiş yıl devir kaydı başarıyla işlendi.`, "success"); btn.innerText = "Devirleri Aktar"; btn.disabled = false;
+                updateAllViews(); logMessage(`${processedCount} devir kaydedildi.`, "success"); btn.innerText = "Devirleri Aktar"; btn.disabled = false;
             });
         }, 50);
     }
 
     function processInvoices() {
-        const fileInput = document.getElementById("invoiceFile");
-        if (!fileInput.files || !fileInput.files.length) { alert("Lütfen Fatura Excel dosyasını seçin."); return; }
+        const fileInput = document.getElementById("invoiceFile"); if (!fileInput.files || !fileInput.files.length) { alert("Lütfen Fatura Excel dosyasını seçin."); return; }
         let btn = document.getElementById("invoiceBtn"); btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> İşleniyor...`; btn.disabled = true;
 
         setTimeout(() => {
@@ -992,8 +825,7 @@
                     let unvanKey = findColumnKey(row, ["ünvan", "unvan", "müşteri", "alıcı"]) || "Ünvanı/Adı Soyadı";
                     let vknKey = findColumnKey(row, ["vkn", "tckn", "vergi"]) || "Vkn/Tckn";
                     let tutarKey = Object.keys(row).find(k => k.toLowerCase().includes("ödenecek tutar") || (k.toLowerCase().includes("tutar") && !k.toLowerCase().includes("kdv") && !k.toLowerCase().includes("iskonto"))) || "Ödenecek Tutar Türk Lirası";
-                    let fTarihKey = findColumnKey(row, ["tarih"]) || "Fatura Tarihi";
-                    let fNoKey = findColumnKey(row, ["no.", "numara"]) || "Fatura No.";
+                    let fTarihKey = findColumnKey(row, ["tarih"]) || "Fatura Tarihi"; let fNoKey = findColumnKey(row, ["no.", "numara"]) || "Fatura No.";
 
                     let unvan = row[unvanKey]; let vkn = row[vknKey] ? row[vknKey].toString() : "Bilinmeyen-"+Math.floor(Math.random()*1000); let tutar = parseAmount(row[tutarKey]); let tarih = parseExcelDate(row[fTarihKey]); let fno = row[fNoKey] || "-";
 
@@ -1003,24 +835,20 @@
                             companies[vkn] = { vkn: vkn, unvan: unvan, devirBakiye: 0, faturaTutar: 0, odemeTutar: 0, vadeGun: 30, primaryWord: primaryWord, hareketler: [], faturaNolar: [] };
                         }
                         if (fno && fno.toString() !== "-" && fno.toString().trim().length > 3) {
-                            let fnoStr = normalizeText(fno.toString());
-                            if(!companies[vkn].faturaNolar.includes(fnoStr)) companies[vkn].faturaNolar.push(fnoStr);
+                            let fnoStr = normalizeText(fno.toString()); if(!companies[vkn].faturaNolar.includes(fnoStr)) companies[vkn].faturaNolar.push(fnoStr);
                         }
-                        companies[vkn].faturaTutar += tutar;
-                        companies[vkn].hareketler.push({ id: generateId(), tur: "Fatura", tarih: tarih, aciklama: `Fatura No: ${fno}`, tutar: tutar, orjTutar: tutar });
+                        companies[vkn].faturaTutar += tutar; companies[vkn].hareketler.push({ id: generateId(), tur: "Fatura", tarih: tarih, aciklama: `Fatura No: ${fno}`, tutar: tutar, orjTutar: tutar });
                         if (fno.toString() > maxFaturaNoStr && fno.toString() !== "-") maxFaturaNoStr = fno.toString();
                         processedCount++;
                     }
                 });
-                if(maxFaturaNoStr) globalSonFaturaNo = maxFaturaNoStr;
-                updateAllViews(); logMessage(`${processedCount} adet fatura işlendi.`, "success"); btn.innerText = "Faturaları Aktar"; btn.disabled = false;
+                if(maxFaturaNoStr) globalSonFaturaNo = maxFaturaNoStr; updateAllViews(); logMessage(`${processedCount} fatura işlendi.`, "success"); btn.innerText = "Faturaları Aktar"; btn.disabled = false;
             });
         }, 50);
     }
 
     function processBankStatements() {
-        const fileInput = document.getElementById("bankFile");
-        if (!fileInput.files || !fileInput.files.length) { alert("Lütfen Banka Ekstresi Excel dosyasını seçin."); return; }
+        const fileInput = document.getElementById("bankFile"); if (!fileInput.files || !fileInput.files.length) { alert("Lütfen Banka Ekstresi Excel dosyasını seçin."); return; }
         let btn = document.getElementById("bankBtn"); btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Taranıyor...`; btn.disabled = true;
 
         setTimeout(() => {
@@ -1029,8 +857,7 @@
                 let matchedCount = 0; unmatchedTransactions = [];
                 data.forEach(row => {
                     let aciklamaKey = findColumnKey(row, ["açıklama", "aciklama", "detay"]) || "Açıklama";
-                    let tutarKey = findColumnKey(row, ["işlem tutarı", "tutar", "alacak", "borç"]) || "İşlem Tutarı";
-                    let tarihKey = findColumnKey(row, ["tarih", "zaman"]) || "Tarih";
+                    let tutarKey = findColumnKey(row, ["işlem tutarı", "tutar", "alacak", "borç"]) || "İşlem Tutarı"; let tarihKey = findColumnKey(row, ["tarih", "zaman"]) || "Tarih";
 
                     let aciklama = row[aciklamaKey]; let tutar = parseAmount(row[tutarKey]); let tarih = parseExcelDate(row[tarihKey]);
 
@@ -1110,6 +937,5 @@
         let ws = XLSX.utils.json_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Banka"); XLSX.writeFile(wb, "Banka_Ekstre_Sablonu.xlsx");
     }
 </script>
-
 </body>
 </html>
