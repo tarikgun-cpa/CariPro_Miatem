@@ -475,12 +475,12 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 // Giriş yapılmışsa ana programı göster
-                document.getElementById("loginScreen").classList.replace("d-flex", "d-none");
+                document.getElementById("loginScreen").style.display = "none";
                 document.getElementById("mainApp").style.display = "block";
             } else {
                 // Giriş yapılmamışsa giriş ekranını göster
                 document.getElementById("mainApp").style.display = "none";
-                document.getElementById("loginScreen").classList.replace("d-none", "d-flex");
+                document.getElementById("loginScreen").style.display = "flex";
             }
         });
     } else {
