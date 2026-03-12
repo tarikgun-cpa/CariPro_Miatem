@@ -462,16 +462,75 @@
     </div>
 </div>
 <div class="tab-pane fade" id="agenda" role="tabpanel">
+    
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="card summary-card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);">
+                <h6 class="text-white fw-bold mb-1"><i class="fas fa-calendar-alt"></i> VADESİ GELMEMİŞ (GELECEK)</h6>
+                <h3 class="fw-bold mb-0 text-white" id="dashAgendaGelecek">0,00 ₺</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card summary-card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);">
+                <h6 class="text-white fw-bold mb-1"><i class="fas fa-exclamation-triangle"></i> VADESİ GEÇMİŞ (GECİKEN)</h6>
+                <h3 class="fw-bold mb-0 text-white" id="dashAgendaGecikmis">0,00 ₺</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card summary-card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+                <h6 class="text-white fw-bold mb-1"><i class="fas fa-wallet"></i> TOPLAM BEKLEYEN ÖDEME</h6>
+                <h3 class="fw-bold mb-0 text-white" id="dashAgendaToplam">0,00 ₺</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-3 border-0 shadow-sm mb-4">
+        <h6 class="text-secondary fw-bold border-bottom pb-2 mb-3"><i class="fas fa-chart-pie"></i> Bekleyen Ödemelerin Kategori Dağılımı</h6>
+        <div class="row g-2" id="agendaCategoryDash">
+            </div>
+    </div>
+
     <div class="card p-3 border-0 shadow-sm mb-4" style="border-top: 4px solid #dc3545;">
         <h5 class="fw-bold text-danger mb-3"><i class="fas fa-calendar-plus"></i> Gelecek Ödeme (Hatırlatıcı) Ekle</h5>
         <div class="row g-2 align-items-end">
-            <div class="col-md-3"><label class="small text-muted">Son Ödeme Tarihi</label><input type="date" id="agendaTarih" class="form-control form-control-sm"></div>
-            <div class="col-md-5"><label class="small text-muted">Ödeme Açıklaması / Yer</label><input type="text" id="agendaAciklama" class="form-control form-control-sm" placeholder="Örn: Kira, Malzeme Borcu"></div>
-            <div class="col-md-2"><label class="small text-muted">Tutar (₺)</label><input type="text" id="agendaTutar" class="form-control form-control-sm" placeholder="10000"></div>
-            <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm w-100 fw-bold" onclick="saveAgenda()"><i class="fas fa-bell"></i> Kaydet</button></div>
+            <div class="col-md-2"><label class="small text-muted fw-bold">Son Ödeme Tarihi</label><input type="date" id="agendaTarih" class="form-control form-control-sm"></div>
+            <div class="col-md-2">
+                <label class="small text-muted fw-bold">Kategori</label>
+                <select id="agendaKategori" class="form-select form-select-sm border-info">
+                    <option value="Firma">Firma / Tedarikçi</option>
+                    <option value="Vergi">Vergi (KDV, Stopaj vb.)</option>
+                    <option value="SGK">SGK (Prim, İşsizlik)</option>
+                    <option value="Kredi Kartı">Kredi Kartı / Kredi</option>
+                    <option value="Ceza">Ceza / Faiz</option>
+                    <option value="Diğer">Diğer</option>
+                </select>
+            </div>
+            <div class="col-md-4"><label class="small text-muted fw-bold">Ödeme Detayı / Açıklama</label><input type="text" id="agendaAciklama" class="form-control form-control-sm" placeholder="Örn: X Firması Malzeme Borcu"></div>
+            <div class="col-md-2"><label class="small text-muted fw-bold">Tutar (₺)</label><input type="text" id="agendaTutar" class="form-control form-control-sm" placeholder="10000"></div>
+            <div class="col-md-2 d-flex gap-1">
+    <button type="button" id="btnCancelAgenda" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm" style="display:none;" onclick="cancelEditAgenda()" title="Vazgeç"><i class="fas fa-times"></i></button>
+    <button type="button" id="btnSaveAgenda" class="btn btn-danger btn-sm w-100 fw-bold shadow-sm" onclick="saveAgenda()"><i class="fas fa-bell"></i> Kaydet</button>
+</div>
         </div>
     </div>
-    <div class="card p-3 border-0 shadow-sm"><div class="table-responsive"><table class="table table-hover align-middle table-sm"><thead class="table-light"><tr><th>Son Ödeme Tarihi</th><th>Ödeme Detayı</th><th class="text-end">Tutar (₺)</th><th class="text-center">Durum</th><th class="text-center">İşlem</th></tr></thead><tbody id="agendaTableBody"></tbody></table></div></div>
+    
+    <div class="card p-3 border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle table-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>Son Ödeme Tarihi</th>
+                        <th>Kategori</th>
+                        <th>Ödeme Detayı</th>
+                        <th class="text-end">Tutar (₺)</th>
+                        <th class="text-center">Durum (Gün Analizi)</th>
+                        <th class="text-center">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="agendaTableBody"></tbody>
+            </table>
+        </div>
+    </div>
 </div>
     <div class="text-center mt-5 mb-3 text-muted no-print" style="font-size: 0.85rem; border-top: 1px solid #ddd; padding-top: 15px;">
         <i class="fas fa-shield-alt text-primary"></i> <strong>CariPro Ⓜ️ MİATEM </strong> &copy; 2026 <br> SMMM Tarık GÜN Tüm Hakları Saklıdır. ©️ CPA-FTC Ltd.
@@ -1158,28 +1217,167 @@ function renderPersonnelTable() {
     // =====================================
     // 4. ÖDEME AJANDASI (9. SEKME)
     // =====================================
+    let editingAgendaId = null;
+
     function saveAgenda() {
-        let rawTarih = document.getElementById("agendaTarih").value; let aciklama = document.getElementById("agendaAciklama").value; let tutar = parseAmount(document.getElementById("agendaTutar").value);
+        let rawTarih = document.getElementById("agendaTarih").value; 
+        let kategori = document.getElementById("agendaKategori").value;
+        let aciklama = document.getElementById("agendaAciklama").value; 
+        let tutar = parseAmount(document.getElementById("agendaTutar").value);
+        
         if(!rawTarih || !aciklama) return alert("Tarih ve Açıklama zorunludur.");
-        agendaPayments.push({ id: generateId(), rawTarih: rawTarih, aciklama: aciklama, tutar: tutar, isPaid: false });
-        document.getElementById("agendaTarih").value = ""; document.getElementById("agendaAciklama").value = ""; document.getElementById("agendaTutar").value = "";
-        updateAllViews(); logMessage("Ajandaya eklendi.", "success");
+        
+        if (editingAgendaId) {
+            // Var olan kaydı güncelle
+            let existing = agendaPayments.find(x => x.id === editingAgendaId);
+            if (existing) {
+                existing.rawTarih = rawTarih;
+                existing.kategori = kategori;
+                existing.aciklama = aciklama;
+                existing.tutar = tutar;
+            }
+            cancelEditAgenda(); // Formu sıfırla ve butonları eski haline getir
+            logMessage("Ajanda kaydı güncellendi.", "success");
+        } else {
+            // Yeni kayıt ekle
+            agendaPayments.push({ id: generateId(), rawTarih: rawTarih, kategori: kategori, aciklama: aciklama, tutar: tutar, isPaid: false });
+            
+            document.getElementById("agendaTarih").value = ""; 
+            document.getElementById("agendaAciklama").value = ""; 
+            document.getElementById("agendaTutar").value = "";
+            document.getElementById("agendaKategori").value = "Firma";
+            logMessage("Ajandaya eklendi.", "success");
+        }
+        
+        updateAllViews(); 
     }
+
+    function editAgenda(id) {
+        let a = agendaPayments.find(x => x.id === id); if(!a) return;
+        editingAgendaId = a.id;
+        
+        // Formu doldur
+        document.getElementById("agendaTarih").value = a.rawTarih || "";
+        document.getElementById("agendaKategori").value = a.kategori || "Firma";
+        document.getElementById("agendaAciklama").value = a.aciklama || "";
+        document.getElementById("agendaTutar").value = a.tutar ? a.tutar : "";
+        
+        // Butonları güncelle
+        let btn = document.getElementById("btnSaveAgenda");
+        btn.innerHTML = `<i class="fas fa-save"></i> Güncelle`;
+        btn.classList.replace("btn-danger", "btn-warning");
+        btn.classList.add("text-dark");
+        document.getElementById("btnCancelAgenda").style.display = "inline-block";
+        
+        // Ekrani forma kaydır
+        document.getElementById("agendaTarih").scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function cancelEditAgenda() {
+        editingAgendaId = null;
+        document.getElementById("agendaTarih").value = ""; 
+        document.getElementById("agendaAciklama").value = ""; 
+        document.getElementById("agendaTutar").value = "";
+        document.getElementById("agendaKategori").value = "Firma";
+        
+        let btn = document.getElementById("btnSaveAgenda");
+        btn.innerHTML = `<i class="fas fa-bell"></i> Kaydet`;
+        btn.classList.replace("btn-warning", "btn-danger");
+        btn.classList.remove("text-dark");
+        document.getElementById("btnCancelAgenda").style.display = "none";
+    }
+
     function toggleAgendaStatus(id) { let a = agendaPayments.find(x => x.id === id); if(a) { a.isPaid = !a.isPaid; updateAllViews(); } }
     function deleteAgenda(id) { if(confirm("Silmek istediğinize emin misiniz?")) { agendaPayments = agendaPayments.filter(x => x.id !== id); updateAllViews(); } }
     
     function renderAgenda() {
         const tbody = document.getElementById("agendaTableBody"); if(!tbody) return; tbody.innerHTML = "";
+        
         let today = new Date(); today.setHours(0,0,0,0);
+        
+        let topBekleyen = 0, topGecikmis = 0, topGelecek = 0;
+        let catTotals = { "Vergi": 0, "SGK": 0, "Firma": 0, "Kredi Kartı": 0, "Ceza": 0, "Diğer": 0 };
+        
         agendaPayments.sort((a,b) => new Date(a.rawTarih) - new Date(b.rawTarih)).forEach(item => {
             let p = item.rawTarih.split("-"); let trTarih = `${p[2]}.${p[1]}.${p[0]}`;
-            let itemDate = new Date(item.rawTarih); let isOverdue = !item.isPaid && itemDate < today;
-            let statusBadge = item.isPaid ? `<span class="badge bg-success"><i class="fas fa-check-double"></i> Ödendi</span>` : (isOverdue ? `<span class="badge bg-danger"><i class="fas fa-exclamation-circle"></i> Gecikti</span>` : `<span class="badge bg-warning text-dark"><i class="fas fa-clock"></i> Bekliyor</span>`);
-            let rowClass = item.isPaid ? "text-decoration-line-through text-muted" : "";
-            tbody.innerHTML += `<tr class="${rowClass}"><td>${trTarih}</td><td class="fw-bold">${item.aciklama}</td><td class="text-end fw-bold">${formatMoney(item.tutar)} ₺</td><td class="text-center">${statusBadge}</td><td class="text-center"><button type="button" class="btn btn-sm btn-outline-success py-0 px-2" onclick="toggleAgendaStatus('${item.id}')"><i class="fas fa-check"></i></button> <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteAgenda('${item.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
-        });
-    }
+            let itemDate = new Date(item.rawTarih); itemDate.setHours(0,0,0,0);
+            
+            let timeDiff = itemDate.getTime() - today.getTime();
+            let diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            
+            let isOverdue = !item.isPaid && diffDays < 0;
+            let dayInfoText = "";
+            
+            if (!item.isPaid) {
+                topBekleyen += item.tutar;
+                let kat = item.kategori || "Diğer";
+                if(catTotals[kat] !== undefined) catTotals[kat] += item.tutar; else catTotals["Diğer"] += item.tutar;
+                
+                if (isOverdue) {
+                    topGecikmis += item.tutar;
+                    dayInfoText = `<div class="small fw-bold mt-1" style="font-size:0.75rem;">(${Math.abs(diffDays)} gün geçti)</div>`;
+                } else if (diffDays === 0) {
+                    topGelecek += item.tutar;
+                    dayInfoText = `<div class="small fw-bold mt-1" style="font-size:0.75rem;">(Bugün Son Gün)</div>`;
+                } else {
+                    topGelecek += item.tutar;
+                    dayInfoText = `<div class="small fw-bold mt-1 text-dark" style="font-size:0.75rem;">(${diffDays} gün kaldı)</div>`;
+                }
+            }
+            
+            let statusBadge = item.isPaid 
+                ? `<span class="badge bg-success px-3 py-2"><i class="fas fa-check-double"></i> Ödendi Kapatıldı</span>` 
+                : (isOverdue 
+                    ? `<div class="badge bg-danger px-3 py-2"><i class="fas fa-exclamation-circle"></i> Gecikmiş Ödeme ${dayInfoText}</div>` 
+                    : `<div class="badge bg-warning text-dark px-3 py-2 border"><i class="fas fa-clock"></i> Bekliyor ${dayInfoText}</div>`);
+            
+            let rowClass = item.isPaid ? "text-decoration-line-through text-muted" : (isOverdue ? "table-danger" : "");
+            
+            const catBadgeColors = { "Vergi": "info", "SGK": "success", "Firma": "secondary", "Kredi Kartı": "primary", "Ceza": "danger", "Diğer": "dark" };
+            let katBadgeColor = catBadgeColors[item.kategori] || "dark";
+            let katBadge = `<span class="badge bg-${katBadgeColor} rounded-pill shadow-sm" style="font-size:0.7rem;">${item.kategori || 'Diğer'}</span>`;
 
+            // Tabloya Düzenle Butonu Eklendi
+            tbody.innerHTML += `
+            <tr class="${rowClass}">
+                <td class="fw-bold">${trTarih}</td>
+                <td>${katBadge}</td>
+                <td class="fw-bold">${item.aciklama}</td>
+                <td class="text-end fw-bold fs-6 text-danger">${formatMoney(item.tutar)} ₺</td>
+                <td class="text-center align-middle">${statusBadge}</td>
+                <td class="text-center align-middle" style="white-space: nowrap;">
+                    <button type="button" class="btn btn-sm btn-outline-warning py-1 px-2 shadow-sm text-dark" onclick="editAgenda('${item.id}')" title="Düzenle"><i class="fas fa-edit"></i></button>
+                    <button type="button" class="btn btn-sm btn-outline-success py-1 px-2 shadow-sm" onclick="toggleAgendaStatus('${item.id}')" title="Ödendi İşaretle"><i class="fas fa-check"></i></button> 
+                    <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2 shadow-sm" onclick="deleteAgenda('${item.id}')" title="Kayıttan Sil"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+        });
+        
+        if(document.getElementById("dashAgendaToplam")) document.getElementById("dashAgendaToplam").innerText = formatMoney(topBekleyen) + " ₺";
+        if(document.getElementById("dashAgendaGecikmis")) document.getElementById("dashAgendaGecikmis").innerText = formatMoney(topGecikmis) + " ₺";
+        if(document.getElementById("dashAgendaGelecek")) document.getElementById("dashAgendaGelecek").innerText = formatMoney(topGelecek) + " ₺";
+        
+        const catIcons = { "Vergi": "fa-landmark", "SGK": "fa-user-shield", "Firma": "fa-building", "Kredi Kartı": "fa-credit-card", "Ceza": "fa-gavel", "Diğer": "fa-box" };
+        const catColors = { "Vergi": "info", "SGK": "success", "Firma": "secondary", "Kredi Kartı": "primary", "Ceza": "danger", "Diğer": "dark" };
+        
+        let catHtml = "";
+        for(let k in catTotals) {
+            if (catTotals[k] > 0) {
+                catHtml += `
+                <div class="col-xl-2 col-md-4 col-sm-6 mb-2">
+                    <div class="border rounded p-3 shadow-sm text-center bg-white" style="border-bottom: 4px solid var(--bs-${catColors[k]}) !important;">
+                        <div class="text-muted fw-bold mb-2" style="font-size: 0.8rem;"><i class="fas ${catIcons[k]} text-${catColors[k]} fs-5 d-block mb-1"></i> ${k.toUpperCase()}</div>
+                        <div class="fw-bold text-dark fs-5">${formatMoney(catTotals[k])} <small>₺</small></div>
+                    </div>
+                </div>`;
+            }
+        }
+        
+        let dashContainer = document.getElementById("agendaCategoryDash");
+        if(dashContainer) {
+            dashContainer.innerHTML = catHtml || `<div class="col-12"><div class="alert alert-success border text-center shadow-sm"><i class="fas fa-check-circle"></i> Harika! Bekleyen hiçbir ödeme veya borcunuz bulunmuyor.</div></div>`;
+        }
+    }
     // ==========================================
     // 5. BANKA VE CARİ İŞLEMLERİ (Kusursuz Eşleşmeyenler Motoru)
     // ==========================================
