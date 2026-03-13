@@ -754,30 +754,91 @@
         logMessage("Sistem ayarları başarıyla güncellendi ve buluta kaydedildi.", "success");
     }
 
-    function saveToCloud() {
-        if(!auth || !auth.currentUser || !db) return;
-        const state = { companies: companies, unmatchedTransactions: unmatchedTransactions, cancelledInvoices: cancelledInvoices, personnelList: personnelList, uninvoicedJobs: uninvoicedJobs, agendaPayments: agendaPayments, periodYear: periodYear, globalSonBankaTarihi: globalSonBankaTarihi, globalSonFaturaNo: globalSonFaturaNo, systemConfig: systemConfig, sonGuncelleme: firebase.firestore.FieldValue.serverTimestamp() };
-        let ind = document.getElementById("cloudSaveIndicator"); if(ind) ind.innerHTML = '<i class="fas fa-sync fa-spin text-warning"></i> Buluta Kaydediliyor...';
-        db.collection("MiatemData").doc("MainData").set(state).then(() => { if(ind) ind.innerHTML = '<i class="fas fa-cloud-upload-alt text-success"></i> Buluta Kaydedildi'; }).catch((error) => { 
-    if(ind) ind.innerHTML = '<i class="fas fa-exclamation-triangle text-danger"></i> Kayıt Hatası!'; 
-    console.error("Buluta kayıt başarısız oldu:", error); // Hatayı konsola yazdırır
-});
-    }
+    async function saveToCloud() {
+    if(!auth || !auth.currentUser || !db) return;
+    let ind = document.getElementById("cloudSaveIndicator"); 
+    if(ind) ind.innerHTML = '<i class="fas fa-sync fa-spin text-warning"></i> Buluta Kaydediliyor...';
 
-    function loadFromCloud() {
-        if(!auth || !auth.currentUser || !db) return;
-        let ind = document.getElementById("cloudSaveIndicator"); if(ind) ind.innerHTML = '<i class="fas fa-sync fa-spin text-primary"></i> Veriler İndiriliyor...';
-        db.collection("MiatemData").doc("MainData").get().then((doc) => {
-            if (doc.exists) {
-                let state = doc.data(); companies = state.companies || {}; unmatchedTransactions = state.unmatchedTransactions || []; cancelledInvoices = state.cancelledInvoices || []; personnelList = state.personnelList || []; uninvoicedJobs = state.uninvoicedJobs || []; agendaPayments = state.agendaPayments || []; periodYear = state.periodYear || 2026; globalSonBankaTarihi = state.globalSonBankaTarihi || ""; globalSonFaturaNo = state.globalSonFaturaNo || "";
-                
-                if(state.systemConfig) systemConfig = state.systemConfig;
-
-                for(let vkn in companies) { if(companies[vkn].vadeGun === undefined) companies[vkn].vadeGun = 30; }
-                document.getElementById("currentPeriod").innerText = periodYear + " Yılı"; updateAllViews(false); if(ind) ind.innerHTML = '<i class="fas fa-cloud text-success"></i> Bulut Güncel';
-            } else { updateAllViews(false); if(ind) ind.innerHTML = '<i class="fas fa-cloud text-secondary"></i> Bulutta Kayıt Yok'; }
+    try {
+        // 1. Ana Ayarları ve Küçük Listeleri Kaydet
+        await db.collection("MiatemData").doc("MainData").set({
+            unmatchedTransactions: unmatchedTransactions, 
+            cancelledInvoices: cancelledInvoices, 
+            uninvoicedJobs: uninvoicedJobs, 
+            agendaPayments: agendaPayments, 
+            periodYear: periodYear, 
+            globalSonBankaTarihi: globalSonBankaTarihi, 
+            globalSonFaturaNo: globalSonFaturaNo, 
+            systemConfig: systemConfig, 
+            sonGuncelleme: firebase.firestore.FieldValue.serverTimestamp()
         });
+
+        // 2. Firmaları Ayrı Dokümanlar Halinde Kaydet
+        const companyPromises = Object.keys(companies).map(vkn => 
+            db.collection("Companies").doc(vkn).set(companies[vkn])
+        );
+
+        // 3. Personelleri Ayrı Dokümanlar Halinde Kaydet
+        const personnelPromises = personnelList.map(p => 
+            db.collection("Personnel").doc(p.id).set(p)
+        );
+
+        // Hepsini paralel olarak buluta gönder ve bitmesini bekle
+        await Promise.all([...companyPromises, ...personnelPromises]);
+
+        if(ind) ind.innerHTML = '<i class="fas fa-cloud-upload-alt text-success"></i> Buluta Kaydedildi'; 
+    } catch (error) {
+        if(ind) ind.innerHTML = '<i class="fas fa-exclamation-triangle text-danger"></i> Kayıt Hatası!'; 
+        console.error("Buluta kayıt başarısız oldu:", error);
     }
+}
+
+    async function loadFromCloud() {
+    if(!auth || !auth.currentUser || !db) return;
+    let ind = document.getElementById("cloudSaveIndicator"); 
+    if(ind) ind.innerHTML = '<i class="fas fa-sync fa-spin text-primary"></i> Veriler İndiriliyor...';
+
+    try {
+        // 1. Ana Verileri (Ayarları) Çek
+        const mainDoc = await db.collection("MiatemData").doc("MainData").get();
+        if (mainDoc.exists) {
+            let state = mainDoc.data(); 
+            unmatchedTransactions = state.unmatchedTransactions || []; 
+            cancelledInvoices = state.cancelledInvoices || []; 
+            uninvoicedJobs = state.uninvoicedJobs || []; 
+            agendaPayments = state.agendaPayments || []; 
+            periodYear = state.periodYear || 2026; 
+            globalSonBankaTarihi = state.globalSonBankaTarihi || ""; 
+            globalSonFaturaNo = state.globalSonFaturaNo || "";
+            if(state.systemConfig) systemConfig = state.systemConfig;
+        }
+
+        // 2. Firmaları Klasörden (Collection) Topla
+        const companiesSnap = await db.collection("Companies").get();
+        companies = {};
+        companiesSnap.forEach(doc => {
+            let compData = doc.data();
+            if(compData.vadeGun === undefined) compData.vadeGun = 30; // Varsayılan vade koruması
+            companies[doc.id] = compData;
+        });
+
+        // 3. Personelleri Klasörden (Collection) Topla
+        const personnelSnap = await db.collection("Personnel").get();
+        personnelList = [];
+        personnelSnap.forEach(doc => {
+            personnelList.push(doc.data());
+        });
+
+        // Ekranları Güncelle
+        document.getElementById("currentPeriod").innerText = periodYear + " Yılı"; 
+        updateAllViews(false); 
+        if(ind) ind.innerHTML = '<i class="fas fa-cloud text-success"></i> Bulut Güncel';
+        
+    } catch (error) {
+        console.error("Veri indirme hatası:", error);
+        if(ind) ind.innerHTML = '<i class="fas fa-exclamation-triangle text-danger"></i> İndirme Hatası!';
+    }
+}
 
     function updateAllViews(triggerCloudSave = true) {
         try { renderPersonnelTable(); } catch(e) { console.error("Personel Render Hatası:", e); }
