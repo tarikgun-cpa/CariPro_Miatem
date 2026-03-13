@@ -120,6 +120,55 @@
             @page { margin: 1cm; size: auto; }
         }
         .print-header-only { display: none; }
+
+        /* Pastel Menü Tasarımı (Tek Satır - Kaydırılabilir) */
+        #myTab.nav-tabs {
+            border-bottom: none;
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 8px;
+            padding-bottom: 15px;
+            -ms-overflow-style: none;  /* IE ve Edge için scrollbar gizleme */
+            scrollbar-width: none;  /* Firefox için scrollbar gizleme */
+        }
+        #myTab.nav-tabs::-webkit-scrollbar { display: none; } /* Chrome ve Safari için scrollbar gizleme */
+        
+        #myTab .nav-item { flex: 0 0 auto; }
+        
+        #myTab .nav-link {
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            background-color: #f8f9fa;
+            color: #6c757d;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        #myTab .nav-link:hover {
+            transform: translateY(-2px);
+            background-color: #e9ecef;
+        }
+        
+        /* Pastel Aktif Renkler */
+        #myTab .nav-link.active { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #upload-tab.active { background-color: #e3f2fd; color: #0d47a1; }
+        #dashboard-tab.active { background-color: #f3e5f5; color: #4a148c; }
+        #cariler-tab.active { background-color: #e8f5e9; color: #1b5e20; }
+        #analiz-tab.active { background-color: #fff8e1; color: #f57f17; }
+        #unmatched-tab.active { background-color: #ffebee; color: #b71c1c; }
+        #cancelled-tab.active { background-color: #fff3e0; color: #e65100; }
+        #personnel-tab.active { background-color: #e8eaf6; color: #1a237e; }
+        #uninvoiced-tab.active { background-color: #eceff1; color: #263238; }
+        #agenda-tab.active { background-color: #fce4ec; color: #880e4f; }
+        #reports-tab.active { background-color: #f3e5f5; color: #6a1b9a; }
+
     </style>
 </head>
 <body>
@@ -157,29 +206,28 @@
     </div>
 
     <ul class="nav nav-tabs fw-bold" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation"><button class="nav-link active" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab"><i class="fas fa-file-excel"></i> 1. Veri Yükleme</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab"><i class="fas fa-th-large"></i> 2. Yönetici Özeti</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="cariler-tab" data-bs-toggle="tab" data-bs-target="#cariler" type="button" role="tab"><i class="fas fa-list-ul"></i> 3. Cari Liste & Vade</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab"><i class="fas fa-file-excel"></i> 1. Veri Yükleme</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab"><i class="fas fa-th-large"></i> 2. Yönetici Özeti</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" id="cariler-tab" data-bs-toggle="tab" data-bs-target="#cariler" type="button" role="tab"><i class="fas fa-list-ul"></i> 3. Cari Liste</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" id="analiz-tab" data-bs-toggle="tab" data-bs-target="#analiz" type="button" role="tab"><i class="fas fa-chart-pie text-success"></i> 4. Vade Analiz</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" id="unmatched-tab" data-bs-toggle="tab" data-bs-target="#unmatched" type="button" role="tab"><i class="fas fa-exclamation-triangle"></i> 5. Eşleşmeyenler <span id="unmatched-count" class="badge bg-danger rounded-pill">0</span></button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" id="cancelled-tab" data-bs-toggle="tab" data-bs-target="#cancelled" type="button" role="tab"><i class="fas fa-ban text-warning"></i> 6. İptaller <span id="cancelled-count" class="badge bg-warning text-dark rounded-pill">0</span></button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="personnel-tab" data-bs-toggle="tab" data-bs-target="#personnel" type="button" role="tab"><i class="fas fa-id-badge" style="color: #667eea;"></i> 7. Personel & İK</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="uninvoiced-tab" data-bs-toggle="tab" data-bs-target="#uninvoiced" type="button" role="tab"><i class="fas fa-broom text-secondary"></i> 8. Faturasız İşler</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" id="personnel-tab" data-bs-toggle="tab" data-bs-target="#personnel" type="button" role="tab"><i class="fas fa-id-badge" style="color: #667eea;"></i> 7. Personel</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" id="uninvoiced-tab" data-bs-toggle="tab" data-bs-target="#uninvoiced" type="button" role="tab"><i class="fas fa-broom text-secondary"></i> 8. Faturasız</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" id="agenda-tab" data-bs-toggle="tab" data-bs-target="#agenda" type="button" role="tab"><i class="fas fa-calendar-alt text-danger"></i> 9. Ödeme Ajandası</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab"><i class="fas fa-robot" style="color: #8e44ad;"></i> 10. AI Raporlar</button></li>
     </ul>
 
     <div class="tab-content" id="myTabContent">
         
-        <div class="tab-pane fade show active" id="upload" role="tabpanel">
-            <div class="card p-3 mb-4 bg-light" style="border: 2px dashed #4e73df;">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h5 class="text-primary mb-1"><i class="fas fa-save"></i> Manuel Bilgisayar Yedeği (Opsiyonel)</h5>
-                        <p class="text-muted small mb-0">Verileriniz Buluta otomatik kaydedilmektedir. İsterseniz fiziksel bir yedeği bilgisayarınıza indirebilirsiniz.</p>
-                    </div>
-                    <div class="col-md-3 text-center border-start"><button type="button" class="btn btn-primary w-100 fw-bold shadow-sm" onclick="exportData()"><i class="fas fa-download"></i> PC'ye Yedek İndir</button></div>
-                    <div class="col-md-3 text-center border-start"><input type="file" id="importFile" class="form-control form-control-sm mb-1" accept=".json"><button type="button" class="btn btn-success btn-sm w-100 fw-bold shadow-sm" onclick="importData()"><i class="fas fa-upload"></i> Eski Yedeği Yükle</button></div>
+        <div class="tab-pane fade" id="upload" role="tabpanel">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-6">
+                    <h5 class="text-primary mb-1"><i class="fas fa-save"></i> Manuel Bilgisayar Yedeği (Opsiyonel)</h5>
+                    <p class="text-muted small mb-0">Verileriniz Buluta otomatik kaydedilmektedir. İsterseniz fiziksel bir yedeği bilgisayarınıza indirebilirsiniz.</p>
                 </div>
+                <div class="col-md-3 text-center border-start"><button type="button" class="btn btn-primary w-100 fw-bold shadow-sm" onclick="exportData()"><i class="fas fa-download"></i> PC'ye Yedek İndir</button></div>
+                <div class="col-md-3 text-center border-start"><input type="file" id="importFile" class="form-control form-control-sm mb-1" accept=".json"><button type="button" class="btn btn-success btn-sm w-100 fw-bold shadow-sm" onclick="importData()"><i class="fas fa-upload"></i> Eski Yedeği Yükle</button></div>
             </div>
 
             <div class="row">
@@ -217,7 +265,7 @@
             <div id="uploadLog" class="alert alert-info hidden fw-bold shadow-sm"></div>
         </div>
 
-        <div class="tab-pane fade" id="dashboard" role="tabpanel">
+        <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
             <div class="print-header-only"><h2 style="font-weight: 800; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">MİATEM TEMİZLİK ALACAK LİSTESİ</h2></div>
             <div class="row mb-4">
                 <div class="col-md-4"><div class="card summary-card bg-gradient-primary"><h6>Toplam Piyasa Alacağı</h6><h3 id="dashTotalAlacak">0,00 ₺</h3></div></div>
@@ -440,103 +488,152 @@
     </div>
     <div class="row g-3" id="personnelCardContainer"></div>
 </div>
+
 <div class="tab-pane fade" id="uninvoiced" role="tabpanel">
-    <div class="card p-3 border-0 shadow-sm mb-4" style="border-top: 4px solid #6c757d;">
-        <h5 class="fw-bold text-secondary mb-3"><i class="fas fa-broom"></i> Yeni Faturasız İş / Proje Ekle</h5>
-        <div class="row g-2 align-items-end">
-            <div class="col-md-3"><label class="small text-muted">Tarih</label><input type="date" id="uninvTarih" class="form-control form-control-sm"></div>
-            <div class="col-md-3"><label class="small text-muted">Müşteri / Firma Adı</label><input type="text" id="uninvMusteri" class="form-control form-control-sm" placeholder="Örn: ABC İnşaat"></div>
-            <div class="col-md-4"><label class="small text-muted">Açıklama (Ne İş Yapıldı?)</label><input type="text" id="uninvAciklama" class="form-control form-control-sm" placeholder="Ofis temizliği"></div>
-            <div class="col-md-2"><label class="small text-muted">Tutar (₺)</label><input type="text" id="uninvTutar" class="form-control form-control-sm" placeholder="5000"></div>
-            <div class="col-md-12 mt-2 text-end"><button type="button" class="btn btn-secondary btn-sm fw-bold px-4 shadow-sm" onclick="saveUninvoiced()"><i class="fas fa-save"></i> Kaydet</button></div>
-        </div>
-    </div>
-    <div class="card p-3 border-0 shadow-sm">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle table-sm">
-                <thead class="table-light">
-                    <tr><th>Tarih</th><th>Müşteri</th><th>Açıklama</th><th class="text-end">Toplam Tutar</th><th class="text-end">Alınan Tahsilat</th><th class="text-end">Kalan Bakiye</th><th class="text-center">İşlem</th></tr>
-                </thead>
-                <tbody id="uninvoicedTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-</div>
-<div class="tab-pane fade" id="agenda" role="tabpanel">
-    
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <div class="card summary-card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);">
-                <h6 class="text-white fw-bold mb-1"><i class="fas fa-calendar-alt"></i> VADESİ GELMEMİŞ (GELECEK)</h6>
-                <h3 class="fw-bold mb-0 text-white" id="dashAgendaGelecek">0,00 ₺</h3>
+            <div class="row mb-3">
+                <div class="col-md-3"><div class="card summary-card bg-gradient-primary border-0 h-100"><h6 class="text-white fw-bold"><i class="fas fa-briefcase"></i> TOPLAM İŞ HACMİ</h6><h3 class="fw-bold text-white mb-0" id="dashUninvToplam">0,00 ₺</h3></div></div>
+                <div class="col-md-3"><div class="card summary-card bg-gradient-success border-0 h-100"><h6 class="text-white fw-bold"><i class="fas fa-hand-holding-usd"></i> TAHSİL EDİLEN</h6><h3 class="fw-bold text-white mb-0" id="dashUninvTahsil">0,00 ₺</h3></div></div>
+                <div class="col-md-3"><div class="card summary-card bg-gradient-warning border-0 h-100"><h6 class="text-white fw-bold"><i class="fas fa-hourglass-half"></i> BEKLEYEN BAKİYE</h6><h3 class="fw-bold text-white mb-0" id="dashUninvKalan">0,00 ₺</h3></div></div>
+                <div class="col-md-3"><div class="card summary-card bg-gradient-info border-0 h-100"><h6 class="text-white fw-bold"><i class="fas fa-chart-line"></i> NET KAR (TAHMİNİ)</h6><h3 class="fw-bold text-white mb-0" id="dashUninvKar">0,00 ₺</h3></div></div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card summary-card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);">
-                <h6 class="text-white fw-bold mb-1"><i class="fas fa-exclamation-triangle"></i> VADESİ GEÇMİŞ (GECİKEN)</h6>
-                <h3 class="fw-bold mb-0 text-white" id="dashAgendaGecikmis">0,00 ₺</h3>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card summary-card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
-                <h6 class="text-white fw-bold mb-1"><i class="fas fa-wallet"></i> TOPLAM BEKLEYEN ÖDEME</h6>
-                <h3 class="fw-bold mb-0 text-white" id="dashAgendaToplam">0,00 ₺</h3>
-            </div>
-        </div>
-    </div>
 
-    <div class="card p-3 border-0 shadow-sm mb-4">
-        <h6 class="text-secondary fw-bold border-bottom pb-2 mb-3"><i class="fas fa-chart-pie"></i> Bekleyen Ödemelerin Kategori Dağılımı</h6>
-        <div class="row g-2" id="agendaCategoryDash">
+            <div class="card p-3 border-0 shadow-sm mb-4" style="border-top: 4px solid #6c757d;">
+                <h5 class="fw-bold text-secondary mb-3"><i class="fas fa-plus-circle"></i> Faturasız İş / Proje Yönetimi</h5>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-2"><label class="small text-muted">Tarih</label><input type="date" id="uninvTarih" class="form-control form-control-sm"></div>
+                    <div class="col-md-2"><label class="small text-muted">Müşteri / Firma</label><input type="text" id="uninvMusteri" class="form-control form-control-sm" placeholder="Örn: ABC İnşaat"></div>
+                    <div class="col-md-3"><label class="small text-muted">Açıklama</label><input type="text" id="uninvAciklama" class="form-control form-control-sm" placeholder="Yapılan iş..."></div>
+                    <div class="col-md-2"><label class="small text-muted">Tutar (Satış) ₺</label><input type="text" id="uninvTutar" class="form-control form-control-sm fw-bold text-primary" placeholder="5000"></div>
+                    <div class="col-md-2"><label class="small text-muted">Gider (Maliyet) ₺</label><input type="text" id="uninvGider" class="form-control form-control-sm fw-bold text-danger" placeholder="1500"></div>
+                    <div class="col-md-1 d-flex gap-1">
+                        <button type="button" id="btnCancelUninv" class="btn btn-outline-secondary btn-sm shadow-sm" style="display:none;" onclick="cancelEditUninvoiced()"><i class="fas fa-times"></i></button>
+                        <button type="button" id="btnSaveUninv" class="btn btn-secondary btn-sm fw-bold w-100 shadow-sm" onclick="saveUninvoiced()"><i class="fas fa-save"></i></button>
+                    </div>
+                </div>
             </div>
-    </div>
+            <div class="card p-3 border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-sm">
+                        <thead class="table-light">
+                            <tr><th>Tarih</th><th>Müşteri</th><th>Açıklama</th><th class="text-end">Satış Tutarı</th><th class="text-end">Maliyet/Gider</th><th class="text-end">Net Kar</th><th class="text-end">Tahsilat</th><th class="text-end">Kalan Bakiye</th><th class="text-center">İşlem</th></tr>
+                        </thead>
+                        <tbody id="uninvoicedTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    <div class="card p-3 border-0 shadow-sm mb-4" style="border-top: 4px solid #dc3545;">
-        <h5 class="fw-bold text-danger mb-3"><i class="fas fa-calendar-plus"></i> Gelecek Ödeme (Hatırlatıcı) Ekle</h5>
-        <div class="row g-2 align-items-end">
-            <div class="col-md-2"><label class="small text-muted fw-bold">Son Ödeme Tarihi</label><input type="date" id="agendaTarih" class="form-control form-control-sm"></div>
-            <div class="col-md-2">
-                <label class="small text-muted fw-bold">Kategori</label>
-                <select id="agendaKategori" class="form-select form-select-sm border-info">
-                    <option value="Firma">Firma / Tedarikçi</option>
-                    <option value="Vergi">Vergi (KDV, Stopaj vb.)</option>
-                    <option value="SGK">SGK (Prim, İşsizlik)</option>
-                    <option value="Kredi Kartı">Kredi Kartı / Kredi</option>
-                    <option value="Ceza">Ceza / Faiz</option>
-                    <option value="Diğer">Diğer</option>
-                </select>
+        <div class="tab-pane fade" id="agenda" role="tabpanel">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="card summary-card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);">
+                        <h6 class="text-white fw-bold mb-1"><i class="fas fa-calendar-alt"></i> VADESİ GELMEMİŞ (GELECEK)</h6>
+                        <h3 class="fw-bold mb-0 text-white" id="dashAgendaGelecek">0,00 ₺</h3>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card summary-card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);">
+                        <h6 class="text-white fw-bold mb-1"><i class="fas fa-exclamation-triangle"></i> VADESİ GEÇMİŞ (GECİKEN)</h6>
+                        <h3 class="fw-bold mb-0 text-white" id="dashAgendaGecikmis">0,00 ₺</h3>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card summary-card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+                        <h6 class="text-white fw-bold mb-1"><i class="fas fa-wallet"></i> TOPLAM BEKLEYEN ÖDEME</h6>
+                        <h3 class="fw-bold mb-0 text-white" id="dashAgendaToplam">0,00 ₺</h3>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-4"><label class="small text-muted fw-bold">Ödeme Detayı / Açıklama</label><input type="text" id="agendaAciklama" class="form-control form-control-sm" placeholder="Örn: X Firması Malzeme Borcu"></div>
-            <div class="col-md-2"><label class="small text-muted fw-bold">Tutar (₺)</label><input type="text" id="agendaTutar" class="form-control form-control-sm" placeholder="10000"></div>
-            <div class="col-md-2 d-flex gap-1">
-    <button type="button" id="btnCancelAgenda" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm" style="display:none;" onclick="cancelEditAgenda()" title="Vazgeç"><i class="fas fa-times"></i></button>
-    <button type="button" id="btnSaveAgenda" class="btn btn-danger btn-sm w-100 fw-bold shadow-sm" onclick="saveAgenda()"><i class="fas fa-bell"></i> Kaydet</button>
-</div>
+
+            <div class="card p-3 border-0 shadow-sm mb-4">
+                <h6 class="text-secondary fw-bold border-bottom pb-2 mb-3"><i class="fas fa-chart-pie"></i> Bekleyen Ödemelerin Kategori Dağılımı</h6>
+                <div class="row g-2" id="agendaCategoryDash">
+                </div>
+            </div>
+
+            <div class="card p-3 border-0 shadow-sm mb-4" style="border-top: 4px solid #dc3545;">
+                <h5 class="fw-bold text-danger mb-3"><i class="fas fa-calendar-plus"></i> Gelecek Ödeme (Hatırlatıcı) Ekle</h5>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-2"><label class="small text-muted fw-bold">Son Ödeme Tarihi</label><input type="date" id="agendaTarih" class="form-control form-control-sm"></div>
+                    <div class="col-md-2">
+                        <label class="small text-muted fw-bold mb-0 w-100 d-flex justify-content-between">Kategori <a href="#" class="text-success text-decoration-none" onclick="addCustomAgendaCategory()"><i class="fas fa-plus"></i> Yeni</a></label>
+                        <select id="agendaKategori" class="form-select form-select-sm border-info">
+                            <option value="Firma">Firma / Tedarikçi</option><option value="Vergi">Vergi (KDV, vb.)</option><option value="SGK">SGK (Prim, vb.)</option><option value="Kredi Kartı">Kredi Kartı / Kredi</option><option value="Ceza">Ceza / Faiz</option><option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4"><label class="small text-muted fw-bold">Ödeme Detayı / Açıklama</label><input type="text" id="agendaAciklama" class="form-control form-control-sm" placeholder="Örn: X Firması Malzeme Borcu"></div>
+                    <div class="col-md-2"><label class="small text-muted fw-bold">Tutar (₺)</label><input type="text" id="agendaTutar" class="form-control form-control-sm" placeholder="10000"></div>
+                    <div class="col-md-2 d-flex gap-1">
+                        <button type="button" id="btnCancelAgenda" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm" style="display:none;" onclick="cancelEditAgenda()" title="Vazgeç"><i class="fas fa-times"></i></button>
+                        <button type="button" id="btnSaveAgenda" class="btn btn-danger btn-sm w-100 fw-bold shadow-sm" onclick="saveAgenda()"><i class="fas fa-bell"></i> Kaydet</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card p-3 border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Son Ödeme Tarihi</th>
+                                <th>Kategori</th>
+                                <th>Ödeme Detayı</th>
+                                <th class="text-end">Tutar (₺)</th>
+                                <th class="text-center">Durum (Gün Analizi)</th>
+                                <th class="text-center">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agendaTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
-    
-    <div class="card p-3 border-0 shadow-sm">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle table-sm">
-                <thead class="table-light">
-                    <tr>
-                        <th>Son Ödeme Tarihi</th>
-                        <th>Kategori</th>
-                        <th>Ödeme Detayı</th>
-                        <th class="text-end">Tutar (₺)</th>
-                        <th class="text-center">Durum (Gün Analizi)</th>
-                        <th class="text-center">İşlem</th>
-                    </tr>
-                </thead>
-                <tbody id="agendaTableBody"></tbody>
-            </table>
+
+        <div class="tab-pane fade" id="reports" role="tabpanel">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="card border-0 shadow-sm h-100" style="border-top: 4px solid #8e44ad;">
+                        <div class="card-body bg-light rounded">
+                            <h6 class="fw-bold text-secondary mb-3"><i class="fas fa-cogs"></i> Rapor Motoru</h6>
+                            <label class="small text-muted fw-bold">Rapor Türü Seçin:</label>
+                            <select id="aiReportType" class="form-select border-primary mb-3 shadow-sm">
+                                <option value="genel">Genel Şirket Özeti</option>
+                                <option value="finans">Finans ve Nakit Akışı</option>
+                                <option value="personel">Personel ve İK Analizi</option>
+                            </select>
+                            <button class="btn w-100 text-white fw-bold shadow-sm" style="background: linear-gradient(135deg, #8e44ad, #c0392b);" onclick="generateAIReport()">
+                                <i class="fas fa-magic"></i> AI Rapor Üret
+                            </button>
+                            <hr>
+                            <button class="btn btn-outline-dark w-100 btn-sm fw-bold shadow-sm" onclick="printAIReport()">
+                                <i class="fas fa-print"></i> Raporu Yazdır
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
+                            <h5 class="mb-0 fw-bold" style="color: #2c3e50;"><i class="fas fa-file-alt text-primary"></i> Yapay Zeka Çıktısı</h5>
+                            <span class="badge bg-success" id="reportDateBadge">Tarih: -</span>
+                        </div>
+                        <div class="card-body" id="aiReportContent" style="min-height: 400px; font-size: 1.05rem; line-height: 1.6; color: #333; background-color: #fafbfc;">
+                            <div class="text-center text-muted mt-5">
+                                <i class="fas fa-robot fa-3x mb-3" style="opacity: 0.2;"></i>
+                                <h5>Rapor motoru hazır.</h5>
+                                <p class="small">Sol taraftaki menüden bir rapor türü seçerek "AI Rapor Üret" butonuna basın. Sistem tüm verilerinizi tarayıp size bir yönetici özeti sunacaktır.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-    <div class="text-center mt-5 mb-3 text-muted no-print" style="font-size: 0.85rem; border-top: 1px solid #ddd; padding-top: 15px;">
+
+    </div> <div class="text-center mt-5 mb-3 text-muted no-print" style="font-size: 0.85rem; border-top: 1px solid #ddd; padding-top: 15px;">
         <i class="fas fa-shield-alt text-primary"></i> <strong>CariPro Ⓜ️ MİATEM </strong> &copy; 2026 <br> SMMM Tarık GÜN Tüm Hakları Saklıdır. ©️ CPA-FTC Ltd.
     </div>
 </div>
+
 <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
@@ -1123,13 +1220,13 @@
         let activePers = personnelList.filter(p => !p.isFired).sort((a,b) => String(a.ad).localeCompare(String(b.ad), 'tr-TR'));
         let html = `
         <div style="max-width: 800px; margin: 0 auto; font-family: sans-serif;">
-            <div style="text-align: center; margin-bottom: 20px;">
+            <div style="text-align: center; margin-bottom: 20px;" class="no-print">
                 <button onclick="window.print()" style="background: #4e73df; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">🖨️ Listeyi Yazdır</button>
             </div>
             <h2 style="text-align:center; border-bottom: 2px solid #333; padding-bottom: 10px;">Personel Aylık Ücret / İmza Listesi</h2>
             <table border="1" width="100%" cellpadding="10" style="border-collapse:collapse; text-align:left; margin-top: 20px;">
                 <tr style="background:#f8f9fa;">
-                    <th>Ad Soyad</th>
+                    <th style="text-align:left;">Ad Soyad</th>
                     <th style="text-align:right;">Resmi (Banka) Ödeme</th>
                     <th style="text-align:right;">Elden (Zarf) Ödeme</th>
                     <th style="text-align:right;">Toplam Ödenecek</th>
@@ -1148,15 +1245,15 @@
             totalGenel += toplam;
 
             html += `<tr>
-                        <td><b>${p.ad}</b></td>
-                        <td align="right">${formatMoney(resmi)} ₺</td>
-                        <td align="right">${formatMoney(elden)} ₺</td>
-                        <td align="right" style="color:#d9534f; font-size: 1.1em;"><b>${formatMoney(toplam)} ₺</b></td>
+                        <td align="left"><b>${p.ad}</b></td>
+                        <td align="right" style="white-space: nowrap;">${formatMoney(resmi)} ₺</td>
+                        <td align="right" style="white-space: nowrap;">${formatMoney(elden)} ₺</td>
+                        <td align="right" style="white-space: nowrap; color:#d9534f; font-size: 1.1em;"><b>${formatMoney(toplam)} ₺</b></td>
                         <td></td>
                      </tr>`;
         });
         
-        // GENEL TOPLAM SATIRI
+        // GENEL TOPLAM SATIRI (Döngünün dışına, en sona alındı)
         html += `<tr style="background-color: #f1f5f9; font-weight: bold; font-size: 1.1em;">
                     <td align="right">GENEL TOPLAM:</td>
                     <td align="right">${formatMoney(totalResmi)} ₺</td>
@@ -1172,7 +1269,7 @@
                 MİATEM Temizlik Hizmetleri Ltd.
             </div>
         </div>
-        <style>@media print { button { display: none !important; } }</style>`;
+        <style>@media print { .no-print, button { display: none !important; } }</style>`;
         
         let w = window.open('','_blank'); 
         w.document.write('<html><head><title>Ücret Listesi</title></head><body>' + html + '</body></html>');
@@ -1189,7 +1286,7 @@ function renderPersonnelTable() {
     let tResmi = 0, tKds = 0, cSgk = 0, cKd = 0;
     let activeCount = 0;
 
-    personnelList.forEach(p => {
+    [...personnelList].sort((a, b) => String(a.ad).localeCompare(String(b.ad), 'tr-TR')).forEach(p => {
         if(!p.isFired) {
             // İŞTE BURASI DÜZELDİ: İşçi + İşveren SGK Toplamı
             let totalSgkOdenecek = 0;
@@ -1346,14 +1443,40 @@ function renderPersonnelTable() {
     // =====================================
     // 3. FATURASIZ İŞLER (8. SEKME)
     // =====================================
+    
+    let editingUninvId = null;
+
     function saveUninvoiced() {
-        let tarih = document.getElementById("uninvTarih").value; let musteri = document.getElementById("uninvMusteri").value; let aciklama = document.getElementById("uninvAciklama").value; let tutar = parseAmount(document.getElementById("uninvTutar").value);
-        if(!musteri || tutar <= 0) return alert("Müşteri ve Tutar girmelisiniz.");
+        let tarih = document.getElementById("uninvTarih").value; let musteri = document.getElementById("uninvMusteri").value; let aciklama = document.getElementById("uninvAciklama").value; 
+        let tutar = parseAmount(document.getElementById("uninvTutar").value); let gider = parseAmount(document.getElementById("uninvGider").value);
+        if(!musteri || tutar <= 0) return alert("Müşteri ve Tutar (Satış) girmelisiniz.");
         if(tarih) { let p = tarih.split("-"); tarih = `${p[2]}.${p[1]}.${p[0]}`; } else { tarih = "-"; }
-        uninvoicedJobs.push({ id: generateId(), tarih: tarih, musteri: musteri, aciklama: aciklama, tutar: tutar, odenen: 0 });
-        document.getElementById("uninvTarih").value = ""; document.getElementById("uninvMusteri").value = ""; document.getElementById("uninvAciklama").value = ""; document.getElementById("uninvTutar").value = "";
-        updateAllViews(); logMessage("Faturasız iş eklendi.", "success");
+
+        if(editingUninvId) {
+            let job = uninvoicedJobs.find(x => x.id === editingUninvId);
+            if(job) { job.rawTarih = document.getElementById("uninvTarih").value; job.tarih = tarih; job.musteri = musteri; job.aciklama = aciklama; job.tutar = tutar; job.gider = gider; }
+            cancelEditUninvoiced(); logMessage("İş güncellendi.", "success");
+        } else {
+            uninvoicedJobs.push({ id: generateId(), rawTarih: document.getElementById("uninvTarih").value, tarih: tarih, musteri: musteri, aciklama: aciklama, tutar: tutar, gider: gider, odenen: 0 });
+            document.getElementById("uninvTarih").value = ""; document.getElementById("uninvMusteri").value = ""; document.getElementById("uninvAciklama").value = ""; document.getElementById("uninvTutar").value = ""; document.getElementById("uninvGider").value = "";
+            logMessage("Faturasız iş eklendi.", "success");
+        }
+        updateAllViews();
     }
+
+    function editUninvoiced(id) {
+        let j = uninvoicedJobs.find(x => x.id === id); if(!j) return;
+        editingUninvId = j.id;
+        document.getElementById("uninvTarih").value = j.rawTarih || ""; document.getElementById("uninvMusteri").value = j.musteri || "";
+        document.getElementById("uninvAciklama").value = j.aciklama || ""; document.getElementById("uninvTutar").value = j.tutar || ""; document.getElementById("uninvGider").value = j.gider || "";
+        document.getElementById("btnSaveUninv").innerHTML = `<i class="fas fa-check"></i>`; document.getElementById("btnCancelUninv").style.display = "inline-block";
+    }
+
+    function cancelEditUninvoiced() {
+        editingUninvId = null; document.getElementById("uninvTarih").value = ""; document.getElementById("uninvMusteri").value = ""; document.getElementById("uninvAciklama").value = ""; document.getElementById("uninvTutar").value = ""; document.getElementById("uninvGider").value = "";
+        document.getElementById("btnSaveUninv").innerHTML = `<i class="fas fa-save"></i>`; document.getElementById("btnCancelUninv").style.display = "none";
+    }
+
     function addPaymentUninvoiced(id) {
         let job = uninvoicedJobs.find(x => x.id === id); if(!job) return;
         let kalan = job.tutar - job.odenen; let miktar = prompt(`${job.musteri} Tahsilat (Kalan: ${formatMoney(kalan)} ₺)`, kalan);
@@ -1363,10 +1486,17 @@ function renderPersonnelTable() {
     
     function renderUninvoiced() {
         const tbody = document.getElementById("uninvoicedTableBody"); if(!tbody) return; tbody.innerHTML = "";
+        let tTutar = 0, tTahsil = 0, tKalan = 0, tKar = 0;
+
         uninvoicedJobs.sort((a,b) => parseTRDate(b.tarih) - parseTRDate(a.tarih)).forEach(job => {
-            let kalan = job.tutar - job.odenen; let rowClass = kalan <= 0 ? "table-success" : "";
-            tbody.innerHTML += `<tr class="${rowClass}"><td>${job.tarih}</td><td class="fw-bold">${job.musteri}</td><td><small>${job.aciklama}</small></td><td class="text-end fw-bold text-danger">${formatMoney(job.tutar)} ₺</td><td class="text-end text-success">${formatMoney(job.odenen)} ₺</td><td class="text-end fw-bold">${formatMoney(kalan)} ₺</td><td class="text-center"><button type="button" class="btn btn-sm btn-outline-success py-0 px-2 shadow-sm" onclick="addPaymentUninvoiced('${job.id}')"><i class="fas fa-hand-holding-usd"></i></button> <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 shadow-sm" onclick="deleteUninvoiced('${job.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+            let gider = job.gider || 0; let kar = job.tutar - gider; let kalan = job.tutar - job.odenen;
+            tTutar += job.tutar; tTahsil += job.odenen; tKalan += kalan; tKar += kar;
+            let rowClass = kalan <= 0 ? "table-success" : ""; let karRenk = kar >= 0 ? "text-success" : "text-danger";
+
+            tbody.innerHTML += `<tr class="${rowClass}"><td>${job.tarih}</td><td class="fw-bold">${job.musteri}</td><td><small>${job.aciklama}</small></td><td class="text-end fw-bold text-primary">${formatMoney(job.tutar)} ₺</td><td class="text-end text-danger">${formatMoney(gider)} ₺</td><td class="text-end fw-bold ${karRenk}">${formatMoney(kar)} ₺</td><td class="text-end text-success">${formatMoney(job.odenen)} ₺</td><td class="text-end fw-bold">${formatMoney(kalan)} ₺</td><td class="text-center"><button type="button" class="btn btn-sm btn-outline-warning py-0 px-2 shadow-sm text-dark" onclick="editUninvoiced('${job.id}')"><i class="fas fa-edit"></i></button> <button type="button" class="btn btn-sm btn-outline-success py-0 px-2 shadow-sm" onclick="addPaymentUninvoiced('${job.id}')"><i class="fas fa-hand-holding-usd"></i></button> <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 shadow-sm" onclick="deleteUninvoiced('${job.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
         });
+        document.getElementById("dashUninvToplam").innerText = formatMoney(tTutar) + " ₺"; document.getElementById("dashUninvTahsil").innerText = formatMoney(tTahsil) + " ₺";
+        document.getElementById("dashUninvKalan").innerText = formatMoney(tKalan) + " ₺"; document.getElementById("dashUninvKar").innerText = formatMoney(tKar) + " ₺";
     }
 
     // =====================================
@@ -1444,7 +1574,15 @@ function renderPersonnelTable() {
 
     function toggleAgendaStatus(id) { let a = agendaPayments.find(x => x.id === id); if(a) { a.isPaid = !a.isPaid; updateAllViews(); } }
     function deleteAgenda(id) { if(confirm("Silmek istediğinize emin misiniz?")) { agendaPayments = agendaPayments.filter(x => x.id !== id); updateAllViews(); } }
-    
+    function addCustomAgendaCategory() {
+    let yeniKategori = prompt("Yeni kategori adı giriniz (Örn: Araç Masrafı, Kira):");
+    if(yeniKategori && yeniKategori.trim() !== "") {
+        let sel = document.getElementById("agendaKategori");
+        let opt = document.createElement("option");
+        opt.value = yeniKategori.trim(); opt.text = yeniKategori.trim();
+        sel.add(opt); sel.value = yeniKategori.trim();
+    }
+}
     function renderAgenda() {
         const tbody = document.getElementById("agendaTableBody"); if(!tbody) return; tbody.innerHTML = "";
         
@@ -1534,6 +1672,237 @@ function renderPersonnelTable() {
             dashContainer.innerHTML = catHtml || `<div class="col-12"><div class="alert alert-success border text-center shadow-sm"><i class="fas fa-check-circle"></i> Harika! Bekleyen hiçbir ödeme veya borcunuz bulunmuyor.</div></div>`;
         }
     }
+
+function generateAIReport() {
+        const type = document.getElementById("aiReportType").value;
+        const contentDiv = document.getElementById("aiReportContent");
+        const dateBadge = document.getElementById("reportDateBadge");
+        
+        contentDiv.innerHTML = `<div class="text-center mt-5"><i class="fas fa-circle-notch fa-spin fa-3x text-primary mb-3"></i><h5 class="text-primary">Sistem taranıyor, analizler oluşturuluyor...</h5></div>`;
+        
+        setTimeout(() => {
+            let today = new Date(); today.setHours(0,0,0,0);
+            let todayStr = today.toLocaleDateString('tr-TR');
+            dateBadge.innerText = `Tarih: ${todayStr}`;
+            let html = "";
+
+            // --- 1. CARİ VERİLERİNİ TOPLAMA VE ANALİZ ---
+            let totalDevir = 0, tahsilEdilenDevir = 0;
+            let totalFatura = 0, tahsilEdilenFatura = 0, totalIade = 0;
+            let totalAlacak = 0, riskliFirmaSayisi = 0;
+            let firmaAnaliz = [];
+            
+            // --- DÜZELTME 1: AYLIK BAZDA SATIŞ/TAHSİLAT ANALİZİ (Vade Dağılımlı FIFO) ---
+            let aylikAnaliz = {};
+            const ayIsimleri = {"01":"Ocak", "02":"Şubat", "03":"Mart", "04":"Nisan", "05":"Mayıs", "06":"Haziran", "07":"Temmuz", "08":"Ağustos", "09":"Eylül", "10":"Ekim", "11":"Kasım", "12":"Aralık"};
+
+            Object.values(companies).forEach(c => {
+                let bakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar;
+                let cIade = 0; 
+                
+                // Faturaları tarihe göre dizme
+                let faturalar = [];
+                if (c.devirBakiye > 0) {
+                    faturalar.push({ tur: "Devir", tutar: c.devirBakiye, dateObj: new Date(periodYear - 1, 11, 31) });
+                }
+
+                c.hareketler.forEach(h => { 
+                    if(h.tur === "İade") {
+                        cIade += h.tutar;
+                        let parts = h.tarih.split(".");
+                        if(parts.length === 3) {
+                            let key = `${parts[2]}-${parts[1]}`;
+                            if(!aylikAnaliz[key]) aylikAnaliz[key] = { satis: 0, tahsilat: 0, iade: 0, ayAdi: ayIsimleri[parts[1]], yil: parts[2] };
+                            aylikAnaliz[key].iade += h.tutar;
+                        }
+                    }
+                    else if(h.tur === "Fatura") {
+                        let parts = h.tarih.split(".");
+                        if(parts.length === 3) {
+                            faturalar.push({ tur: "Fatura", tutar: h.tutar, dateObj: parseTRDate(h.tarih), key: `${parts[2]}-${parts[1]}`, ayAdi: ayIsimleri[parts[1]], yil: parts[2] });
+                        }
+                    }
+                });
+
+                faturalar.sort((a,b) => a.dateObj - b.dateObj);
+
+                // FIFO Mantığı ile Ödemeleri Faturalara Dağıtma ve Gecikme Hesaplama
+                let kalanOdeme = c.odemeTutar;
+                let cTahsilDevir = 0, cTahsilFatura = 0, compOverdue = 0;
+                let vadeGunu = c.vadeGun !== undefined ? c.vadeGun : 30;
+
+                faturalar.forEach(f => {
+                    let odenecek = Math.min(f.tutar, kalanOdeme);
+                    kalanOdeme -= odenecek;
+                    let acikKalan = f.tutar - odenecek;
+
+                    if (f.tur === "Devir") {
+                        cTahsilDevir += odenecek;
+                    } else if (f.tur === "Fatura") {
+                        cTahsilFatura += odenecek;
+                        // O ay kesilen faturanın ne kadarının tahsil edildiğini ilgili aya yaz
+                        if (f.key) {
+                            if (!aylikAnaliz[f.key]) aylikAnaliz[f.key] = { satis: 0, tahsilat: 0, iade: 0, ayAdi: f.ayAdi, yil: f.yil };
+                            aylikAnaliz[f.key].satis += f.tutar;
+                            aylikAnaliz[f.key].tahsilat += odenecek; 
+                        }
+                        
+                        // En İyi Ödeyenleri bulmak için gecikme hesaplama
+                        if (acikKalan > 0) {
+                            let daysOld = Math.floor((today - f.dateObj) / (1000 * 3600 * 24));
+                            if (daysOld > vadeGunu) compOverdue += acikKalan;
+                        }
+                    }
+                });
+                
+                totalDevir += c.devirBakiye; totalFatura += c.faturaTutar; totalIade += cIade;
+                tahsilEdilenDevir += cTahsilDevir; tahsilEdilenFatura += cTahsilFatura;
+
+                if(bakiye > 0) {
+                    totalAlacak += bakiye;
+                    if(bakiye > 50000) riskliFirmaSayisi++;
+                }
+
+                // DÜZELTME 2: Gecikme oranını bularak En İyi Ödeyenleri tespit etme
+                let gecikmeOrani = (c.faturaTutar > 0) ? (compOverdue / c.faturaTutar) : 0;
+                firmaAnaliz.push({ unvan: c.unvan, fatura: c.faturaTutar, bakiye: bakiye, gecikmeOrani: gecikmeOrani });
+            });
+
+            // "En Değerli" -> Satış hacmi en yüksek 
+            let enDegerli = [...firmaAnaliz].sort((a,b) => b.fatura - a.fatura).slice(0, 3);
+            // "En Sıkıntılı" -> Bakiyesi en yüksek 
+            let enSikintili = [...firmaAnaliz].sort((a,b) => b.bakiye - a.bakiye).slice(0, 3);
+            // "En İyi Ödeyen" -> Vadesi geçen borcu olmayan (Gecikme Oranı = 0), Faturası yüksek olanlar
+            let enIyiOdeyen = [...firmaAnaliz].filter(x => x.fatura > 1000).sort((a,b) => a.gecikmeOrani - b.gecikmeOrani || b.fatura - a.fatura).slice(0, 3);
+            
+            let aylikList = Object.keys(aylikAnaliz).sort().map(k => aylikAnaliz[k]);
+
+            // --- 2. PERSONEL VE DİĞER VERİLER ---
+            let topPersMaliyet = 0, topSgkVergiYuku = 0, topUretilenGelir = 0, aktifPers = 0, kdPers = 0, kadinCount = 0, erkekCount = 0;
+            personnelList.forEach(p => {
+                if(!p.isFired) {
+                    aktifPers++; topPersMaliyet += (p.maliyet || 0); topUretilenGelir += (p.gelir || 0);
+                    if(p.cinsiyet === "Kadın") kadinCount++; else erkekCount++; if(p.isKayitDisi) kdPers++;
+                    if(!p.isKayitDisi) topSgkVergiYuku += (p.isAuto ? ((p.brut * 0.15) + (p.sgkIsveren || 0)) : (p.sgkIsveren || 0)) + ((p.gv || 0) + (p.dv || 0));
+                }
+            });
+
+            let topFaturasizKar = 0, faturasizKalan = 0; uninvoicedJobs.forEach(j => { topFaturasizKar += (j.tutar - (j.gider || 0)); faturasizKalan += (j.tutar - j.odenen); });
+            
+            // --- DÜZELTME 3: AJANDA TARİH VE GECİKME HATASI ÇÖZÜMÜ ---
+            let ajandaGelecek = 0, ajandaGecikmis = 0; 
+            agendaPayments.forEach(a => { 
+                if(!a.isPaid && a.rawTarih) { 
+                    let itemDate = new Date(a.rawTarih); itemDate.setHours(0,0,0,0);
+                    let diff = Math.ceil((itemDate.getTime() - today.getTime()) / (1000 * 3600 * 24)); 
+                    if(diff < 0) ajandaGecikmis += a.tutar; else ajandaGelecek += a.tutar; 
+                } 
+            });
+
+            // =====================================
+            // RAPOR METİN/VİTRİN ÜRETİM AŞAMASI
+            // =====================================
+            if(type === "genel") {
+                let devirBasari = totalDevir > 0 ? (tahsilEdilenDevir / totalDevir * 100).toFixed(1) : 0;
+                let faturaBasari = totalFatura > 0 ? (tahsilEdilenFatura / totalFatura * 100).toFixed(1) : 0;
+
+                let listHTML_Degerli = enDegerli.map(x => `<li><span class="text-primary fw-bold">${x.unvan}</span> (${formatMoney(x.fatura)} ₺ Satış)</li>`).join("");
+                let listHTML_Sikinti = enSikintili.map(x => `<li><span class="text-danger fw-bold">${x.unvan}</span> (${formatMoney(x.bakiye)} ₺ Bakiye)</li>`).join("");
+                
+                // En iyi ödeyenlerin yeni gösterimi (Gecikmesiz)
+                let listHTML_Iyi = enIyiOdeyen.map(x => {
+                    let text = x.gecikmeOrani === 0 ? "Tam Zamanında" : `%${(x.gecikmeOrani*100).toFixed(0)} Gecikmeli`;
+                    let color = x.gecikmeOrani === 0 ? "text-success" : "text-warning text-dark";
+                    return `<li><span class="fw-bold" style="color:#1b5e20;">${x.unvan}</span> <br><small class="${color} fw-bold"><i class="fas fa-check-circle"></i> ${text}</small></li>`;
+                }).join("");
+
+                // Aylık Analiz Tablosu HTML
+                let aylikHtml = "";
+                if(aylikList.length > 0) {
+                    aylikHtml = `<h5 class="fw-bold text-secondary mt-4 mb-3"><i class="fas fa-calendar-alt text-info"></i> Ay Bazında Kesilen Faturaların Tahsilat Durumu</h5>
+                                <div class="table-responsive"><table class="table table-bordered table-hover table-sm small bg-white shadow-sm">
+                                <thead class="table-light"><tr><th>İlgili Ay</th><th class="text-end">O Ayki Satışlar</th><th class="text-end">Alınan Tahsilat</th><th class="text-end">İade Faturası</th><th class="text-end">O Aydan Kalan Bakiye</th></tr></thead><tbody>`;
+                    aylikList.forEach(a => {
+                        let kalan = a.satis - a.tahsilat - a.iade;
+                        aylikHtml += `<tr>
+                                        <td><b>${a.ayAdi} ${a.yil}</b></td>
+                                        <td class="text-end text-primary fw-bold">${formatMoney(a.satis)} ₺</td>
+                                        <td class="text-end text-success fw-bold">${formatMoney(a.tahsilat)} ₺</td>
+                                        <td class="text-end text-warning">${formatMoney(a.iade)} ₺</td>
+                                        <td class="text-end fw-bold ${kalan > 0 ? 'text-danger' : 'text-success'}">${formatMoney(kalan)} ₺</td>
+                                      </tr>`;
+                    });
+                    aylikHtml += `</tbody></table></div>
+                    <div class="alert alert-light border small text-muted"><i class="fas fa-info-circle"></i> <b>Not:</b> Tablodaki tahsilat rakamları, müşterilerin ödemelerinin FIFO (İlk Giren İlk Çıkar) yöntemiyle o ayki faturalara dağıtılmasıyla hesaplanmıştır.</div>`;
+                }
+
+                html = `<h4 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="fas fa-chart-line text-primary"></i> Genel Şirket & Performans Özeti</h4>
+                        
+                        <div class="row mb-4 text-center">
+                            <div class="col-md-6 mb-2">
+                                <div class="border rounded p-3 bg-white shadow-sm h-100" style="border-left: 4px solid #f6c23e !important;">
+                                    <h6 class="text-muted fw-bold">Geçmiş Yıl Devir (Eski Alacak) Performansı</h6>
+                                    <div class="fs-4 fw-bold text-dark">${formatMoney(totalDevir)} ₺</div>
+                                    <div class="small text-success fw-bold mt-1"><i class="fas fa-check-circle"></i> ${formatMoney(tahsilEdilenDevir)} ₺ Tahsil Edildi (%${devirBasari})</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="border rounded p-3 bg-white shadow-sm h-100" style="border-left: 4px solid #1cc88a !important;">
+                                    <h6 class="text-muted fw-bold">Bu Yıl Kesilen Fatura & Satış Performansı</h6>
+                                    <div class="fs-4 fw-bold text-dark">${formatMoney(totalFatura)} ₺</div>
+                                    <div class="small text-success fw-bold mt-1"><i class="fas fa-check-circle"></i> ${formatMoney(tahsilEdilenFatura)} ₺ Tahsil Edildi (%${faturaBasari})</div>
+                                    ${totalIade > 0 ? `<div class="small text-warning fw-bold mt-1"><i class="fas fa-undo"></i> Toplam ${formatMoney(totalIade)} ₺ İade Faturası alındı</div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-2"><div class="card bg-light border-0 shadow-sm"><div class="card-body p-2"><h6 class="fw-bold text-primary border-bottom pb-1"><i class="fas fa-star text-warning"></i> En Değerli Müşteriler</h6><ul class="small ps-3 mb-0" style="list-style-type: square;">${listHTML_Degerli || '<li>Veri yok</li>'}</ul></div></div></div>
+                            <div class="col-md-4 mb-2"><div class="card bg-light border-0 shadow-sm"><div class="card-body p-2"><h6 class="fw-bold text-success border-bottom pb-1"><i class="fas fa-bolt text-success"></i> Tahsilatı En Hızlılar</h6><ul class="small ps-3 mb-0" style="list-style-type: square; list-style-position: inside; padding-left: 5px !important;">${listHTML_Iyi || '<li>Veri yok</li>'}</ul></div></div></div>
+                            <div class="col-md-4 mb-2"><div class="card bg-light border-0 shadow-sm"><div class="card-body p-2"><h6 class="fw-bold text-danger border-bottom pb-1"><i class="fas fa-exclamation-triangle text-danger"></i> Ödemesi Sıkıntılılar</h6><ul class="small ps-3 mb-0" style="list-style-type: square;">${listHTML_Sikinti || '<li>Veri yok</li>'}</ul></div></div></div>
+                        </div>
+                        
+                        ${aylikHtml}`;
+            } 
+            else if (type === "finans") {
+                let totalNakitBeklentisi = totalAlacak + faturasizKalan; let totalBorcYukumlulugu = ajandaGecikmis + ajandaGelecek; let likiditeDurumu = totalNakitBeklentisi - totalBorcYukumlulugu; let likiditeRenk = likiditeDurumu >= 0 ? "text-success" : "text-danger";
+                html = `<h4 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="fas fa-wallet text-success"></i> Finans ve Nakit Akışı Analizi</h4>
+                        <div class="row mb-3"><div class="col-md-6 mb-2"><div class="card border-success border-2 shadow-sm h-100"><div class="card-header bg-success text-white fw-bold py-2"><i class="fas fa-arrow-down"></i> GİRİŞ BEKLENTİLERİ (ALACAK)</div><div class="card-body py-2"><div class="d-flex justify-content-between border-bottom pb-1 mb-1"><span>Piyasa (Cari) Alacakları:</span><strong class="text-success">${formatMoney(totalAlacak)} ₺</strong></div><div class="d-flex justify-content-between pb-1"><span>Faturasız İş (Kalan):</span><strong class="text-success">${formatMoney(faturasizKalan)} ₺</strong></div></div><div class="card-footer bg-light d-flex justify-content-between fw-bold"><span>Toplam Beklenen:</span><span class="text-success fs-5">${formatMoney(totalNakitBeklentisi)} ₺</span></div></div></div>
+                        <div class="col-md-6 mb-2"><div class="card border-danger border-2 shadow-sm h-100"><div class="card-header bg-danger text-white fw-bold py-2"><i class="fas fa-arrow-up"></i> ÇIKIŞ YÜKÜMLÜLÜKLERİ (BORÇ)</div><div class="card-body py-2"><div class="d-flex justify-content-between border-bottom pb-1 mb-1"><span>Acil/Gecikmiş Ödemeler:</span><strong class="text-danger">${formatMoney(ajandaGecikmis)} ₺</strong></div><div class="d-flex justify-content-between pb-1"><span>Gelecek Ajanda Ödemeleri:</span><strong class="text-danger">${formatMoney(ajandaGelecek)} ₺</strong></div></div><div class="card-footer bg-light d-flex justify-content-between fw-bold"><span>Toplam Çıkacak:</span><span class="text-danger fs-5">${formatMoney(totalBorcYukumlulugu)} ₺</span></div></div></div></div>
+                        <div class="alert ${likiditeDurumu >= 0 ? 'alert-success' : 'alert-danger'} shadow-sm text-center py-3"><h6 class="fw-bold mb-1">Net Nakit Pozisyonu (Likidite Durumu)</h6><h2 class="fw-bold mb-0 ${likiditeRenk}">${likiditeDurumu >= 0 ? '+' : ''}${formatMoney(likiditeDurumu)} ₺</h2><div class="mt-2 text-dark">${likiditeDurumu >= 0 ? '✔️ Şirketinizin beklenen alacakları, tüm borçlarını fazlasıyla karşılamaktadır. Nakit akışı son derece güvenli bölgede.' : '⚠️ DİKKAT! Beklenen alacaklarınız, yaklaşan ve geciken borçlarınızı karşılamıyor. Ekstra nakit girişi veya borç erteleme planlanmalı.'}</div></div>`;
+            }
+            else if (type === "personel") {
+                let verimsizlik = aktifPers > 0 ? (kdPers / aktifPers) * 100 : 0; let karZarar = topUretilenGelir - topPersMaliyet;
+                html = `<h4 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="fas fa-users-cog text-info"></i> Personel ve İnsan Kaynakları Analizi</h4>
+                        <div class="row text-center mb-3"><div class="col-md-3 col-6 mb-2"><div class="border rounded p-2 bg-white shadow-sm h-100"><div class="text-muted small fw-bold">Aktif Çalışan</div><h3 class="text-primary mb-0">${aktifPers}</h3><div class="small text-secondary mt-1"><i class="fas fa-male text-info"></i> ${erkekCount} Erkek | <i class="fas fa-female" style="color:#ff6b81;"></i> ${kadinCount} Kadın</div></div></div>
+                        <div class="col-md-3 col-6 mb-2"><div class="border rounded p-2 bg-white shadow-sm h-100"><div class="text-muted small fw-bold">Kayıt Dışı Oranı</div><h3 class="text-warning mb-0">%${verimsizlik.toFixed(0)}</h3><div class="small text-secondary mt-1">${kdPers} Personel KD.</div></div></div>
+                        <div class="col-md-3 col-6 mb-2"><div class="border rounded p-2 bg-white shadow-sm h-100"><div class="text-muted small fw-bold">Aylık Maliyet (Net+Vergi)</div><h4 class="text-danger fw-bold mb-0">${formatMoney(topPersMaliyet)} ₺</h4></div></div>
+                        <div class="col-md-3 col-6 mb-2"><div class="border rounded p-2 bg-white shadow-sm h-100"><div class="text-muted small fw-bold">Maaş Karşılığı Gelir</div><h4 class="text-success fw-bold mb-0">${formatMoney(topUretilenGelir)} ₺</h4></div></div></div>
+                        <div class="card border-info shadow-sm mb-3"><div class="card-body py-3"><h6 class="fw-bold text-info border-bottom pb-1 mb-2"><i class="fas fa-landmark"></i> Devlete Ödenecek Toplam Vergi ve SGK Yükü (Aylık)</h6><p class="mb-0 text-dark" style="font-size: 1.05rem;">Şirketinizin aylık resmi çalışanlardan kaynaklı SGK (İşçi+İşveren) ve Vergi (Gelir+Damga) kesintilerinin oluşturduğu toplam yük <b>${formatMoney(topSgkVergiYuku)} ₺</b> olarak hesaplanmıştır.</p></div></div>
+                        <div class="alert ${karZarar >= 0 ? 'alert-success' : 'alert-danger'} shadow-sm py-3"><div class="d-flex justify-content-between align-items-center"><div><i class="fas ${karZarar >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'} fs-4"></i> <b class="fs-5 ms-2">Personel Karlılık Özeti:</b><br><small>(Hizmet Edilen Mağaza Gelirleri - Toplam Personel Maliyeti)</small></div><h3 class="fw-bold mb-0 ${karZarar >= 0 ? 'text-success' : 'text-danger'}">${karZarar >= 0 ? '+' : ''}${formatMoney(karZarar)} ₺</h3></div></div>`;
+            }
+            contentDiv.innerHTML = html;
+        }, 800);
+    }
+
+    function printAIReport() {
+        let content = document.getElementById("aiReportContent").innerHTML;
+        let w = window.open('','_blank'); 
+        w.document.write('<html><head><title>MİATEM Yönetim Raporu</title>');
+        w.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">');
+        
+        // no-print class'ı eklenerek yazdırılırken butonun gizlenmesi sağlandı
+        w.document.write('<style>body{padding:40px; font-family:sans-serif;} @media print { .no-print { display: none !important; } }</style>');
+        w.document.write('</head><body>');
+        w.document.write('<div class="text-center mb-4"><h2 class="fw-bold">MİATEM TEMİZLİK HİZMETLERİ</h2><h5 class="text-muted">Sistem Analiz Raporu</h5></div>');
+        w.document.write(content);
+        
+        // Butonu saran div'e 'no-print' sınıfını ekledik
+        w.document.write('<div class="mt-5 text-center no-print"><button class="btn btn-primary btn-lg" onclick="window.print()">🖨️ Sayfayı Yazdır</button></div>');
+        w.document.write('</body></html>');
+        w.document.close();
+    }
+
     // ==========================================
     // 5. BANKA VE CARİ İŞLEMLERİ (Kusursuz Eşleşmeyenler Motoru)
     // ==========================================
