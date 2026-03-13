@@ -149,6 +149,7 @@
         <div class="d-flex align-items-center flex-wrap mt-2 mt-md-0">
             <span id="cloudSaveIndicator" class="badge bg-white text-dark border me-3 py-2 px-3 shadow-sm"><i class="fas fa-cloud text-secondary"></i> Bulut Bekleniyor...</span>
             <strong>Aktif Yıl: </strong> <span id="currentPeriod" class="badge bg-primary fs-5 shadow-sm ms-2">2026 Yılı</span>
+            <button type="button" class="btn btn-dark ms-3 fw-bold shadow-sm" onclick="openSettingsModal()"><i class="fas fa-cogs"></i> Ayarlar</button>
             <button type="button" class="btn btn-warning ms-3 fw-bold text-dark shadow-sm" onclick="donemKapat()"><i class="fas fa-calendar-check"></i> Yılı Devret</button>
             <button type="button" class="btn btn-danger ms-2 fw-bold shadow-sm" onclick="resetData()"><i class="fas fa-trash-alt"></i> Sıfırla</button>
             <button type="button" class="btn btn-outline-dark ms-3 fw-bold shadow-sm" onclick="sistemdenCikisYap()"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
@@ -536,6 +537,39 @@
         <i class="fas fa-shield-alt text-primary"></i> <strong>CariPro Ⓜ️ MİATEM </strong> &copy; 2026 <br> SMMM Tarık GÜN Tüm Hakları Saklıdır. ©️ CPA-FTC Ltd.
     </div>
 </div>
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-dark text-white border-0">
+        <h5 class="modal-title"><i class="fas fa-cogs text-warning"></i> Sistem Finansal Ayarları</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div class="alert alert-warning small border-warning"><i class="fas fa-info-circle"></i> Burada yapacağınız değişiklikler tüm yeni hesaplamaları etkiler ve <b>Bulut'a</b> kaydedilir.</div>
+        
+        <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">Asgari Ücret ve İstisnalar</h6>
+        <div class="row g-2 mb-3">
+            <div class="col-6"><label class="small text-muted fw-bold">Asgari Brüt (₺)</label><input type="number" step="0.01" id="setAsgariBrut" class="form-control fw-bold"></div>
+            <div class="col-6"><label class="small text-muted fw-bold">Asgari Net (₺)</label><input type="number" step="0.01" id="setAsgariNet" class="form-control fw-bold text-success"></div>
+            <div class="col-6"><label class="small text-muted fw-bold">Aylık GV İstisnası (₺)</label><input type="number" step="0.01" id="setIstisnaGv" class="form-control"></div>
+            <div class="col-6"><label class="small text-muted fw-bold">Aylık DV İstisnası (₺)</label><input type="number" step="0.01" id="setIstisnaDv" class="form-control"></div>
+        </div>
+
+        <h6 class="text-danger fw-bold border-bottom pb-2 mb-3 mt-4">SGK ve Vergi Oranları</h6>
+        <div class="row g-2">
+            <div class="col-6"><label class="small text-muted fw-bold">SGK İşçi Payı (Örn: 0.15)</label><input type="number" step="0.001" id="setSgkIsci" class="form-control"></div>
+            <div class="col-6"><label class="small text-muted fw-bold">SGK İşveren Payı (Örn: 0.175)</label><input type="number" step="0.001" id="setSgkIsveren" class="form-control"></div>
+            <div class="col-6"><label class="small text-muted fw-bold">Gelir Vergisi (Örn: 0.15)</label><input type="number" step="0.001" id="setGvOran" class="form-control"></div>
+            <div class="col-6"><label class="small text-muted fw-bold">Damga Vergisi (Örn: 0.00759)</label><input type="number" step="0.00001" id="setDvOran" class="form-control"></div>
+        </div>
+      </div>
+      <div class="modal-footer bg-white border-0 justify-content-between">
+        <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">Vazgeç</button>
+        <button type="button" class="btn btn-primary fw-bold px-4" onclick="saveSettings()"><i class="fas fa-save"></i> Ayarları Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="modal fade" id="manuelCariModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered"><div class="modal-content border-0 shadow"><div class="modal-header bg-primary text-white"><h5 class="modal-title">Yeni Cari Hesap Aç</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="mb-3"><label class="form-label fw-bold">Firma Ünvanı / Adı Soyadı</label><input type="text" id="yeniCariUnvan" class="form-control" placeholder="Örn: X TEKSTİL SANAYİ"></div><div class="mb-3"><label class="form-label fw-bold">Geçmiş Dönem Devir Bakiyesi (₺)</label><input type="text" id="yeniCariBakiye" class="form-control" placeholder="Örn: 15.000,00"></div></div><div class="modal-footer bg-light border-0"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button><button type="button" class="btn btn-primary" onclick="saveManuelCari()">Cariyi Kaydet</button></div></div></div>
@@ -673,18 +707,56 @@
     function sistemdenCikisYap() { if(auth) auth.signOut(); }
     function checkEnter(e) { if(e.key === 'Enter') sistemeGirisYap(); }
 
-    // ==========================================
+    
+// ==========================================
     // 3. ORTAK DEĞİŞKENLER & BULUT MOTORU
     // ==========================================
     let companies = {}; let unmatchedTransactions = []; let cancelledInvoices = []; let personnelList = [];
     let uninvoicedJobs = []; let agendaPayments = []; 
     let periodYear = 2026; let globalSonBankaTarihi = ""; let globalSonFaturaNo = ""; let globalMaxBankDateObj = new Date(1900, 0, 1); let currentEkstreVkn = null;
+    
+    // ARTIK 'let' OLDU, ÇÜNKÜ ARAYÜZDEN DEĞİŞTİRECEĞİZ
+    let systemConfig = {
+        asgariBrut: 33030.00, asgariNet: 28075.50, istisnaGv: 4211.33, istisnaDv: 250.70,
+        sgkIsciOran: 0.15, sgkIsverenOran: 0.175, gvOran: 0.15, dvOran: 0.00759, nettenBruteBolen: 0.7149
+    };
 
     function resetLocalMemory() { companies = {}; unmatchedTransactions = []; cancelledInvoices = []; personnelList = []; uninvoicedJobs = []; agendaPayments = []; }
 
+    // SİSTEM AYARLARINI AÇMA VE KAYDETME FONKSİYONLARI
+    function openSettingsModal() {
+        document.getElementById("setAsgariBrut").value = systemConfig.asgariBrut;
+        document.getElementById("setAsgariNet").value = systemConfig.asgariNet;
+        document.getElementById("setIstisnaGv").value = systemConfig.istisnaGv;
+        document.getElementById("setIstisnaDv").value = systemConfig.istisnaDv;
+        document.getElementById("setSgkIsci").value = systemConfig.sgkIsciOran;
+        document.getElementById("setSgkIsveren").value = systemConfig.sgkIsverenOran;
+        document.getElementById("setGvOran").value = systemConfig.gvOran;
+        document.getElementById("setDvOran").value = systemConfig.dvOran;
+        new bootstrap.Modal(document.getElementById('settingsModal')).show();
+    }
+
+    function saveSettings() {
+        systemConfig.asgariBrut = parseFloat(document.getElementById("setAsgariBrut").value) || 0;
+        systemConfig.asgariNet = parseFloat(document.getElementById("setAsgariNet").value) || 0;
+        systemConfig.istisnaGv = parseFloat(document.getElementById("setIstisnaGv").value) || 0;
+        systemConfig.istisnaDv = parseFloat(document.getElementById("setIstisnaDv").value) || 0;
+        systemConfig.sgkIsciOran = parseFloat(document.getElementById("setSgkIsci").value) || 0;
+        systemConfig.sgkIsverenOran = parseFloat(document.getElementById("setSgkIsveren").value) || 0;
+        systemConfig.gvOran = parseFloat(document.getElementById("setGvOran").value) || 0;
+        systemConfig.dvOran = parseFloat(document.getElementById("setDvOran").value) || 0;
+        
+        // Netten brüte bölen oranını güncel SGK ve GV oranlarına göre otomatik hesapla
+        systemConfig.nettenBruteBolen = 1 - (systemConfig.sgkIsciOran + (1 - systemConfig.sgkIsciOran) * systemConfig.gvOran + systemConfig.dvOran);
+        
+        bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
+        updateAllViews(true); // Ayarları buluta gönderir ve ekranları yeniler
+        logMessage("Sistem ayarları başarıyla güncellendi ve buluta kaydedildi.", "success");
+    }
+
     function saveToCloud() {
         if(!auth || !auth.currentUser || !db) return;
-        const state = { companies: companies, unmatchedTransactions: unmatchedTransactions, cancelledInvoices: cancelledInvoices, personnelList: personnelList, uninvoicedJobs: uninvoicedJobs, agendaPayments: agendaPayments, periodYear: periodYear, globalSonBankaTarihi: globalSonBankaTarihi, globalSonFaturaNo: globalSonFaturaNo, sonGuncelleme: firebase.firestore.FieldValue.serverTimestamp() };
+        const state = { companies: companies, unmatchedTransactions: unmatchedTransactions, cancelledInvoices: cancelledInvoices, personnelList: personnelList, uninvoicedJobs: uninvoicedJobs, agendaPayments: agendaPayments, periodYear: periodYear, globalSonBankaTarihi: globalSonBankaTarihi, globalSonFaturaNo: globalSonFaturaNo, systemConfig: systemConfig, sonGuncelleme: firebase.firestore.FieldValue.serverTimestamp() };
         let ind = document.getElementById("cloudSaveIndicator"); if(ind) ind.innerHTML = '<i class="fas fa-sync fa-spin text-warning"></i> Buluta Kaydediliyor...';
         db.collection("MiatemData").doc("MainData").set(state).then(() => { if(ind) ind.innerHTML = '<i class="fas fa-cloud-upload-alt text-success"></i> Buluta Kaydedildi'; }).catch(() => { if(ind) ind.innerHTML = '<i class="fas fa-exclamation-triangle text-danger"></i> Kayıt Hatası!'; });
     }
@@ -695,6 +767,9 @@
         db.collection("MiatemData").doc("MainData").get().then((doc) => {
             if (doc.exists) {
                 let state = doc.data(); companies = state.companies || {}; unmatchedTransactions = state.unmatchedTransactions || []; cancelledInvoices = state.cancelledInvoices || []; personnelList = state.personnelList || []; uninvoicedJobs = state.uninvoicedJobs || []; agendaPayments = state.agendaPayments || []; periodYear = state.periodYear || 2026; globalSonBankaTarihi = state.globalSonBankaTarihi || ""; globalSonFaturaNo = state.globalSonFaturaNo || "";
+                
+                if(state.systemConfig) systemConfig = state.systemConfig;
+
                 for(let vkn in companies) { if(companies[vkn].vadeGun === undefined) companies[vkn].vadeGun = 30; }
                 document.getElementById("currentPeriod").innerText = periodYear + " Yılı"; updateAllViews(false); if(ind) ind.innerHTML = '<i class="fas fa-cloud text-success"></i> Bulut Güncel';
             } else { updateAllViews(false); if(ind) ind.innerHTML = '<i class="fas fa-cloud text-secondary"></i> Bulutta Kayıt Yok'; }
@@ -702,14 +777,15 @@
     }
 
     function updateAllViews(triggerCloudSave = true) {
-        try { renderPersonnelTable(); } catch(e) {}
+        try { renderPersonnelTable(); } catch(e) { console.error("Personel Render Hatası:", e); }
         try { renderDashboard(); } catch(e) {}
         try { renderCariTable(); } catch(e) {}
         try { renderUnmatchedTable(); } catch(e) {}
         try { renderCancelledTable(); } catch(e) {}
         try { renderSimpleAnalytics(); } catch(e) {}
         try { filterFirma(); filterCariListe(); } catch(e) {}
-        try { renderUninvoiced(); renderAgenda(); } catch(e) {}
+        try { renderUninvoiced(); } catch(e) { console.error("Faturasız İşler Render Hatası:", e); }
+        try { renderAgenda(); } catch(e) { console.error("Ajanda Render Hatası:", e); }
         
         document.getElementById("unmatched-count").innerText = unmatchedTransactions.length; 
         document.getElementById("cancelled-count").innerText = cancelledInvoices.length;
@@ -769,17 +845,18 @@
         let eldenMesai = parseAmount(document.getElementById("persElden").value);
         let detayDiv = document.getElementById("maliyetDetayAuto");
 
-        const ASGARI_BRUT = 33030.00; 
-        const ASGARI_NET = 28075.50; 
-        const ASGARI_ISTISNA_GV = 4211.33;
-        const ASGARI_ISTISNA_DV = 250.70;
+        // ESKİ SABİT (HARDCODED) DEĞERLERİ SİLDİK, ARTIK systemConfig KULLANILIYOR
         
         let gercekBrut = 0;
         let girilenMaas = parseAmount(maasInput.value);
 
         if (isKayitDisi) {
             ucretTipiSelect.disabled = true; ucretTipiSelect.value = "Net";
-            if (isAsgari) { maasInput.disabled = true; maasInput.value = formatMoney(ASGARI_NET * oran); girilenMaas = ASGARI_NET * oran; } 
+            if (isAsgari) { 
+                maasInput.disabled = true; 
+                maasInput.value = formatMoney(systemConfig.asgariNet * oran); 
+                girilenMaas = systemConfig.asgariNet * oran; 
+            } 
             else { maasInput.disabled = false; }
             let toplamNet = girilenMaas + eldenMesai;
             
@@ -793,23 +870,24 @@
 
         if (isAsgari) {
             ucretTipiSelect.disabled = true; maasInput.disabled = true;
-            gercekBrut = ASGARI_BRUT * oran;
-            maasInput.value = formatMoney(ASGARI_NET * oran);
+            gercekBrut = systemConfig.asgariBrut * oran;
+            maasInput.value = formatMoney(systemConfig.asgariNet * oran);
         } else {
             ucretTipiSelect.disabled = false; maasInput.disabled = false;
-            if(ucretTipiSelect.value === "Net") gercekBrut = girilenMaas / 0.7149; else gercekBrut = girilenMaas; 
+            if(ucretTipiSelect.value === "Net") gercekBrut = girilenMaas / systemConfig.nettenBruteBolen; else gercekBrut = girilenMaas; 
         }
         
-        let sgkIsci = gercekBrut * 0.15; 
-        let sgkIsveren = gercekBrut * 0.175; 
-        let odenecekToplamSgk = sgkIsci + sgkIsveren; // İşçi ve İşveren Payı Toplamı
+        // DİNAMİK VERGİ VE SGK HESAPLAMALARI BURADA YAPILIYOR
+        let sgkIsci = gercekBrut * systemConfig.sgkIsciOran; 
+        let sgkIsveren = gercekBrut * systemConfig.sgkIsverenOran; 
+        let odenecekToplamSgk = sgkIsci + sgkIsveren; 
         
         let gvMatrah = gercekBrut - sgkIsci;
-        let gv = gvMatrah * 0.15;
-        let dv = gercekBrut * 0.00759;
+        let gv = gvMatrah * systemConfig.gvOran;
+        let dv = gercekBrut * systemConfig.dvOran;
         
-        let istisnaGv = ASGARI_ISTISNA_GV * oran;
-        let istisnaDv = ASGARI_ISTISNA_DV * oran;
+        let istisnaGv = systemConfig.istisnaGv * oran;
+        let istisnaDv = systemConfig.istisnaDv * oran;
         
         let odenecekGv = Math.max(0, gv - istisnaGv);
         let odenecekDv = Math.max(0, dv - istisnaDv);
@@ -854,17 +932,24 @@
             isKayitDisi = document.getElementById("persKayitDisi").checked;
             ucretTipi = isAsgari ? "Net" : document.getElementById("persUcretTipi").value;
             girilenMaas = parseAmount(document.getElementById("persMaas").value);
-            const ASGARI_BRUT = 33030.00; 
+            
+            // ESKİ SABİT (HARDCODED) ASGARİ BRÜT DEĞERİNİ SİLDİK
             let oran = (tip === "Part-Time" && gun > 0) ? gun / 30 : 1;
 
             if (isKayitDisi) {
                 pBrut = girilenMaas; pNet = girilenMaas + eldenMesai; pMaliyet = girilenMaas + eldenMesai;
             } else {
-                if (isAsgari) pBrut = ASGARI_BRUT * oran; else pBrut = (ucretTipi === "Net") ? (girilenMaas / 0.7149) : girilenMaas;
-                let sgkIsci = pBrut * 0.15; pSgk = pBrut * 0.175;
-                let gvCalc = (pBrut - sgkIsci) * 0.15; let dvCalc = pBrut * 0.00759;
-                pGv = Math.max(0, gvCalc - (4211.33 * oran));
-                pDv = Math.max(0, dvCalc - (250.70 * oran));
+                // ARTIK systemConfig KULLANILIYOR
+                if (isAsgari) pBrut = systemConfig.asgariBrut * oran; else pBrut = (ucretTipi === "Net") ? (girilenMaas / systemConfig.nettenBruteBolen) : girilenMaas;
+                
+                let sgkIsci = pBrut * systemConfig.sgkIsciOran; 
+                pSgk = pBrut * systemConfig.sgkIsverenOran;
+                
+                let gvCalc = (pBrut - sgkIsci) * systemConfig.gvOran; 
+                let dvCalc = pBrut * systemConfig.dvOran;
+                
+                pGv = Math.max(0, gvCalc - (systemConfig.istisnaGv * oran));
+                pDv = Math.max(0, dvCalc - (systemConfig.istisnaDv * oran));
                 pNet = pBrut - sgkIsci - pGv - pDv + eldenMesai;
                 pMaliyet = pBrut + pSgk + eldenMesai;
             }
@@ -880,7 +965,6 @@
         let isFiredStatus = false;
         if(editingPersonnelId) { let existing = personnelList.find(x => x.id === editingPersonnelId); if(existing) isFiredStatus = existing.isFired; }
 
-        // magazaList: magazaArrObj objesini de kaydediyoruz ki düzenlerken okuyabilelim
         let pObj = { 
             id: editingPersonnelId || generateId(), 
             ad: ad, tc: tc, gorev: gorev, cinsiyet: cinsiyet, tip: tip, gun: gun, magaza: magaza, magazaList: magazaArrObj, gelir: gelir,
@@ -955,9 +1039,13 @@
         btn.innerHTML = `<i class="fas fa-save"></i> Kaydet`; btn.classList.replace("btn-warning", "btn-primary"); btn.classList.replace("text-dark", "text-white");
         document.getElementById("btnCancelEditPers").style.display = "none"; togglePersGun(); calculateMaliyet();
         
-        // Animasyonlu Akordeonu Kapat (Eğer çarpıya basıldıysa)
-        let collapseEl = document.getElementById("personnelFormCollapse");
-        if(collapseEl && collapseEl.classList.contains('show')) new bootstrap.Collapse(collapseEl, {toggle: false}).hide();
+        // ZIRHLI BOOTSTRAP KAPATMA KODU (Hata fırlatmayı engeller)
+        try {
+            let collapseEl = document.getElementById("personnelFormCollapse");
+            if(collapseEl && collapseEl.classList.contains('show')) {
+                bootstrap.Collapse.getOrCreateInstance(collapseEl).hide();
+            }
+        } catch(e) { console.warn("Form kapanma animasyonu atlandı."); }
     }
 
     function deletePersonnel(id) { if(confirm("Kalıcı silmek istediğinize emin misiniz?")) { personnelList = personnelList.filter(p => p.id !== id); updateAllViews(); } }
@@ -1298,9 +1386,11 @@ function renderPersonnelTable() {
         let topBekleyen = 0, topGecikmis = 0, topGelecek = 0;
         let catTotals = { "Vergi": 0, "SGK": 0, "Firma": 0, "Kredi Kartı": 0, "Ceza": 0, "Diğer": 0 };
         
-        agendaPayments.sort((a,b) => new Date(a.rawTarih) - new Date(b.rawTarih)).forEach(item => {
-            let p = item.rawTarih.split("-"); let trTarih = `${p[2]}.${p[1]}.${p[0]}`;
-            let itemDate = new Date(item.rawTarih); itemDate.setHours(0,0,0,0);
+        agendaPayments.sort((a,b) => new Date(a.rawTarih || "1900-01-01") - new Date(b.rawTarih || "1900-01-01")).forEach(item => {
+            // Boş tarih çökmesini engelleyen güvenlik zırhı
+            let safeTarih = item.rawTarih || "1900-01-01";
+            let p = safeTarih.split("-"); let trTarih = `${p[2]}.${p[1]}.${p[0]}`;
+            let itemDate = new Date(safeTarih); itemDate.setHours(0,0,0,0);
             
             let timeDiff = itemDate.getTime() - today.getTime();
             let diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
@@ -1309,18 +1399,18 @@ function renderPersonnelTable() {
             let dayInfoText = "";
             
             if (!item.isPaid) {
-                topBekleyen += item.tutar;
+                topBekleyen += item.tutar || 0;
                 let kat = item.kategori || "Diğer";
-                if(catTotals[kat] !== undefined) catTotals[kat] += item.tutar; else catTotals["Diğer"] += item.tutar;
+                if(catTotals[kat] !== undefined) catTotals[kat] += (item.tutar || 0); else catTotals["Diğer"] += (item.tutar || 0);
                 
                 if (isOverdue) {
-                    topGecikmis += item.tutar;
+                    topGecikmis += item.tutar || 0;
                     dayInfoText = `<div class="small fw-bold mt-1" style="font-size:0.75rem;">(${Math.abs(diffDays)} gün geçti)</div>`;
                 } else if (diffDays === 0) {
-                    topGelecek += item.tutar;
+                    topGelecek += item.tutar || 0;
                     dayInfoText = `<div class="small fw-bold mt-1" style="font-size:0.75rem;">(Bugün Son Gün)</div>`;
                 } else {
-                    topGelecek += item.tutar;
+                    topGelecek += item.tutar || 0;
                     dayInfoText = `<div class="small fw-bold mt-1 text-dark" style="font-size:0.75rem;">(${diffDays} gün kaldı)</div>`;
                 }
             }
@@ -1337,10 +1427,9 @@ function renderPersonnelTable() {
             let katBadgeColor = catBadgeColors[item.kategori] || "dark";
             let katBadge = `<span class="badge bg-${katBadgeColor} rounded-pill shadow-sm" style="font-size:0.7rem;">${item.kategori || 'Diğer'}</span>`;
 
-            // Tabloya Düzenle Butonu Eklendi
             tbody.innerHTML += `
             <tr class="${rowClass}">
-                <td class="fw-bold">${trTarih}</td>
+                <td class="fw-bold">${trTarih === "01.01.1900" ? "-" : trTarih}</td>
                 <td>${katBadge}</td>
                 <td class="fw-bold">${item.aciklama}</td>
                 <td class="text-end fw-bold fs-6 text-danger">${formatMoney(item.tutar)} ₺</td>
