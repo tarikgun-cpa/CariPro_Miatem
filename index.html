@@ -758,7 +758,10 @@
         if(!auth || !auth.currentUser || !db) return;
         const state = { companies: companies, unmatchedTransactions: unmatchedTransactions, cancelledInvoices: cancelledInvoices, personnelList: personnelList, uninvoicedJobs: uninvoicedJobs, agendaPayments: agendaPayments, periodYear: periodYear, globalSonBankaTarihi: globalSonBankaTarihi, globalSonFaturaNo: globalSonFaturaNo, systemConfig: systemConfig, sonGuncelleme: firebase.firestore.FieldValue.serverTimestamp() };
         let ind = document.getElementById("cloudSaveIndicator"); if(ind) ind.innerHTML = '<i class="fas fa-sync fa-spin text-warning"></i> Buluta Kaydediliyor...';
-        db.collection("MiatemData").doc("MainData").set(state).then(() => { if(ind) ind.innerHTML = '<i class="fas fa-cloud-upload-alt text-success"></i> Buluta Kaydedildi'; }).catch(() => { if(ind) ind.innerHTML = '<i class="fas fa-exclamation-triangle text-danger"></i> Kayıt Hatası!'; });
+        db.collection("MiatemData").doc("MainData").set(state).then(() => { if(ind) ind.innerHTML = '<i class="fas fa-cloud-upload-alt text-success"></i> Buluta Kaydedildi'; }).catch((error) => { 
+    if(ind) ind.innerHTML = '<i class="fas fa-exclamation-triangle text-danger"></i> Kayıt Hatası!'; 
+    console.error("Buluta kayıt başarısız oldu:", error); // Hatayı konsola yazdırır
+});
     }
 
     function loadFromCloud() {
@@ -963,7 +966,10 @@
         pDv = isNaN(pDv) ? 0 : pDv; pNet = isNaN(pNet) ? 0 : pNet; pMaliyet = isNaN(pMaliyet) ? 0 : pMaliyet; eldenMesai = isNaN(eldenMesai) ? 0 : eldenMesai;
 
         let isFiredStatus = false;
-        if(editingPersonnelId) { let existing = personnelList.find(x => x.id === editingPersonnelId); if(existing) isFiredStatus = existing.isFired; }
+        if(editingPersonnelId) { 
+    let existing = personnelList.find(x => x.id === editingPersonnelId); 
+    if(existing) isFiredStatus = existing.isFired || false; // undefined ise false yap
+}
 
         let pObj = { 
             id: editingPersonnelId || generateId(), 
