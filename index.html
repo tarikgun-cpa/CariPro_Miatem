@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CariPro Ⓜ️ MİATEM </title>
+    <title>CariPro 💰 </title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -177,7 +177,7 @@
     <div class="card p-5 bg-white" id="loginCard" style="width: 420px;">
         <div class="text-center mb-4">
             <h2 class="fw-bold" style="color: #4e73df;"><i class="fas fa-shield-alt"></i> MİATEM</h2>
-            <h5 class="text-muted"> 💎 CPA-FTC Pro </h5>
+            <h5 class="text-muted"> <img src="CPAFTC.ico" alt="CPA-FTC" height="28" class="align-middle me-1"> Pro </h5>
         </div>
         <div id="loginError" class="alert alert-danger d-none small text-center"></div>
         <div class="mb-3">
@@ -194,7 +194,10 @@
 
 <div id="mainApp" style="display: none;" class="app-container">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-        <h2><i class="fas fa-chart-pie" style="color: #6a82fb;"></i> <strong>CariPro</strong> Ⓜ️ MİATEM <span class="badge bg-success fs-6 align-middle"> 💎 CPA-FTC</span></h2>
+        <h2>
+    <img src="https://www.miatem.com/wp-content/uploads/2019/06/miatem-logo.png" alt="MİATEM" height="40" class="me-2 rounded shadow-sm">
+    <strong>CariPro 💰 </strong><img src="CPAFTC.ico" alt="CPA-FTC" height="26" class="align-middle ms-2 bg-white rounded p-1 shadow-sm">
+</h2>
         <div class="d-flex align-items-center flex-wrap mt-2 mt-md-0">
             <span id="cloudSaveIndicator" class="badge bg-white text-dark border me-3 py-2 px-3 shadow-sm"><i class="fas fa-cloud text-secondary"></i> Bulut Bekleniyor...</span>
             <strong>Aktif Yıl: </strong> <span id="currentPeriod" class="badge bg-primary fs-5 shadow-sm ms-2">2026 Yılı</span>
@@ -630,7 +633,7 @@
         </div>
 
     </div> <div class="text-center mt-5 mb-3 text-muted no-print" style="font-size: 0.85rem; border-top: 1px solid #ddd; padding-top: 15px;">
-        <i class="fas fa-shield-alt text-primary"></i> <strong>CariPro Ⓜ️ MİATEM </strong> &copy; 2026 <br> SMMM Tarık GÜN Tüm Hakları Saklıdır. ©️ CPA-FTC Ltd.
+        <i class="fas fa-shield-alt text-primary"></i> <strong>CariPro 💰 </strong> &copy; 2026 <br> SMMM Tarık GÜN Tüm Hakları Saklıdır. <img src="CPAFTC.ico" alt="CPA-FTC" height="20" class="align-middle">
     </div>
 </div>
 
@@ -1769,11 +1772,33 @@ function generateAIReport() {
             });
 
             // "En Değerli" -> Satış hacmi en yüksek 
-            let enDegerli = [...firmaAnaliz].sort((a,b) => b.fatura - a.fatura).slice(0, 3);
+            let enDegerli = [...firmaAnaliz].sort((a,b) => b.fatura - a.fatura).slice(0, 5);
+            let enSikintili = [...firmaAnaliz].sort((a,b) => b.bakiye - a.bakiye).slice(0, 5);
+            let enIyiOdeyen = [...firmaAnaliz].filter(x => x.fatura > 0).sort((a,b) => a.gecikmeOrani - b.gecikmeOrani).slice(0, 5);
+            let listHTML_Degerli = enDegerli.map((x, i) => `
+    <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+        <div><span class="badge bg-primary rounded-pill me-2">${i+1}</span><span class="text-primary fw-bold" style="font-size: 0.85rem;">${x.unvan}</span></div>
+        <span class="badge bg-light text-dark border shadow-sm">${formatMoney(x.fatura)} ₺</span>
+    </div>`).join("");
             // "En Sıkıntılı" -> Bakiyesi en yüksek 
-            let enSikintili = [...firmaAnaliz].sort((a,b) => b.bakiye - a.bakiye).slice(0, 3);
+            let listHTML_Sikinti = enSikintili.map((x, i) => `
+    <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+        <div><span class="badge bg-danger rounded-pill me-2"><i class="fas fa-exclamation"></i></span><span class="text-danger fw-bold" style="font-size: 0.85rem;">${x.unvan}</span></div>
+        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger shadow-sm">${formatMoney(x.bakiye)} ₺ Bakiye</span>
+    </div>`).join("");
             // "En İyi Ödeyen" -> Vadesi geçen borcu olmayan (Gecikme Oranı = 0), Faturası yüksek olanlar
-            let enIyiOdeyen = [...firmaAnaliz].filter(x => x.fatura > 1000).sort((a,b) => a.gecikmeOrani - b.gecikmeOrani || b.fatura - a.fatura).slice(0, 3);
+            let listHTML_Iyi = enIyiOdeyen.map((x, i) => {
+    let isPerfect = x.gecikmeOrani === 0;
+    let text = isPerfect ? "Sıfır Gecikme" : `%${(x.gecikmeOrani*100).toFixed(0)} Gecikmeli`;
+    let colorClass = isPerfect ? "bg-success" : "bg-warning text-dark";
+    return `
+    <div class="d-flex flex-column mb-2 pb-1 border-bottom">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-bold text-success" style="font-size: 0.85rem;">${x.unvan}</span>
+            <span class="badge ${colorClass} shadow-sm"><i class="fas fa-clock"></i> ${text}</span>
+        </div>
+    </div>`;
+}).join("");
             
             let aylikList = Object.keys(aylikAnaliz).sort().map(k => aylikAnaliz[k]);
 
@@ -1805,16 +1830,6 @@ function generateAIReport() {
             if(type === "genel") {
                 let devirBasari = totalDevir > 0 ? (tahsilEdilenDevir / totalDevir * 100).toFixed(1) : 0;
                 let faturaBasari = totalFatura > 0 ? (tahsilEdilenFatura / totalFatura * 100).toFixed(1) : 0;
-
-                let listHTML_Degerli = enDegerli.map(x => `<li><span class="text-primary fw-bold">${x.unvan}</span> (${formatMoney(x.fatura)} ₺ Satış)</li>`).join("");
-                let listHTML_Sikinti = enSikintili.map(x => `<li><span class="text-danger fw-bold">${x.unvan}</span> (${formatMoney(x.bakiye)} ₺ Bakiye)</li>`).join("");
-                
-                // En iyi ödeyenlerin yeni gösterimi (Gecikmesiz)
-                let listHTML_Iyi = enIyiOdeyen.map(x => {
-                    let text = x.gecikmeOrani === 0 ? "Tam Zamanında" : `%${(x.gecikmeOrani*100).toFixed(0)} Gecikmeli`;
-                    let color = x.gecikmeOrani === 0 ? "text-success" : "text-warning text-dark";
-                    return `<li><span class="fw-bold" style="color:#1b5e20;">${x.unvan}</span> <br><small class="${color} fw-bold"><i class="fas fa-check-circle"></i> ${text}</small></li>`;
-                }).join("");
 
                 // Aylık Analiz Tablosu HTML
                 let aylikHtml = "";
@@ -1894,7 +1909,13 @@ function generateAIReport() {
         // no-print class'ı eklenerek yazdırılırken butonun gizlenmesi sağlandı
         w.document.write('<style>body{padding:40px; font-family:sans-serif;} @media print { .no-print { display: none !important; } }</style>');
         w.document.write('</head><body>');
-        w.document.write('<div class="text-center mb-4"><h2 class="fw-bold">MİATEM TEMİZLİK HİZMETLERİ</h2><h5 class="text-muted">Sistem Analiz Raporu</h5></div>');
+        w.document.write(`
+    <div class="text-center mb-4">
+        <img src="https://www.miatem.com/wp-content/uploads/2019/06/miatem-logo.png" alt="Logo" height="80" style="margin-bottom: 15px;">
+        <h2 class="fw-bold">MİATEM TEMİZLİK HİZMETLERİ</h2>
+        <h5 class="text-muted">Sistem Analiz Raporu</h5>
+    </div>
+`);
         w.document.write(content);
         
         // Butonu saran div'e 'no-print' sınıfını ekledik
@@ -1968,7 +1989,22 @@ function generateAIReport() {
         companies[vkn] = { vkn: vkn, unvan: unvan, devirBakiye: bakiye, faturaTutar: 0, odemeTutar: 0, vadeGun: 30, primaryWord: primaryWord, hareketler: [], faturaNolar: [] };
         bootstrap.Modal.getInstance(document.getElementById('manuelCariModal')).hide(); document.getElementById("yeniCariUnvan").value = ""; document.getElementById("yeniCariBakiye").value = ""; updateAllViews(); logMessage("Cari eklendi.", "success");
     }
+// --- KANDIRIKÇI YAPAY ZEKA: Anomali Dedektörü ---
+function detectPaymentAnomalies(c) {
+    let hasAnomaly = false;
+    let faturalar = c.hareketler.filter(h => h.tur === "Fatura");
+    let odemeler = c.hareketler.filter(h => h.tur === "Ödeme");
 
+    odemeler.forEach(odeme => {
+        faturalar.forEach(fatura => {
+            // Faturanın tam %10'u ödenmişse (Sıfır unutulmuş) veya 10 katı ödenmişse (Fazla sıfır)
+            if (odeme.tutar === fatura.tutar / 10 || odeme.tutar === fatura.tutar * 10) {
+                hasAnomaly = true;
+            }
+        });
+    });
+    return hasAnomaly;
+}
     function renderDashboard() {
         document.getElementById("dashSonBanka").innerText = globalSonBankaTarihi || "Yüklenmedi"; document.getElementById("dashSonFatura").innerText = globalSonFaturaNo || "Yüklenmedi";
         let totalAlacak = 0; let cArray = [];
@@ -1977,10 +2013,24 @@ function generateAIReport() {
         const badgeContainer = document.getElementById("dashboardBadges"); badgeContainer.innerHTML = "";
         if(cArray.length === 0) { badgeContainer.innerHTML = `<div class="col-12"><div class="alert alert-light border text-center text-muted">Veri yükleyerek başlayın.</div></div>`; return; }
         cArray.forEach(c => {
-            let badgeClass = c.bakiye > 0 ? "debt" : "credit"; let colorText = c.bakiye > 0 ? "text-pastel-danger" : "text-pastel-primary";
-            let html = `<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 firma-card-container" data-unvan="${c.unvan}"><div class="company-badge ${badgeClass}" onclick="openEkstre('${c.vkn}')"><div class="text-truncate w-100 mb-1" title="${c.unvan}"><strong style="font-size: 0.85rem; color: #555;">${c.unvan}</strong></div><div><h6 class="mb-0 fw-bold ${colorText}" style="font-size: 1.05rem;">${formatMoney(c.bakiye)} ₺</h6></div></div></div>`;
-            badgeContainer.innerHTML += html;
-        });
+    let badgeClass = c.bakiye > 0 ? "debt" : "credit"; 
+    let colorText = c.bakiye > 0 ? "text-pastel-danger" : "text-pastel-primary";
+    
+    // Anomali tespiti ve rozet (Badge)
+    let compData = companies[c.vkn];
+    let anomalyHtml = detectPaymentAnomalies(compData) 
+        ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow" style="z-index: 5;" title="Yapay Zeka Uyarısı: Fatura tutarı ile ödeme arasında 'sıfır' hatası şüphesi var! (Eksik/Fazla Ödeme)"><i class="fas fa-exclamation"></i><span class="visually-hidden">Uyarı</span></span>` 
+        : "";
+
+    let html = `<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 firma-card-container position-relative" data-unvan="${c.unvan}">
+        ${anomalyHtml}
+        <div class="company-badge ${badgeClass}" onclick="openEkstre('${c.vkn}')">
+            <div class="text-truncate w-100 mb-1" title="${c.unvan}"><strong style="font-size: 0.85rem; color: #555;">${c.unvan}</strong></div>
+            <div><h6 class="mb-0 fw-bold ${colorText}" style="font-size: 1.05rem;">${formatMoney(c.bakiye)} ₺</h6></div>
+        </div>
+    </div>`;
+    badgeContainer.innerHTML += html;
+});
     }
 
     function renderCariTable() {
@@ -2059,9 +2109,10 @@ function generateAIReport() {
                     <button onclick="window.print()">🖨️ Ekstreyi Yazdır</button>
                 </div>
                 <div class="header">
-                    <h2>MİATEM TEMİZLİK HİZMETLERİ CARİ HESAP EKSTRESİ</h2>
-                    <h3>${unvan}</h3>
-                </div>
+    <img src="https://miatem.com.tr/img/logo.png" alt="Logo" height="70" style="margin-bottom: 10px;">
+    <h2>CARİ HESAP EKSTRESİ</h2>
+    <h3>${unvan}</h3>
+</div>
                 <div class="summary-box">
                     <div>
                         <h6>VKN/TCKN</h6>
