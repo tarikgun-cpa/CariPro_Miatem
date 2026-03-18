@@ -488,8 +488,13 @@
 
     <div class="d-flex justify-content-between align-items-end mb-3 mt-4 border-bottom pb-2">
         <h5 class="text-secondary fw-bold mb-0"><i class="fas fa-address-card"></i> Personel Kartları</h5>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap justify-content-end">
             <button type="button" class="btn btn-outline-dark btn-sm fw-bold shadow-sm" onclick="printPayroll()"><i class="fas fa-print"></i> Ücret Listesi</button>
+            <select id="persTypeFilter" class="form-select form-select-sm border-primary fw-bold text-primary shadow-sm" onchange="renderPersonnelTable()" style="width: auto;">
+                <option value="all">Tüm Çalışanlar</option>
+                <option value="sgk">Sadece SGK'lılar</option>
+                <option value="kayitdisi">Sadece Kayıt Dışı</option>
+            </select>
             <select id="persViewFilter" class="form-select form-select-sm border-info fw-bold text-info shadow-sm" onchange="renderPersonnelTable()" style="width: auto;">
                 <option value="active">Aktif Çalışanlar</option>
                 <option value="fired">Eski Personeller</option>
@@ -581,6 +586,10 @@
             </div>
             
             <div class="card p-3 border-0 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-secondary fw-bold mb-0"><i class="fas fa-list"></i> Detaylı Ödeme Listesi</h6>
+                    <button type="button" class="btn btn-outline-dark btn-sm fw-bold shadow-sm" onclick="printAgenda()"><i class="fas fa-print"></i> Listeyi Yazdır</button>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle table-sm">
                         <thead class="table-light">
@@ -1372,12 +1381,13 @@
         w.document.write('<html><head><title>Ücret Listesi</title></head><body>' + html + '</body></html>');
         w.document.close();
     }
-function renderPersonnelTable() {
+    function renderPersonnelTable() {
     const container = document.getElementById("personnelCardContainer");
     if(!container) return;
     container.innerHTML = "";
     
     let filterValue = document.getElementById("persViewFilter") ? document.getElementById("persViewFilter").value : "active";
+    let typeFilter = document.getElementById("persTypeFilter") ? document.getElementById("persTypeFilter").value : "all";
     
     let tNet = 0, tMaliyet = 0, tSgk = 0, tGv = 0, tDv = 0;
     let tResmi = 0, tKds = 0, cSgk = 0, cKd = 0;
@@ -1402,6 +1412,13 @@ function renderPersonnelTable() {
         }
 
         let isVisible = (filterValue === "active" && !p.isFired) || (filterValue === "fired" && p.isFired);
+        
+        // YENİ: SGK ve Kayıt Dışı Filtresi
+        if (isVisible && typeFilter !== "all") {
+            if (typeFilter === "sgk" && p.isKayitDisi) isVisible = false;
+            if (typeFilter === "kayitdisi" && !p.isKayitDisi) isVisible = false;
+        }
+
         if(!isVisible) return;
 
         let pTipBadge = p.tip === "Part-Time" 
@@ -1768,6 +1785,108 @@ function renderPersonnelTable() {
         if(dashContainer) {
             dashContainer.innerHTML = catHtml || `<div class="col-12"><div class="alert alert-success border text-center shadow-sm"><i class="fas fa-check-circle"></i> Harika! Bekleyen hiçbir ödeme veya borcunuz bulunmuyor.</div></div>`;
         }
+    }
+    function printAgenda() {
+        let today = new Date(); today.setHours(0,0,0,0);
+        
+        // Ödemeleri ayırıyoruz (Bekleyenler ve Kapananlar)
+        let pendingPayments = agendaPayments.filter(a => !a.isPaid).sort((a,b) => new Date(a.rawTarih || "1900-01-01") - new Date(b.rawTarih || "1900-01-01"));
+        let paidPayments = agendaPayments.filter(a => a.isPaid).sort((a,b) => new Date(b.rawTarih || "1900-01-01") - new Date(a.rawTarih || "1900-01-01"));
+
+        let topBekleyen = 0, topGecikmis = 0;
+
+        // Yazdırılacak Çıktının Tasarımı
+        let html = `
+        <div style="max-width: 900px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+            <div style="text-align: center; margin-bottom: 20px;" class="no-print">
+                <button onclick="window.print()" style="background: #4e73df; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">🖨️ Raporu Yazdır</button>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #2c3e50; padding-bottom: 15px;">
+                <img src="https://miatem.com.tr/img/logo.png" alt="MİATEM" height="70" style="margin-bottom: 10px;">
+                <h2 style="margin: 0; color: #2c3e50; font-weight: 800;">ÖDEME AJANDASI RAPORU</h2>
+                <div style="color: #6c757d; margin-top: 5px; font-weight: bold;">Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')}</div>
+            </div>`;
+
+        // Bekleyen ve Gecikmiş Ödemeler Tablosu
+        if (pendingPayments.length > 0) {
+            html += `<h4 style="color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 5px; margin-bottom:10px;">Bekleyen ve Gecikmiş Ödemeler</h4>
+            <table width="100%" cellpadding="10" style="border-collapse:collapse; text-align:left; margin-bottom: 40px; font-size: 14px; border: 1px solid #dee2e6;">
+                <tr style="background:#f1f5f9; border-bottom: 2px solid #cbd5e1; color:#333;">
+                    <th width="120">Son Ödeme</th>
+                    <th width="120">Kategori</th>
+                    <th>Açıklama / Cari Detayı</th>
+                    <th width="130">Durum</th>
+                    <th width="130" style="text-align:right;">Tutar</th>
+                </tr>`;
+            
+            pendingPayments.forEach(item => {
+                let safeTarih = item.rawTarih || "1900-01-01";
+                let p = safeTarih.split("-"); let trTarih = `${p[2]}.${p[1]}.${p[0]}`;
+                let itemDate = new Date(safeTarih); itemDate.setHours(0,0,0,0);
+                
+                let diffDays = Math.ceil((itemDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
+                let isOverdue = diffDays < 0;
+                
+                topBekleyen += item.tutar;
+                if(isOverdue) topGecikmis += item.tutar;
+
+                let durumTxt = isOverdue ? `<span style="color:#dc3545; font-weight:bold; background: #ffebee; padding: 2px 5px; border-radius: 4px;">${Math.abs(diffDays)} gün gecikti</span>` : (diffDays === 0 ? "Bugün" : `${diffDays} gün kaldı`);
+                
+                html += `<tr style="border-bottom: 1px solid #eee;">
+                    <td>${trTarih}</td>
+                    <td><span style="background: #e9ecef; padding: 2px 6px; border-radius:4px; font-size:12px;">${item.kategori || 'Diğer'}</span></td>
+                    <td><b>${item.aciklama}</b></td>
+                    <td>${durumTxt}</td>
+                    <td align="right" style="color:#dc3545; font-weight:bold; font-size: 15px;">${formatMoney(item.tutar)} ₺</td>
+                </tr>`;
+            });
+            
+            html += `<tr style="background:#fff3cd; font-weight:bold; font-size: 16px;">
+                <td colspan="4" align="right" style="border-right: 1px solid #ffeeba;">TOPLAM BEKLEYEN ÖDEME YÜKÜ:</td>
+                <td align="right" style="color:#dc3545;">${formatMoney(topBekleyen)} ₺</td>
+            </tr>`;
+            html += `</table>`;
+        } else {
+            html += `<div style="padding: 15px; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px; text-align: center; margin-bottom: 30px;"><b>Harika! Bekleyen hiçbir ödeme veya borç kaydı bulunmuyor.</b></div>`;
+        }
+
+        // Ödenenler Tablosu (Sadece son 30 işlem)
+        if (paidPayments.length > 0) {
+            html += `<h4 style="color: #198754; border-bottom: 2px solid #198754; padding-bottom: 5px; margin-top: 20px; margin-bottom:10px;">Kapatılan (Ödenmiş) Kayıtlar Özeti</h4>
+            <table width="100%" cellpadding="8" style="border-collapse:collapse; text-align:left; font-size: 13px; color: #555; border: 1px solid #dee2e6;">
+                <tr style="background:#f8f9fa; border-bottom: 2px solid #dee2e6;">
+                    <th width="120">Planlanan Tarih</th>
+                    <th width="120">Kategori</th>
+                    <th>Açıklama / Cari Detayı</th>
+                    <th width="130" style="text-align:right;">Ödenen Tutar</th>
+                </tr>`;
+            
+            paidPayments.slice(0, 30).forEach(item => {
+                let safeTarih = item.rawTarih || "1900-01-01";
+                let p = safeTarih.split("-"); let trTarih = `${p[2]}.${p[1]}.${p[0]}`;
+                
+                html += `<tr style="border-bottom: 1px solid #eee;">
+                    <td>${trTarih}</td>
+                    <td>${item.kategori || 'Diğer'}</td>
+                    <td><del>${item.aciklama}</del> <span style="color:#198754; font-size:11px; margin-left:5px;">(Ödendi)</span></td>
+                    <td align="right" style="font-weight:bold;">${formatMoney(item.tutar)} ₺</td>
+                </tr>`;
+            });
+            html += `</table><div style="text-align:right; font-size:11px; margin-top:5px; color:#888;">* Sadece son 30 kapatılan kayıt listelenmiştir.</div>`;
+        }
+
+        html += `
+            <div style="margin-top: 50px; text-align: right; color: #333; font-size: 14px;">
+                <strong>Finans / Ön Muhasebe Onayı</strong><br><br><br>
+                ......................................................
+            </div>
+        </div>
+        <style>@media print { .no-print { display: none !important; } @page { margin: 1cm; size: A4 portrait; } }</style>`;
+        
+        let w = window.open('','_blank'); 
+        w.document.write('<html><head><title>MİATEM Ödeme Ajandası</title></head><body style="background:#fff;">' + html + '</body></html>');
+        w.document.close();
     }
 
 function generateAIReport() {
