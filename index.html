@@ -2283,6 +2283,9 @@ function generateAIReport() {
                 c.vkn = newVkn;
                 companies[newVkn] = c;
                 delete companies[oldVkn];
+                
+                // --- YENİ EKLENEN: Eski VKN'yi buluttan da sil ---
+                if (auth && db) { db.collection("Companies").doc(oldVkn).delete(); }
             }
             
             logMessage("Cari hesap başarıyla güncellendi.", "success");
@@ -2308,6 +2311,10 @@ function generateAIReport() {
         
         if (confirm(`${uyari}Bu cari kartı kalıcı olarak silmek istediğinize emin misiniz? (Bu işlem geri alınamaz!)`)) {
             delete companies[vkn];
+            
+            // --- YENİ EKLENEN: Buluttan (Firebase) Kalıcı Olarak Silme Komutu ---
+            if (auth && db) { db.collection("Companies").doc(vkn).delete(); }
+            
             updateAllViews();
             logMessage("Cari kart başarıyla silindi.", "success");
         }
