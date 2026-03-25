@@ -1252,17 +1252,57 @@
         let gun = parseInt(document.getElementById("persGun").value) || 0;
         let eldenMesai = parseAmount(document.getElementById("persElden").value);
         
-        // MAĞAZA DİZİSİNİ HEM STRING HEM OBJECT OLARAK ALIYORUZ
         let magazaArrObj = []; let magazaArrStr = []; let gelir = 0;
+        let pId = editingPersonnelId || generateId(); // ID'yi önceden belirledik
+        
         document.querySelectorAll(".magaza-satiri").forEach(row => {
             let mAd = row.querySelector(".m-ad").value.trim();
             let mGel = parseAmount(row.querySelector(".m-gelir").value);
+            let isFaturasiz = row.querySelector(".m-faturasiz").checked;
+            let mId = row.querySelector(".m-id") ? row.querySelector(".m-id").value : generateId();
+
             if(mAd) { 
-                magazaArrObj.push({ ad: mAd, gelir: mGel }); 
-                magazaArrStr.push(mAd + " (" + formatMoney(mGel) + " ₺)"); 
+                magazaArrObj.push({ id: mId, ad: mAd, gelir: mGel, isFaturasiz: isFaturasiz }); 
+                let fatBadge = isFaturasiz ? " (Faturasız)" : "";
+                magazaArrStr.push(mAd + " (" + formatMoney(mGel) + " ₺)" + fatBadge); 
                 gelir += mGel; 
             }
         });
+
+        // ===============================================
+        // YENİ: FATURASIZ İŞLER (8. SEKME) SENKRONİZASYONU
+        // ===============================================
+        let activeMagazaIds = magazaArrObj.map(m => m.id);
+        
+        // 1. Artık faturasız olmayan veya silinen mağazaları 8. sekmeden temizle
+        uninvoicedJobs = uninvoicedJobs.filter(u => {
+            if (u.linkedPersId === pId) {
+                let relatedMagaza = magazaArrObj.find(m => m.id === u.linkedMagazaId);
+                return relatedMagaza && relatedMagaza.isFaturasiz;
+            }
+            return true;
+        });
+
+        // 2. Yeni faturasızları ekle veya var olanların rakamını güncelle
+        magazaArrObj.forEach(m => {
+            if (m.isFaturasiz) {
+                let existingUninv = uninvoicedJobs.find(u => u.linkedMagazaId === m.id);
+                if (existingUninv) {
+                    existingUninv.musteri = m.ad + " (Hizmet)";
+                    existingUninv.tutar = m.gelir; // Tutar güncellenir, tahsilat (odenen) korunur!
+                } else {
+                    let todayStr = new Date().toLocaleDateString('tr-TR');
+                    uninvoicedJobs.push({
+                        id: generateId(), linkedMagazaId: m.id, linkedPersId: pId,
+                        rawTarih: new Date().toISOString().split('T')[0], tarih: todayStr,
+                        musteri: m.ad + " (Hizmet)", aciklama: `${ad} Personel Geliri`,
+                        tutar: m.gelir, gider: 0, odenen: 0
+                    });
+                }
+            }
+        });
+        // ===============================================
+
         let magaza = magazaArrStr.join(", ");
         let isAuto = document.getElementById("aiHesaplaToggle").checked;
 
@@ -1276,18 +1316,15 @@
             ucretTipi = isAsgari ? "Net" : document.getElementById("persUcretTipi").value;
             girilenMaas = parseAmount(document.getElementById("persMaas").value);
             
-            // ESKİ SABİT (HARDCODED) ASGARİ BRÜT DEĞERİNİ SİLDİK
             let oran = (tip === "Part-Time" && gun > 0) ? gun / 30 : 1;
 
             if (isKayitDisi) {
                 pBrut = girilenMaas; pNet = girilenMaas + eldenMesai; pMaliyet = girilenMaas + eldenMesai;
             } else {
-                // ARTIK systemConfig KULLANILIYOR
                 if (isAsgari) pBrut = systemConfig.asgariBrut * oran; else pBrut = (ucretTipi === "Net") ? (girilenMaas / systemConfig.nettenBruteBolen) : girilenMaas;
                 
                 let sgkIsci = pBrut * systemConfig.sgkIsciOran; 
                 pSgk = pBrut * systemConfig.sgkIsverenOran;
-                
                 let gvCalc = (pBrut - sgkIsci) * systemConfig.gvOran; 
                 let dvCalc = pBrut * systemConfig.dvOran;
                 
@@ -1307,12 +1344,12 @@
 
         let isFiredStatus = false;
         if(editingPersonnelId) { 
-    let existing = personnelList.find(x => x.id === editingPersonnelId); 
-    if(existing) isFiredStatus = existing.isFired || false; // undefined ise false yap
-}
+            let existing = personnelList.find(x => x.id === editingPersonnelId); 
+            if(existing) isFiredStatus = existing.isFired || false; 
+        }
 
         let pObj = { 
-            id: editingPersonnelId || generateId(), 
+            id: pId, 
             ad: ad, tc: tc, gorev: gorev, cinsiyet: cinsiyet, tip: tip, gun: gun, magaza: magaza, magazaList: magazaArrObj, gelir: gelir,
             isAuto: isAuto, isAsgari: isAsgari, isKayitDisi: isKayitDisi, ucretTipi: ucretTipi, maas: girilenMaas, eldenMesai: eldenMesai,
             brut: pBrut, sgkIsveren: pSgk, gv: pGv, dv: pDv, net: pNet, maliyet: pMaliyet, isFired: isFiredStatus
@@ -1323,7 +1360,7 @@
             if(idx > -1) personnelList[idx] = pObj;
         } else { personnelList.push(pObj); }
 
-        cancelEditPers(); updateAllViews(); logMessage("Personel başarıyla kaydedildi.", "success");
+        cancelEditPers(); updateAllViews(); logMessage("Personel başarıyla kaydedildi ve Faturasız Listesi senkronize edildi.", "success");
     }
 
     function editPersonnel(id) {
@@ -1335,15 +1372,25 @@
         document.getElementById("persTip").value = p.tip || "Daimi"; document.getElementById("persGun").value = p.gun || ""; togglePersGun();
         document.getElementById("persElden").value = p.eldenMesai ? formatMoney(p.eldenMesai) : "";
         
-        // MAĞAZA LİSTESİNİ FORMA GERİ DOLDURMA İŞLEMİ
         let mlDiv = document.getElementById("magazaListesi");
         mlDiv.innerHTML = "";
         let mList = p.magazaList || [];
         if(mList.length === 0) { yeniMagazaSatiri(); } 
         else {
             mList.forEach(m => {
-                let div = document.createElement("div"); div.className = "d-flex gap-1 mb-1 magaza-satiri";
-                div.innerHTML = `<input type="text" class="form-control form-control-sm m-ad" value="${m.ad}"><input type="number" class="form-control form-control-sm m-gelir" value="${m.gelir}" style="width:90px;"><button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-minus"></i></button>`;
+                let div = document.createElement("div"); div.className = "d-flex gap-1 mb-1 align-items-center magaza-satiri";
+                let mId = m.id || generateId();
+                let chkId = "chk_" + generateId();
+                let isChecked = m.isFaturasiz ? "checked" : "";
+                div.innerHTML = `
+                    <input type="text" class="form-control form-control-sm m-ad" value="${m.ad}">
+                    <input type="number" class="form-control form-control-sm m-gelir" value="${m.gelir}" style="width:90px;">
+                    <div class="form-check ms-1 me-1 mb-0 border rounded px-1" style="background:#fff8e6;">
+                        <input class="form-check-input m-faturasiz" type="checkbox" id="${chkId}" ${isChecked} style="cursor:pointer;">
+                        <label class="form-check-label small text-muted" for="${chkId}" style="cursor:pointer;">Faturasız</label>
+                    </div>
+                    <input type="hidden" class="m-id" value="${mId}">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-minus"></i></button>`;
                 mlDiv.appendChild(div);
             });
         }
@@ -1364,7 +1411,6 @@
         btn.innerHTML = `<i class="fas fa-save"></i> Güncelle`; btn.classList.replace("btn-primary", "btn-warning"); btn.classList.replace("text-white", "text-dark");
         document.getElementById("btnCancelEditPers").style.display = "inline-block"; 
         
-        // Animasyonlu Akordeonu Aç
         let collapseEl = document.getElementById("personnelFormCollapse");
         if(collapseEl) new bootstrap.Collapse(collapseEl, {toggle: false}).show();
         
@@ -1377,7 +1423,19 @@
         document.getElementById("persAd").value = ""; document.getElementById("persTc").value = ""; document.getElementById("persGorev").value = "";
         document.getElementById("persMaas").value = ""; document.getElementById("persAsgari").checked = false; document.getElementById("persKayitDisi").checked = false; document.getElementById("persGun").value = "";
         document.getElementById("persElden").value = "";
-        document.getElementById("magazaListesi").innerHTML = `<div class="d-flex gap-1 mb-1 magaza-satiri"><input type="text" class="form-control form-control-sm m-ad" placeholder="Mağaza Adı"><input type="number" class="form-control form-control-sm m-gelir" placeholder="Gelir ₺" style="width:90px;"><button type="button" class="btn btn-success btn-sm" onclick="yeniMagazaSatiri()"><i class="fas fa-plus"></i></button></div>`;
+        
+        let mId = generateId();
+        document.getElementById("magazaListesi").innerHTML = `<div class="d-flex gap-1 mb-1 align-items-center magaza-satiri">
+            <input type="text" class="form-control form-control-sm m-ad" placeholder="Mağaza Adı">
+            <input type="number" class="form-control form-control-sm m-gelir" placeholder="Gelir ₺" style="width:90px;">
+            <div class="form-check ms-1 me-1 mb-0 border rounded px-1" style="background:#fff8e6;">
+                <input class="form-check-input m-faturasiz" type="checkbox" id="chk_${mId}" style="cursor:pointer;">
+                <label class="form-check-label small text-muted" for="chk_${mId}" style="cursor:pointer;">Faturasız</label>
+            </div>
+            <input type="hidden" class="m-id" value="${mId}">
+            <button type="button" class="btn btn-success btn-sm" onclick="yeniMagazaSatiri()"><i class="fas fa-plus"></i></button>
+        </div>`;
+        
         document.getElementById("manBrut").value = ""; document.getElementById("manSgk").value = ""; document.getElementById("manGv").value = ""; document.getElementById("manDv").value = ""; document.getElementById("manNet").value = "";
         document.getElementById("aiHesaplaToggle").checked = true; toggleAiMode();
         
@@ -1385,13 +1443,12 @@
         btn.innerHTML = `<i class="fas fa-save"></i> Kaydet`; btn.classList.replace("btn-warning", "btn-primary"); btn.classList.replace("text-dark", "text-white");
         document.getElementById("btnCancelEditPers").style.display = "none"; togglePersGun(); calculateMaliyet();
         
-        // ZIRHLI BOOTSTRAP KAPATMA KODU (Hata fırlatmayı engeller)
         try {
             let collapseEl = document.getElementById("personnelFormCollapse");
             if(collapseEl && collapseEl.classList.contains('show')) {
                 bootstrap.Collapse.getOrCreateInstance(collapseEl).hide();
             }
-        } catch(e) { console.warn("Form kapanma animasyonu atlandı."); }
+        } catch(e) {}
     }
 
     function deletePersonnel(id) { if(confirm("Kalıcı silmek istediğinize emin misiniz?")) { personnelList = personnelList.filter(p => p.id !== id); updateAllViews(); } }
@@ -1462,6 +1519,14 @@
         w.document.write('<html><head><title>Ücret Listesi</title></head><body>' + html + '</body></html>');
         w.document.close();
     }
+    function deletePersonnel(id) { 
+        if(confirm("Kalıcı silmek istediğinize emin misiniz?")) { 
+            personnelList = personnelList.filter(p => p.id !== id); 
+            uninvoicedJobs = uninvoicedJobs.filter(u => u.linkedPersId !== id); // YENİ: Bağlı faturasız işleri de sil
+            updateAllViews(); 
+        } 
+    }
+
     function renderPersonnelTable() {
     const container = document.getElementById("personnelCardContainer");
     if(!container) return;
@@ -1474,7 +1539,6 @@
     let tResmi = 0, tKds = 0, cSgk = 0, cKd = 0;
     let activeCount = 0;
     
-    // YENİ: Alt dashboard için toplam değişkenleri
     let grandGelir = 0, grandKurumlarVergisi = 0, grandNetKar = 0;
 
     [...personnelList].sort((a, b) => String(a.ad).localeCompare(String(b.ad), 'tr-TR')).forEach(p => {
@@ -1493,11 +1557,17 @@
             
             if(p.isKayitDisi) { cKd++; tKds += (p.maliyet || 0); } else { cSgk++; tResmi += (p.maliyet || 0); }
             
-            // YENİ: Kurumlar Vergisi ve Net Kar Toplamları (Tüm aktif çalışanlar için)
+            // Faturasız Gelir Vergiden Muaf Hesaplaması
+            let pResmiGelir = 0;
             let pToplamGelir = p.gelir || 0;
-            let pResmiMaliyet = p.isKayitDisi ? 0 : (p.maliyet - (p.eldenMesai || 0)); // Sadece resmi olan gider yazılabilir
-            let pMaliKar = pToplamGelir - pResmiMaliyet; // Vergiye tabi tutar (KKEG eklendi)
-            let pKurumlarVergisi = Math.max(0, pMaliKar * 0.25);
+            
+            if(p.magazaList) {
+                p.magazaList.forEach(m => { if (!m.isFaturasiz) pResmiGelir += m.gelir; });
+            } else { pResmiGelir = pToplamGelir; }
+
+            let resmiMaliyet = p.isKayitDisi ? 0 : (p.maliyet - (p.eldenMesai || 0)); 
+            let maliKar = pResmiGelir - resmiMaliyet; // Matraha faturasız gelir DAHİL DEĞİL
+            let pKurumlarVergisi = Math.max(0, maliKar * 0.25);
             let pTicariKar = pToplamGelir - (p.maliyet || 0);
             let pVergiSonrasiKar = pTicariKar - pKurumlarVergisi;
 
@@ -1530,7 +1600,8 @@
             magazaHtml = `<div class="mt-2 mb-2"><div class="text-muted fw-bold mb-1" style="font-size:0.75rem;"><i class="fas fa-store"></i> Görevli Mağazalar:</div><div class="d-flex flex-wrap gap-1">`;
             p.magazaList.forEach((m, index) => {
                 let color = pastelColors[index % pastelColors.length];
-                magazaHtml += `<span class="badge rounded-pill py-1 px-2 shadow-sm" style="background-color: ${color.bg}; color: ${color.text}; border: 1px solid rgba(0,0,0,0.05); font-size: 0.7rem;">${m.ad} (${formatMoney(m.gelir)} ₺)</span>`;
+                let faturasizIcon = m.isFaturasiz ? `<i class="fas fa-eye-slash text-danger" title="Faturasız Gelir (Vergiden Muaf)"></i> ` : '';
+                magazaHtml += `<span class="badge rounded-pill py-1 px-2 shadow-sm" style="background-color: ${color.bg}; color: ${color.text}; border: 1px solid rgba(0,0,0,0.05); font-size: 0.7rem;">${faturasizIcon}${m.ad} (${formatMoney(m.gelir)} ₺)</span>`;
             });
             magazaHtml += `</div></div>`;
         }
@@ -1546,17 +1617,27 @@
         let kdBorder = p.isKayitDisi ? `border: 1px solid #ff0000; box-shadow: 0 0 10px rgba(255,0,0,0.05);` : ``;
         let kdRibbon = p.isKayitDisi ? `<div class="ribbon-wrapper"><div class="ribbon">KAYIT DIŞI</div></div>` : ``;
 
-        // YENİ: Kart içi Kurumlar Vergisi ve Net Kar Hesabı
-        let toplamGelir = p.gelir || 0;
-        let resmiMaliyet = p.isKayitDisi ? 0 : (p.maliyet - (p.eldenMesai || 0)); 
-        let maliKar = toplamGelir - resmiMaliyet; // Matrah: KKEG gider kabul edilmez.
+        // Kart İçi Kurumlar Vergisi ve Net Kar Hesabı
+        let pResmiGelirKart = 0;
+        if(p.magazaList) p.magazaList.forEach(m => { if (!m.isFaturasiz) pResmiGelirKart += m.gelir; }); else pResmiGelirKart = p.gelir || 0;
         
-        let kurumlarVergisi = Math.max(0, maliKar * 0.25); // %25 Kurumlar Vergisi
-        let ticariKar = toplamGelir - (p.maliyet || 0); // Gerçek kar (Vergi öncesi)
-        let vergiSonrasiKar = ticariKar - kurumlarVergisi; // Kasa da kalan net
+        let toplamGelir = p.gelir || 0;
+        let resmiMaliyetKart = p.isKayitDisi ? 0 : (p.maliyet - (p.eldenMesai || 0)); 
+        let eldenGiderKart = p.isKayitDisi ? (p.maliyet || 0) : (p.eldenMesai || 0); // YENİ: Unutulan elden parayı yakala
+        let maliKarKart = pResmiGelirKart - resmiMaliyetKart; // Matrah
+        
+        let kurumlarVergisi = Math.max(0, maliKarKart * 0.25); 
+        let ticariKar = toplamGelir - (p.maliyet || 0); 
+        let vergiSonrasiKar = ticariKar - kurumlarVergisi; 
 
         let kzRenk = vergiSonrasiKar >= 0 ? "text-success" : "text-danger";
         let kzIcon = vergiSonrasiKar >= 0 ? "fa-arrow-trend-up" : "fa-arrow-trend-down";
+
+        let eldenHtml = eldenGiderKart > 0 ? `
+        <div class="d-flex justify-content-between mb-1" style="color: #e83e8c;">
+            <span title="Gider yazılamayan, elden veya kayıt dışı verilen tutar."><i class="fas fa-hand-holding-usd"></i> Elden (Gider Yazılamayan)</span>
+            <span class="fw-bold">-${formatMoney(eldenGiderKart)} ₺</span>
+        </div>` : '';
 
         container.innerHTML += `
         <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
@@ -1601,20 +1682,24 @@
                         <span class="text-primary fw-bold"><i class="fas fa-store"></i> Üretilen Gelir</span>
                         <span class="text-primary fw-bold">${formatMoney(toplamGelir)} ₺</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-1">
-                        <span class="text-danger fw-bold"><i class="fas fa-chart-line"></i> Toplam Maliyet</span>
-                        <span class="text-danger fw-bold">-${formatMoney(p.maliyet)} ₺</span>
+                    <div class="d-flex justify-content-between mb-1 text-muted">
+                        <span><i class="fas fa-file-invoice-dollar"></i> Resmi Maliyet (SGK+Maaş)</span>
+                        <span>-${formatMoney(resmiMaliyetKart)} ₺</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-1 border-top pt-1 text-muted">
-                        <span>Vergi Öncesi Kar</span>
+                    ${eldenHtml}
+                    
+                    <div class="d-flex justify-content-between mb-1 border-top pt-1 text-dark fw-bold">
+                        <span>Gerçek Kar (Vergi Öncesi)</span>
                         <span>${formatMoney(ticariKar)} ₺</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-1 text-warning" style="color: #d98200 !important;" title="Gider yazılamayan tutarlar dikkate alınarak hesaplanmıştır.">
+                    
+                    <div class="d-flex justify-content-between mb-1 text-warning" style="color: #d98200 !important;" title="Devlet sadece Resmi Vergi Matrahı (${formatMoney(maliKarKart)} ₺) üzerinden vergi alır. Elden verilen tutarlar bu matrahtan düşülemez.">
                         <span><i class="fas fa-landmark"></i> Kurumlar V. (%25)</span>
                         <span>-${formatMoney(kurumlarVergisi)} ₺</span>
                     </div>
+                    
                     <div class="d-flex justify-content-between pt-1 border-top mt-1">
-                        <strong class="${kzRenk}">Net Kar (Vergi Sonrası)</strong>
+                        <strong class="${kzRenk}">Net Kasa (Kalan)</strong>
                         <strong class="${kzRenk}"><i class="fas ${kzIcon}"></i> ${formatMoney(vergiSonrasiKar)} ₺</strong>
                     </div>
                 </div>
@@ -1629,7 +1714,6 @@
         </div>`;
     });
 
-    // Ana dashboard güncellemeleri
     if(document.getElementById("dashPersCount")) document.getElementById("dashPersCount").innerText = activeCount;
     if(document.getElementById("dashPersSgkCount")) document.getElementById("dashPersSgkCount").innerText = cSgk;
     if(document.getElementById("dashPersKdCount")) document.getElementById("dashPersKdCount").innerText = cKd;
@@ -1641,7 +1725,6 @@
     if(document.getElementById("dashPersTotalResmi")) document.getElementById("dashPersTotalResmi").innerText = formatMoney(tResmi) + " ₺";
     if(document.getElementById("dashPersTotalKds")) document.getElementById("dashPersTotalKds").innerText = formatMoney(tKds) + " ₺";
 
-    // YENİ: Alt dashboard değer atamaları
     if(document.getElementById("dashPersGelir")) document.getElementById("dashPersGelir").innerText = formatMoney(grandGelir) + " ₺";
     if(document.getElementById("dashPersKurumlarVergisi")) document.getElementById("dashPersKurumlarVergisi").innerText = formatMoney(grandKurumlarVergisi) + " ₺";
     if(document.getElementById("dashPersNetKar")) document.getElementById("dashPersNetKar").innerText = formatMoney(grandNetKar) + " ₺";
@@ -3108,10 +3191,19 @@ function detectPaymentAnomalies(c) {
     }
     // =====================================
     function yeniMagazaSatiri() {
-    let div = document.createElement("div"); div.className = "d-flex gap-1 mb-1 magaza-satiri";
-    div.innerHTML = `<input type="text" class="form-control form-control-sm m-ad" placeholder="Mağaza Adı"><input type="number" class="form-control form-control-sm m-gelir" placeholder="Gelir ₺" style="width:100px;"><button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-minus"></i></button>`;
-    document.getElementById("magazaListesi").appendChild(div);
-    } 
+        let div = document.createElement("div"); div.className = "d-flex gap-1 mb-1 align-items-center magaza-satiri";
+        let mId = generateId();
+        div.innerHTML = `
+            <input type="text" class="form-control form-control-sm m-ad" placeholder="Mağaza Adı">
+            <input type="number" class="form-control form-control-sm m-gelir" placeholder="Gelir ₺" style="width:90px;">
+            <div class="form-check ms-1 me-1 mb-0 border rounded px-1" style="background:#fff8e6;">
+                <input class="form-check-input m-faturasiz" type="checkbox" id="chk_${mId}" style="cursor:pointer;">
+                <label class="form-check-label small text-muted" for="chk_${mId}" style="cursor:pointer;" title="Vergiden muaf tutar ve Faturasız sekmesine ekler">Faturasız</label>
+            </div>
+            <input type="hidden" class="m-id" value="${mId}">
+            <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-minus"></i></button>`;
+        document.getElementById("magazaListesi").appendChild(div);
+    }
     // =====================================
     // MUTABAKAT İŞLEMLERİ MOTORU
     // =====================================
