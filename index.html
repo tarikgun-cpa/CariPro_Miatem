@@ -2818,6 +2818,115 @@ function detectPaymentAnomalies(c) {
         w.document.write(html);
         w.document.close();
     }
+    // =====================================
+// TAHSİLAT MAKBUZU YAZDIRMA MOTORU
+// =====================================
+function printTahsilatMakbuzu(vkn, id) {
+    let c = companies[vkn];
+    if (!c) return;
+    let h = c.hareketler.find(x => x.id === id);
+    if (!h) return;
+
+    let tutar = formatMoney(h.tutar);
+    let aciklama = h.aciklama.replace("[NAKİT] ", ""); // Ekranda gereksiz [NAKİT] yazmasını engeller
+    let tarih = h.tarih;
+    let unvan = c.unvan;
+    let makbuzNo = id.substring(0, 6).toUpperCase(); // İşlem ID'sinden otomatik makbuz no üretir
+
+    let html = `
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Tahsilat Makbuzu - ${unvan}</title>
+        <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; color: #111; background-color: #f8f9fa; }
+            .makbuz-container { max-width: 750px; margin: 0 auto; border: 2px solid #2c3e50; padding: 30px; border-radius: 12px; position: relative; background-color: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+            .makbuz-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px double #2c3e50; padding-bottom: 20px; margin-bottom: 30px; }
+            .logo-container img { height: 80px; margin-bottom: 10px; }
+            .company-info { font-size: 13px; color: #444; line-height: 1.5; }
+            .makbuz-title { text-align: center; font-size: 26px; font-weight: 900; letter-spacing: 2px; color: #2c3e50; margin: 0; }
+            .makbuz-details { width: 100%; margin-bottom: 30px; border-collapse: separate; border-spacing: 0 15px; }
+            .makbuz-details td { font-size: 16px; padding: 5px; }
+            .makbuz-details td.label { width: 150px; font-weight: bold; color: #555; }
+            .makbuz-details td.value { border-bottom: 1px dotted #888; font-weight: 600; font-size: 18px; color: #111; }
+            .amount-box { border: 2px solid #198754; padding: 10px 25px; font-size: 22px; font-weight: bold; display: inline-block; margin-top: 10px; background-color: #e8f5e9; color: #198754; border-radius: 8px;}
+            .signatures { display: flex; justify-content: space-between; margin-top: 60px; padding: 0 20px; }
+            .signatures div { text-align: center; width: 40%; font-size: 15px; }
+            .signatures strong { border-top: 1px solid #333; display: block; padding-top: 10px; margin-top: 80px; }
+            .print-btn { text-align: center; margin-bottom: 20px; }
+            .print-btn button { background-color: #198754; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 6px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            @media print {
+                .print-btn { display: none !important; }
+                body { padding: 0; background-color: #fff; }
+                .makbuz-container { border: 2px solid #000; box-shadow: none; border-radius: 0; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="print-btn text-center no-print">
+            <button onclick="window.print()">🖨️ Makbuzu Yazdır</button>
+        </div>
+        <div class="makbuz-container">
+            <div class="makbuz-header">
+                <div>
+                    <div class="logo-container">
+                        <img src="https://miatem.com.tr/img/logo.png" alt="MİATEM Logo">
+                    </div>
+                    <div class="company-info">
+                        <strong>MİATEM TEMİZLİK HİZMETLERİ LTD. ŞTİ.</strong><br>
+                        Dumlupınar Mahallesi Zafer Sokak No:67/B Kartepe KOCAELİ <br>
+                        Tel: 0533 049 09 72<br>
+                        E-Posta: info@miatem.com.tr
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <h2 class="makbuz-title">TAHSİLAT MAKBUZU</h2>
+                    <div style="margin-top: 20px; font-size: 14px; text-align: left; background: #f8f9fa; padding: 10px; border: 1px solid #dee2e6; border-radius: 5px; display: inline-block;">
+                        <table style="width: 100%;">
+                            <tr><td><strong>Tarih:</strong></td><td style="text-align: right; padding-left: 20px;">${tarih}</td></tr>
+                            <tr><td><strong>Makbuz No:</strong></td><td style="text-align: right; padding-left: 20px;">${makbuzNo}</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <table class="makbuz-details">
+                <tr>
+                    <td class="label">Sayın:</td>
+                    <td class="value">${unvan}</td>
+                </tr>
+                <tr>
+                    <td class="label">Açıklama:</td>
+                    <td class="value">${aciklama}</td>
+                </tr>
+                <tr>
+                    <td class="label">Tahsil Edilen:</td>
+                    <td style="border: none;">
+                        <div class="amount-box"># ${tutar} ₺ #</div>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="signatures">
+                <div>
+                    <strong>Ödemeyi Yapan<br>(Kaşe / İmza)</strong>
+                </div>
+                <div>
+                    <strong>Tahsilatı Yapan Yetkili<br>(İLHAN TUNCER)</strong><br>
+                    
+                    <span style="color: #555; font-size: 13px;">MİATEM Temizlik Hizmetleri Ltd.Şti.</span>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+
+    let w = window.open('', '_blank');
+    w.document.write(html);
+    w.document.close();
+}
     function printDashboard() { document.body.classList.add("print-dashboard"); window.print(); setTimeout(() => document.body.classList.remove("print-dashboard"), 500); }
 
     const ekstreModal = new bootstrap.Modal(document.getElementById('ekstreModal'));
@@ -2855,7 +2964,17 @@ function detectPaymentAnomalies(c) {
                 let alacakCol = !isFatura ? formatMoney(h.tutar) : ""; 
                 let bakiyeRenk = currentBalance >= 0 ? "text-pastel-danger" : "text-pastel-primary";
                 
-                let islemCol = !isFatura ? `<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 shadow-sm" title="Ödemeyi İptal Et/Geri Al" onclick="unmatchTransaction('${vkn}', '${h.id}')"><i class="fas fa-times"></i></button>` : `<button type="button" class="btn btn-sm btn-outline-warning py-0 px-2 shadow-sm text-dark" title="Faturayı İptal Et / Çıkar" onclick="cancelFatura('${vkn}', '${h.id}')"><i class="fas fa-ban"></i></button>`;
+                let islemCol = "";
+if (!isFatura) {
+    islemCol = `<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 shadow-sm" title="Ödemeyi İptal Et/Geri Al" onclick="unmatchTransaction('${vkn}', '${h.id}')"><i class="fas fa-times"></i></button>`;
+    
+    // Eğer bu bir nakit tahsilat ise yanına Makbuz Yazdır butonu ekle
+    if (h.aciklama.includes("[NAKİT]")) {
+        islemCol += ` <button type="button" class="btn btn-sm btn-outline-success py-0 px-2 shadow-sm ms-1" title="Tahsilat Makbuzu Yazdır" onclick="printTahsilatMakbuzu('${vkn}', '${h.id}')"><i class="fas fa-print"></i></button>`;
+    }
+} else {
+    islemCol = `<button type="button" class="btn btn-sm btn-outline-warning py-0 px-2 shadow-sm text-dark" title="Faturayı İptal Et / Çıkar" onclick="cancelFatura('${vkn}', '${h.id}')"><i class="fas fa-ban"></i></button>`;
+}
                 
                 tbody.innerHTML += `<tr><td class="text-muted" style="white-space: nowrap;">${h.tarih}</td><td style="white-space: nowrap;">${badge}</td><td class="text-start"><small>${h.aciklama}</small></td><td class="text-end fw-bold text-pastel-danger">${borcCol}</td><td class="text-end fw-bold text-pastel-success">${alacakCol}</td><td class="text-end fw-bold ${bakiyeRenk}" style="background-color: #f9fafc; border-left: 2px solid #e2e8f0;">${formatMoney(currentBalance)}</td><td class="text-center align-middle islem-col">${islemCol}</td></tr>`;
             });
