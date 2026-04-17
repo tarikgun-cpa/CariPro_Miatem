@@ -193,6 +193,85 @@
         }
         .note-item-text { margin-right: 60px; }
         .note-item-text i { color: #f6c23e; margin-right: 8px; font-size: 1.1rem; }
+
+        /* ==========================================
+   MOBİL / iOS OPTİMİZASYONLARI
+========================================== */
+@media (max-width: 768px) {
+    
+    /* 1. Sekmeleri (Tabs) Alt Alta Yığma, Yatay Kaydırılabilir Yap */
+    #myTab.nav-tabs {
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch; /* iOS Safari için akıcı kaydırma (Momentum Scroll) */
+        padding-bottom: 10px;
+        scrollbar-width: none; /* Firefox için scrollbar gizleme */
+    }
+    #myTab.nav-tabs::-webkit-scrollbar {
+        display: none; /* Chrome/Safari için scrollbar gizleme */
+    }
+    #myTab .nav-item {
+        flex: 0 0 auto;
+    }
+
+    /* 2. Apple iOS Minimum Dokunma Alanı (Fat-Finger) Ayarı */
+    .table .btn-sm {
+        padding: 8px 12px !important; /* Butonların tıklama alanını genişletiyoruz */
+        font-size: 0.95rem !important;
+        margin-bottom: 4px; /* Yan yana sığmazsa alt alta boşluklu düşsün */
+    }
+    
+    /* 3. Tablo Fontlarını ve Boşluklarını Mobilde Daraltma */
+    .table {
+        font-size: 0.80rem !important;
+    }
+    .table th, .table td {
+        padding: 8px 6px !important;
+    }
+    
+    /* 4. Rozetler (Badges) ve Kutu Tasarımlarını Küçültme */
+    .company-badge {
+        padding: 10px !important;
+    }
+    .company-badge h6 {
+        font-size: 0.9rem !important;
+    }
+    
+    /* 5. Üst Bilgi Alanı (Header) ve Kontrol Butonlarının Dizilimi */
+    /* Miatem Logosu ve CariPro yazısını ortala */
+    .app-container > .d-flex.justify-content-between {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 15px;
+    }
+    /* Ayarlar, Çıkış gibi butonları yan yana sığdır */
+    .app-container > .d-flex > .d-flex {
+        width: 100%;
+        justify-content: center;
+        gap: 8px !important;
+    }
+    /* Üst menü butonlarındaki metinleri gizle, sadece ikon kalsın (Yerden tasarruf) */
+    .app-container > .d-flex > .d-flex .btn {
+        margin-left: 0 !important;
+        padding: 8px 12px;
+        font-size: 1rem;
+    }
+    .app-container > .d-flex > .d-flex .btn span, 
+    .app-container > .d-flex > .d-flex .btn strong {
+        display: none; /* Metinleri mobilde gizle */
+    }
+
+    /* 6. Modallar (Açılır Pencereler) İçin Tam Ekran Genişliği */
+    .modal-body .row > .col-md-3,
+    .modal-body .row > .col-md-2,
+    .modal-body .row > .col-md-4,
+    .modal-body .row > .col-6 {
+        width: 100% !important; /* Mobilde form elemanlarını yan yana değil alt alta diz */
+        margin-bottom: 10px;
+    }
+}
+
     </style>
 </head>
 <body>
