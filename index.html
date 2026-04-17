@@ -195,80 +195,110 @@
         .note-item-text i { color: #f6c23e; margin-right: 8px; font-size: 1.1rem; }
 
         /* ==========================================
-   MOBİL / iOS OPTİMİZASYONLARI
+   MOBİL / iOS KESİN ÇÖZÜM (TAM OPTİMİZASYON)
 ========================================== */
 @media (max-width: 768px) {
-    
-    /* 1. Sekmeleri (Tabs) Alt Alta Yığma, Yatay Kaydırılabilir Yap */
+    /* 1. Başlık ve Logo Alanını Ortalama ve Küçültme */
+    .app-container > .d-flex.justify-content-between {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 10px;
+    }
+    .app-container > .d-flex.justify-content-between > h2 {
+        font-size: 1.3rem !important;
+        margin-bottom: 0 !important;
+        text-align: center;
+    }
+    .app-container > .d-flex.justify-content-between > h2 img {
+        height: 24px !important; /* Logoyu küçült */
+    }
+
+    /* 2. Buton Çorbasını Düzeltme (Yatay Kaydırılabilir Yapı) */
+    .app-container > .d-flex.justify-content-between > .d-flex {
+        flex-wrap: nowrap !important; /* Alt alta inmeyi engeller */
+        overflow-x: auto !important; /* Sağa sola kaydırmayı açar */
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch; /* iOS akıcı kaydırma */
+        width: 100vw !important; /* Tam ekran genişliği */
+        margin-left: -20px !important; /* Kenar boşluklarını sıfırla */
+        padding: 0 20px 10px 20px !important;
+        gap: 8px !important;
+        justify-content: flex-start !important;
+    }
+    .app-container > .d-flex.justify-content-between > .d-flex > * {
+        flex: 0 0 auto !important; /* Butonların ezilmesini engeller */
+        margin: 0 !important; 
+        font-size: 0.85rem !important;
+        padding: 8px 12px !important;
+    }
+    /* "Aktif Yıl:" metnini mobilde gizle, sadece "2026 Yılı" rozeti kalsın */
+    .app-container > .d-flex.justify-content-between > .d-flex > strong {
+        display: none !important; 
+    }
+
+    /* 3. Menü Sekmelerini (Tabs) Yatay Kaydırılabilir Yapma */
     #myTab.nav-tabs {
         flex-wrap: nowrap !important;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch; /* iOS Safari için akıcı kaydırma (Momentum Scroll) */
-        padding-bottom: 10px;
-        scrollbar-width: none; /* Firefox için scrollbar gizleme */
-    }
-    #myTab.nav-tabs::-webkit-scrollbar {
-        display: none; /* Chrome/Safari için scrollbar gizleme */
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+        gap: 5px;
+        border-bottom: none;
     }
     #myTab .nav-item {
         flex: 0 0 auto;
     }
+    #myTab .nav-link {
+        font-size: 0.85rem !important;
+        padding: 8px 14px !important;
+        border-radius: 20px !important;
+    }
 
-    /* 2. Apple iOS Minimum Dokunma Alanı (Fat-Finger) Ayarı */
-    .table .btn-sm {
-        padding: 8px 12px !important; /* Butonların tıklama alanını genişletiyoruz */
-        font-size: 0.95rem !important;
-        margin-bottom: 4px; /* Yan yana sığmazsa alt alta boşluklu düşsün */
+    /* 4. Renkli Özet Kartlarının İç Boşluklarını ve Fontlarını Daraltma */
+    .summary-card {
+        padding: 12px 15px !important; 
     }
-    
-    /* 3. Tablo Fontlarını ve Boşluklarını Mobilde Daraltma */
-    .table {
-        font-size: 0.80rem !important;
+    .summary-card h6 {
+        font-size: 0.75rem !important;
+        margin-bottom: 4px !important;
     }
-    .table th, .table td {
-        padding: 8px 6px !important;
+    .summary-card h3 {
+        font-size: 1.25rem !important; /* Rakamları küçült */
     }
-    
-    /* 4. Rozetler (Badges) ve Kutu Tasarımlarını Küçültme */
-    .company-badge {
-        padding: 10px !important;
+    #dashSonFatura {
+        font-size: 0.9rem !important; 
     }
-    .company-badge h6 {
-        font-size: 0.9rem !important;
+    #dashSonFatura > div {
+        padding-bottom: 4px !important;
+        margin-bottom: 4px !important;
     }
-    
-    /* 5. Üst Bilgi Alanı (Header) ve Kontrol Butonlarının Dizilimi */
-    /* Miatem Logosu ve CariPro yazısını ortala */
-    .app-container > .d-flex.justify-content-between {
+
+    /* 5. Arama Çubuğu ve Filtrelerin Ezilmesini Engelleme (Alt alta diz) */
+    #dashboard .d-flex.justify-content-between.align-items-center.mb-3.mt-4 {
         flex-direction: column !important;
-        align-items: center !important;
-        gap: 15px;
+        align-items: flex-start !important;
+        gap: 10px !important;
     }
-    /* Ayarlar, Çıkış gibi butonları yan yana sığdır */
-    .app-container > .d-flex > .d-flex {
-        width: 100%;
-        justify-content: center;
+    #dashboard .d-flex.justify-content-between.align-items-center.mb-3.mt-4 > h4 {
+        font-size: 1.1rem !important;
+    }
+    #dashboard .d-flex.justify-content-between.align-items-center.mb-3.mt-4 > .d-flex {
+        flex-direction: column !important; /* Buton, Select ve Input'u alt alta diz */
+        width: 100% !important;
         gap: 8px !important;
     }
-    /* Üst menü butonlarındaki metinleri gizle, sadece ikon kalsın (Yerden tasarruf) */
-    .app-container > .d-flex > .d-flex .btn {
-        margin-left: 0 !important;
-        padding: 8px 12px;
-        font-size: 1rem;
+    #dashboard .d-flex.justify-content-between.align-items-center.mb-3.mt-4 > .d-flex > * {
+        width: 100% !important; /* Form elemanlarına tam genişlik ver */
+        margin: 0 !important;
     }
-    .app-container > .d-flex > .d-flex .btn span, 
-    .app-container > .d-flex > .d-flex .btn strong {
-        display: none; /* Metinleri mobilde gizle */
+    .input-group {
+        width: 100% !important;
     }
-
-    /* 6. Modallar (Açılır Pencereler) İçin Tam Ekran Genişliği */
-    .modal-body .row > .col-md-3,
-    .modal-body .row > .col-md-2,
-    .modal-body .row > .col-md-4,
-    .modal-body .row > .col-6 {
-        width: 100% !important; /* Mobilde form elemanlarını yan yana değil alt alta diz */
-        margin-bottom: 10px;
+    
+    /* 6. Firma Rozetleri İçin Dokunma Alanı Optimizasyonu */
+    .company-badge {
+        padding: 12px !important;
     }
 }
 
