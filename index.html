@@ -302,6 +302,90 @@
     }
 }
 
+/* ==========================================
+   MOBİL TABLO, LİSTE VE MODAL DÜZELTMELERİ (V2)
+========================================== */
+@media (max-width: 768px) {
+    
+    /* --- 1. CARİ EKSTRE MODAL DÜZELTMESİ (Foto 1) --- */
+    #ekstreModal .row.text-center {
+        flex-direction: column !important; /* Yan yana durmaya çalışan 3 kutuyu alt alta al */
+        padding: 5px 15px !important;
+    }
+    #ekstreModal .row.text-center > .col-4 {
+        width: 100% !important; /* Tam genişlik ver */
+        border-right: none !important; /* Dikey çizgiyi iptal et */
+        border-bottom: 1px solid #eee !important; /* Yatay çizgi ekle */
+        display: flex !important;
+        justify-content: space-between !important; /* Başlık solda, Rakam sağda dursun */
+        align-items: center !important;
+        padding: 10px 0 !important;
+    }
+    #ekstreModal .row.text-center > .col-4:last-child {
+        border-bottom: none !important;
+    }
+    #ekstreModal .row.text-center h6 {
+        font-size: 0.85rem !important;
+        margin: 0 !important;
+        text-align: left;
+    }
+    #ekstreModal .row.text-center h4 {
+        font-size: 1.1rem !important; /* Devasa rakamları küçült */
+        margin: 0 !important;
+        text-align: right;
+    }
+
+    /* --- 2. TÜM TABLOLARIN FONT VE BOŞLUK OPTİMİZASYONU (Foto 2, 3, 4, 5, 7) --- */
+    .table {
+        font-size: 0.75rem !important; /* Tablo yazı boyutunu %25 küçült */
+    }
+    .table th, .table td {
+        padding: 8px 6px !important; /* Tablo hücrelerindeki dev boşlukları kıs */
+        vertical-align: middle !important;
+    }
+    /* Tablo Başlıklarının alt alta kırılarak devasa olmasını engelle */
+    .table th {
+        white-space: nowrap !important;
+    }
+    /* Tarih, Tutar ve İşlem Butonları sütunlarının kelime kırmasını engelle */
+    .table td:first-child, 
+    .table td.text-end, 
+    .table td.text-center {
+        white-space: nowrap !important;
+    }
+    /* Firma isimleri çok uzunsa biraz kırılsın ama fontu küçük kalsın */
+    .table td strong, .table td b {
+        font-size: 0.8rem !important;
+        line-height: 1.2 !important;
+        display: inline-block;
+    }
+    /* Tablo içindeki inputları (Vade, Devir girişleri) mobilde küçült */
+    .table input.form-control-sm {
+        font-size: 0.75rem !important;
+        padding: 4px !important;
+        height: auto !important;
+    }
+
+    /* --- 3. AI RAPORLAR TABLO DÜZELTMESİ (Foto 6) --- */
+    #aiReportContent table {
+        font-size: 0.75rem !important;
+    }
+    #aiReportContent th, #aiReportContent td {
+        padding: 8px 5px !important;
+    }
+    #aiReportContent .badge {
+        font-size: 0.65rem !important; /* Mağaza rozetlerini küçült */
+        padding: 4px 6px !important;
+    }
+    
+    /* --- 4. TABLOLARIN SAĞA SOLA KAYDIRILMASINI AKICI HALE GETİRME --- */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch; /* iOS için yağ gibi kaydırma efekti */
+        border: 0 !important;
+        margin-bottom: 0 !important;
+    }
+}
+
     </style>
 </head>
 <body>
