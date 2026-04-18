@@ -2366,30 +2366,124 @@ function generateAIReport() {
         } 
         
         // ====================================================
-        // 2. GENEL ŞİRKET ÖZETİ RAPORU (YENİ)
+        // 2. GENEL ŞİRKET ÖZETİ VE SATIŞ ANALİTİĞİ RAPORU (YENİ - DETAYLI)
         // ====================================================
         else if (type === "genel") {
-            let totalAlacak = 0;
-            Object.values(companies).forEach(c => {
-                let bakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar;
-                if(bakiye > 0) totalAlacak += bakiye;
-            });
+            let aylikSatis = Array(12).fill(0);
+            let aylikTahsilat = Array(12).fill(0);
+            let firmaAnaliz = []; 
             
-            let totalBorc = 0;
-            agendaPayments.forEach(a => { if(!a.isPaid) totalBorc += a.tutar; });
-            
-            let activePers = personnelList.filter(p => !p.isFired);
-            let aylikMaliyet = activePers.reduce((sum, p) => sum + (p.maliyet || 0), 0);
+            // Sistemi aktif ayı bulacak şekilde ayarla (Nisan = 3, Mart = 2)
+            let bugun = new Date(); 
+            let currentMonth = bugun.getMonth(); 
+            let lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
 
+            const aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
+            // 1. Tüm Firmaları ve Hareketleri Tara
+            Object.values(companies).forEach(c => {
+                let ciro = c.faturaTutar || 0;
+                let tahsilat = c.odemeTutar || 0;
+                let bakiye = c.devirBakiye + ciro - tahsilat;
+                
+                let currentM_Satis = 0; let prevM_Satis = 0;
+
+                c.hareketler.forEach(h => {
+                    if(!h.tarih || h.tarih === "-") return;
+                    let parts = h.tarih.split(".");
+                    if(parts.length === 3) {
+                        let m = parseInt(parts[1], 10) - 1; // 0-11 arası ay indeksi
+                        if (h.tur === "Fatura") {
+                            aylikSatis[m] += h.tutar;
+                            if (m === currentMonth) currentM_Satis += h.tutar;
+                            else if (m === lastMonth) prevM_Satis += h.tutar;
+                        } else if (h.tur === "Ödeme" || h.tur === "Tahsilat") {
+                            aylikTahsilat[m] += h.tutar;
+                        }
+                    }
+                });
+
+                // Trend Analizi: Bu ay vs Geçen ay
+                let trend = "stabil";
+                if (currentM_Satis > prevM_Satis * 1.2) trend = "yukselen";
+                else if (prevM_Satis > currentM_Satis * 1.2 && prevM_Satis > 0) trend = "dusen";
+
+                firmaAnaliz.push({
+                    unvan: c.unvan, vkn: c.vkn, ciro: ciro, tahsilat: tahsilat, bakiye: bakiye,
+                    trend: trend, currentM: currentM_Satis, prevM: prevM_Satis
+                });
+            });
+
+            // 2. Genel Toplamlar
+            let yillikSatis = aylikSatis.reduce((a,b)=>a+b, 0);
+            let yillikTahsilat = aylikTahsilat.reduce((a,b)=>a+b, 0);
+
+            // 3. Sıralamalar ve Filtreler
+            let top10Ciro = [...firmaAnaliz].sort((a,b) => b.ciro - a.ciro).slice(0, 10);
+            let top10Tahsilat = [...firmaAnaliz].sort((a,b) => b.tahsilat - a.tahsilat).slice(0, 10);
+            let yukselenler = firmaAnaliz.filter(f => f.trend === "yukselen" && f.currentM > 0).sort((a,b) => b.currentM - a.currentM).slice(0, 5);
+            let dusenler = firmaAnaliz.filter(f => f.trend === "dusen").sort((a,b) => b.prevM - a.prevM).slice(0, 5);
+
+            // 4. Aylık Performans Tablosu HTML'i
+            let aylikHtml = "";
+            aylar.forEach((ayAd, i) => {
+                if(aylikSatis[i] > 0 || aylikTahsilat[i] > 0) {
+                    let fark = aylikTahsilat[i] - aylikSatis[i];
+                    let farkRenk = fark >= 0 ? "text-success" : "text-danger";
+                    aylikHtml += `<tr>
+                        <td class="fw-bold text-secondary">${ayAd}</td>
+                        <td class="text-end fw-bold text-primary">${formatMoney(aylikSatis[i])} ₺</td>
+                        <td class="text-end fw-bold text-success">${formatMoney(aylikTahsilat[i])} ₺</td>
+                        <td class="text-end fw-bold ${farkRenk}">${fark > 0 ? '+' : ''}${formatMoney(fark)} ₺</td>
+                    </tr>`;
+                }
+            });
+
+            // 5. Ana HTML Çıktısını Oluştur
             html = `
-            <h5 class="text-primary border-bottom pb-2 mb-3"><i class="fas fa-building"></i> Genel Şirket Durum Özeti</h5>
-            <div class="row g-3 mb-3">
-                <div class="col-md-4"><div class="card p-3 border-start border-4 border-primary shadow-sm bg-white"><h6 class="text-muted">Piyasa Alacakları</h6><h4 class="text-primary fw-bold">${formatMoney(totalAlacak)} ₺</h4></div></div>
-                <div class="col-md-4"><div class="card p-3 border-start border-4 border-danger shadow-sm bg-white"><h6 class="text-muted">Bekleyen Borçlar (Ajanda)</h6><h4 class="text-danger fw-bold">${formatMoney(totalBorc)} ₺</h4></div></div>
-                <div class="col-md-4"><div class="card p-3 border-start border-4 border-warning shadow-sm bg-white"><h6 class="text-muted">Aylık Personel Gideri</h6><h4 class="text-warning text-dark fw-bold">${formatMoney(aylikMaliyet)} ₺</h4></div></div>
+            <h5 class="text-primary border-bottom pb-2 mb-4"><i class="fas fa-chart-pie"></i> Detaylı Satış ve Tahsilat Analizi</h5>
+            
+            <div class="row g-3 mb-4">
+                <div class="col-md-6"><div class="card p-3 border-start border-4 border-primary shadow-sm bg-white"><h6 class="text-muted"><i class="fas fa-file-invoice"></i> Yıllık Toplam Satış (Fatura)</h6><h3 class="text-primary fw-bold mb-0">${formatMoney(yillikSatis)} ₺</h3></div></div>
+                <div class="col-md-6"><div class="card p-3 border-start border-4 border-success shadow-sm bg-white"><h6 class="text-muted"><i class="fas fa-hand-holding-usd"></i> Yıllık Toplam Tahsilat</h6><h3 class="text-success fw-bold mb-0">${formatMoney(yillikTahsilat)} ₺</h3></div></div>
             </div>
-            <div class="alert alert-info border shadow-sm">
-                <b><i class="fas fa-robot"></i> AI Yorumu:</b> Şirketinizin piyasadan tahsil etmesi gereken toplam <b>${formatMoney(totalAlacak)} ₺</b> alacağı bulunurken, kayıtlı ödenmesi gereken borç yükü <b>${formatMoney(totalBorc)} ₺</b> seviyesindedir. Ayrıca her ay asgari <b>${formatMoney(aylikMaliyet)} ₺</b> personel maliyetiniz bulunmaktadır. ${(totalAlacak > (totalBorc + aylikMaliyet)) ? "Nakit akışınız güvenli bölgede görünüyor; alacaklarınız, borç ve maaş yükümlülüklerinizi karşılamaya fazlasıyla yetiyor." : "Kayıtlı alacaklarınız, borçlar ve aylık personel maliyetini karşılamada ucu ucuna yetiyor veya risk oluşturuyor. Acil tahsilat hızlandırılmalı veya faturasız yeni işler sisteme girilmeli."}
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-dark mb-2"><i class="fas fa-trophy text-warning"></i> TOP 10 ALICI (Ciroya Göre)</h6>
+                    <ul class="list-group shadow-sm" style="font-size: 0.85rem;">
+                        ${top10Ciro.map((f, i) => `<li class="list-group-item d-flex justify-content-between align-items-center p-2"><span class="text-truncate" style="max-width: 65%;"><b>${i+1}.</b> ${f.unvan}</span><span class="badge bg-primary rounded-pill py-1 px-2">${formatMoney(f.ciro)} ₺</span></li>`).join('')}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-dark mb-2"><i class="fas fa-star text-success"></i> TAHSİLATIN YILDIZLARI (Ödemeye Göre)</h6>
+                    <ul class="list-group shadow-sm" style="font-size: 0.85rem;">
+                        ${top10Tahsilat.map((f, i) => `<li class="list-group-item d-flex justify-content-between align-items-center p-2"><span class="text-truncate" style="max-width: 65%;"><b>${i+1}.</b> ${f.unvan}</span><span class="badge bg-success rounded-pill py-1 px-2">${formatMoney(f.tahsilat)} ₺</span></li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+
+            <h6 class="fw-bold text-dark mb-2 mt-4"><i class="fas fa-calendar-alt text-secondary"></i> Aylık Performans Karnesi</h6>
+            <div class="table-responsive shadow-sm rounded border bg-white mb-4">
+                <table class="table table-sm table-hover mb-0" style="font-size: 0.85rem;">
+                    <thead class="table-light"><tr><th>Ay</th><th class="text-end">Satış (Fatura)</th><th class="text-end">Tahsilat</th><th class="text-end">Fark (Nakit Akışı)</th></tr></thead>
+                    <tbody>${aylikHtml}</tbody>
+                </table>
+            </div>
+
+            <div class="row g-3 mb-2">
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-success mb-2"><i class="fas fa-arrow-trend-up"></i> CİROSU YÜKSELENLER (Bu Ay)</h6>
+                    <ul class="list-group shadow-sm" style="font-size: 0.80rem;">
+                        ${yukselenler.length > 0 ? yukselenler.map(f => `<li class="list-group-item d-flex justify-content-between p-2"><span class="text-truncate" style="max-width: 60%;">${f.unvan}</span><div class="text-end"><del class="text-muted small">${formatMoney(f.prevM)}</del> <i class="fas fa-long-arrow-alt-right mx-1 text-success"></i> <b class="text-success">${formatMoney(f.currentM)} ₺</b></div></li>`).join('') : '<li class="list-group-item text-muted">Yeterli veri yok veya yükseliş trendi bulunamadı.</li>'}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-danger mb-2"><i class="fas fa-arrow-trend-down"></i> CİROSU DÜŞENLER (Bu Ay)</h6>
+                    <ul class="list-group shadow-sm" style="font-size: 0.80rem;">
+                        ${dusenler.length > 0 ? dusenler.map(f => `<li class="list-group-item d-flex justify-content-between p-2"><span class="text-truncate" style="max-width: 60%;">${f.unvan}</span><div class="text-end"><del class="text-muted small">${formatMoney(f.prevM)}</del> <i class="fas fa-long-arrow-alt-right mx-1 text-danger"></i> <b class="text-danger">${formatMoney(f.currentM)} ₺</b></div></li>`).join('') : '<li class="list-group-item text-muted">Düşüş trendinde olan firma bulunmuyor.</li>'}
+                    </ul>
+                </div>
             </div>`;
         }
 
