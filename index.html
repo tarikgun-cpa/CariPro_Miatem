@@ -2282,7 +2282,7 @@ function generateAIReport() {
     const contentDiv = document.getElementById("aiReportContent");
     const dateBadge = document.getElementById("reportDateBadge");
     
-    contentDiv.innerHTML = `<div class="text-center mt-5"><i class="fas fa-circle-notch fa-spin fa-3x text-primary mb-3"></i><h5 class="text-primary">Veriler taranıyor, kurumsal karne hazırlanıyor...</h5></div>`;
+    contentDiv.innerHTML = `<div class="text-center mt-5"><i class="fas fa-circle-notch fa-spin fa-3x text-primary mb-3"></i><h5 class="text-primary">Sistem verileri taranıyor, raporunuz hazırlanıyor...</h5></div>`;
     
     setTimeout(() => {
         let today = new Date(); today.setHours(0,0,0,0);
@@ -2290,9 +2290,9 @@ function generateAIReport() {
         dateBadge.innerText = `Tarih: ${todayStr}`;
         let html = "";
 
-        // Cari ve Finansal Veri Toplama Mantığı (Mevcut mantık korunur)
-        // ... (Cari hesaplamalarınız burada arka planda devam eder) ...
-
+        // ====================================================
+        // 1. PERSONEL KARNE RAPORU (Zaten Kusursuz Çalışan Kısım)
+        // ====================================================
         if (type === "personel_detay") {
             let activePersonnel = personnelList.filter(p => !p.isFired);
             if (activePersonnel.length === 0) {
@@ -2307,62 +2307,39 @@ function generateAIReport() {
                 let pResmiGelir = 0;
                 let magazaBadges = "";
                 
-                // 1. MAĞAZA ROZETLERİ TASARIMI
                 if(p.magazaList && p.magazaList.length > 0) {
                     p.magazaList.forEach(m => {
                         if (!m.isFaturasiz) pResmiGelir += m.gelir;
                         let color = m.isFaturasiz ? 'background:#fff5f5; color:#c53030; border:1px solid #feb2b2;' : 'background:#f0f7ff; color:#2b6cb0; border:1px solid #bee3f8;';
                         magazaBadges += `<span class="badge rounded-pill me-1 mb-1 shadow-sm" style="${color} font-size:0.65rem; padding:4px 8px; font-weight:600;"><i class="fas ${m.isFaturasiz ? 'fa-eye-slash' : 'fa-store'} me-1"></i>${m.ad}</span>`;
                     });
-                } else {
-                    magazaBadges = `<span class="text-muted small">Atanmamış</span>`;
-                }
+                } else { magazaBadges = `<span class="text-muted small">Atanmamış</span>`; }
 
-                // 2. VERGİ VE KAR HESAPLAMALARI
                 let resmiMaliyet = p.isKayitDisi ? 0 : (p.maliyet - (p.eldenMesai || 0));
-                let maliKar = pResmiGelir - resmiMaliyet; // Devletin gördüğü kâr
-                let kurumlarVergisi = Math.max(0, maliKar * 0.25); // Ödenecek KV
+                let maliKar = pResmiGelir - resmiMaliyet; 
+                let kurumlarVergisi = Math.max(0, maliKar * 0.25); 
                 
-                let ticariKar = ciro - (p.maliyet || 0); // Şirketin vergi öncesi reel kârı
-                let netKasa = ticariKar - kurumlarVergisi; // Her şey çıktıktan sonra cebe kalan
+                let ticariKar = ciro - (p.maliyet || 0); 
+                let netKasa = ticariKar - kurumlarVergisi; 
 
-                topCiro += ciro;
-                topMaliyet += (p.maliyet || 0);
-                topNetKar += netKasa;
+                topCiro += ciro; topMaliyet += (p.maliyet || 0); topNetKar += netKasa;
                 if(netKasa < 0) zararEdenSayisi++;
 
                 let margin = ciro > 0 ? (netKasa / ciro) * 100 : 0;
-                let aiComment = "";
-                let rowColor = "";
+                let aiComment = ""; let rowColor = "";
 
-                if (netKasa < 0) {
-                    aiComment = "<b>Kritik Zarar!</b> Personelin maliyeti ve vergi yükü cirodan fazla. Acilen yüksek gelirli bir projeye kaydırılmalı veya hizmet bedeli revize edilmeli.";
-                    rowColor = "table-danger";
-                } else if (margin < 15) {
-                    aiComment = "<b>Düşük Verim.</b> Karlılık sınırda. Personelin boş vakitleri yeni mağaza görevlendirmeleri ile doldurulmalı.";
-                    rowColor = "table-warning";
-                } else {
-                    aiComment = "<b>Yüksek Verim.</b> Şirketin kâr motoru. Mevcut düzen korunmalı, yeni açılacak kritik projelerde model alınmalı.";
-                    rowColor = "";
-                }
+                if (netKasa < 0) { aiComment = "<b>Kritik Zarar!</b> Maliyet ve vergi yükü cirodan fazla. Proje revize edilmeli."; rowColor = "table-danger"; } 
+                else if (margin < 15) { aiComment = "<b>Düşük Verim.</b> Karlılık sınırda. Yeni görevlendirmeler yapılabilir."; rowColor = "table-warning"; } 
+                else { aiComment = "<b>Yüksek Verim.</b> Şirketin kâr motoru. Mevcut düzen korunmalı."; rowColor = ""; }
 
-                return {
-                    ad: p.ad, magazaBadges, ciro, 
-                    resmiNet: p.isKayitDisi ? 0 : (p.net - (p.eldenMesai || 0)),
-                    eldenGider: p.isKayitDisi ? (p.maliyet || 0) : (p.eldenMesai || 0),
-                    sgkYuku: p.isKayitDisi ? 0 : (p.isAuto ? ((p.brut * 0.15) + (p.sgkIsveren || 0)) : (p.sgkIsveren || 0)),
-                    kurumlarVergisi, netKasa, aiComment, rowColor, isKayitDisi: p.isKayitDisi
-                };
+                return { ad: p.ad, magazaBadges, ciro, resmiNet: p.isKayitDisi ? 0 : (p.net - (p.eldenMesai || 0)), eldenGider: p.isKayitDisi ? (p.maliyet || 0) : (p.eldenMesai || 0), sgkYuku: p.isKayitDisi ? 0 : (p.isAuto ? ((p.brut * 0.15) + (p.sgkIsveren || 0)) : (p.sgkIsveren || 0)), kurumlarVergisi, netKasa, aiComment, rowColor, isKayitDisi: p.isKayitDisi };
             });
 
             pStats.sort((a,b) => b.netKasa - a.netKasa);
 
             let tableRows = pStats.map((ps, i) => `
                 <tr class="align-middle ${ps.rowColor ? ps.rowColor + ' bg-opacity-10' : ''}">
-                    <td class="py-3 ps-3">
-                        <div class="fw-bold text-dark mb-1" style="font-size:0.9rem;">${i+1}. ${ps.ad} ${ps.isKayitDisi ? '<span class="badge bg-danger" style="font-size:0.5rem;">KD</span>' : ''}</div>
-                        <div class="d-flex flex-wrap">${ps.magazaBadges}</div>
-                    </td>
+                    <td class="py-3 ps-3"><div class="fw-bold text-dark mb-1" style="font-size:0.9rem;">${i+1}. ${ps.ad} ${ps.isKayitDisi ? '<span class="badge bg-danger" style="font-size:0.5rem;">KD</span>' : ''}</div><div class="d-flex flex-wrap">${ps.magazaBadges}</div></td>
                     <td class="text-end fw-bold text-primary">${formatMoney(ps.ciro)} ₺</td>
                     <td class="text-end text-muted small">${formatMoney(ps.resmiNet)} ₺</td>
                     <td class="text-end fw-bold text-warning">${formatMoney(ps.eldenGider)} ₺</td>
@@ -2370,11 +2347,7 @@ function generateAIReport() {
                     <td class="text-end fw-bold" style="color:#d97706;">${formatMoney(ps.kurumlarVergisi)} ₺</td>
                     <td class="text-end fw-bold pe-3 fs-6 ${ps.netKasa >= 0 ? 'text-success' : 'text-danger'}">${formatMoney(ps.netKasa)} ₺</td>
                 </tr>
-                <tr style="border-bottom: 2px solid #dee2e6;">
-                    <td colspan="7" class="py-2 ps-4 bg-light small border-start border-4 border-primary">
-                        <i class="fas fa-robot text-primary me-2"></i> <b>Yönetim Stratejisi:</b> ${ps.aiComment}
-                    </td>
-                </tr>
+                <tr style="border-bottom: 2px solid #dee2e6;"><td colspan="7" class="py-2 ps-4 bg-light small border-start border-4 border-primary"><i class="fas fa-robot text-primary me-2"></i> <b>Yönetim Stratejisi:</b> ${ps.aiComment}</td></tr>
             `).join("");
 
             html = `
@@ -2382,30 +2355,138 @@ function generateAIReport() {
                 <div class="col-md-3"><div class="p-3 rounded bg-white border-top border-4 border-primary shadow-sm"><h6>Toplam Ciro</h6><h4 class="text-primary mb-0">${formatMoney(topCiro)} ₺</h4></div></div>
                 <div class="col-md-3"><div class="p-3 rounded bg-white border-top border-4 border-danger shadow-sm"><h6>Reel Maliyet</h6><h4 class="text-danger mb-0">-${formatMoney(topMaliyet)} ₺</h4></div></div>
                 <div class="col-md-3"><div class="p-3 rounded bg-white border-top border-4 border-success shadow-sm"><h6>Net Kalan Kasa</h6><h4 class="text-success mb-0">${formatMoney(topNetKar)} ₺</h4></div></div>
-                <div class="col-md-3"><div class="p-3 rounded bg-white border-top border-4 border-warning shadow-sm"><h6>Risk Durumu</h6><h5 class="mb-0">${zararEdenSayisi > 0 ? `<span class="text-danger">${zararEdenSayisi} Personel Zararda</span>` : '<span class="text-success">Tümü Kârda</span>'}</h5></div></div>
+                <div class="col-md-3"><div class="p-3 rounded bg-white border-top border-4 border-warning shadow-sm"><h6>Risk Durumu</h6><h5 class="mb-0">${zararEdenSayisi > 0 ? `<span class="text-danger">${zararEdenSayisi} Zararda</span>` : '<span class="text-success">Tümü Kârda</span>'}</h5></div></div>
             </div>
             <div class="table-responsive shadow-sm rounded border bg-white">
                 <table class="table table-sm table-hover mb-0" style="font-size: 0.8rem;">
-                    <thead class="bg-dark text-white text-center align-middle">
-                        <tr>
-                            <th class="text-start py-3 ps-3" style="width:30%;">Personel & Mağazalar</th>
-                            <th class="text-end">Ciro</th>
-                            <th class="text-end">Maaş (Banka)</th>
-                            <th class="text-end">Elden/KD</th>
-                            <th class="text-end">SGK Maliyeti</th>
-                            <th class="text-end">Kurumlar V. (%25)</th>
-                            <th class="text-end pe-3">Net Kasa</th>
-                        </tr>
-                    </thead>
+                    <thead class="bg-dark text-white text-center align-middle"><tr><th class="text-start py-3 ps-3" style="width:30%;">Personel & Mağazalar</th><th class="text-end">Ciro</th><th class="text-end">Maaş (Banka)</th><th class="text-end">Elden/KD</th><th class="text-end">SGK Maliyeti</th><th class="text-end">Kurumlar V.</th><th class="text-end pe-3">Net Kasa</th></tr></thead>
                     <tbody>${tableRows}</tbody>
                 </table>
-            </div>
-            <div class="alert alert-light mt-3 small text-muted border">
-                <i class="fas fa-info-circle"></i> <b>Bilgi:</b> Net Kasa tutarı; [Ciro - Toplam Maliyet - Kurumlar Vergisi] formülüyle hesaplanır. Elden ödemeler gider yazılamadığı için kârı kağıt üzerinde yüksek gösterir ve vergi yükünü artırarak net kasanın düşmesine neden olur.
             </div>`;
         } 
-        // ... (Diğer rapor türleri) ...
         
+        // ====================================================
+        // 2. GENEL ŞİRKET ÖZETİ RAPORU (YENİ)
+        // ====================================================
+        else if (type === "genel") {
+            let totalAlacak = 0;
+            Object.values(companies).forEach(c => {
+                let bakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar;
+                if(bakiye > 0) totalAlacak += bakiye;
+            });
+            
+            let totalBorc = 0;
+            agendaPayments.forEach(a => { if(!a.isPaid) totalBorc += a.tutar; });
+            
+            let activePers = personnelList.filter(p => !p.isFired);
+            let aylikMaliyet = activePers.reduce((sum, p) => sum + (p.maliyet || 0), 0);
+
+            html = `
+            <h5 class="text-primary border-bottom pb-2 mb-3"><i class="fas fa-building"></i> Genel Şirket Durum Özeti</h5>
+            <div class="row g-3 mb-3">
+                <div class="col-md-4"><div class="card p-3 border-start border-4 border-primary shadow-sm bg-white"><h6 class="text-muted">Piyasa Alacakları</h6><h4 class="text-primary fw-bold">${formatMoney(totalAlacak)} ₺</h4></div></div>
+                <div class="col-md-4"><div class="card p-3 border-start border-4 border-danger shadow-sm bg-white"><h6 class="text-muted">Bekleyen Borçlar (Ajanda)</h6><h4 class="text-danger fw-bold">${formatMoney(totalBorc)} ₺</h4></div></div>
+                <div class="col-md-4"><div class="card p-3 border-start border-4 border-warning shadow-sm bg-white"><h6 class="text-muted">Aylık Personel Gideri</h6><h4 class="text-warning text-dark fw-bold">${formatMoney(aylikMaliyet)} ₺</h4></div></div>
+            </div>
+            <div class="alert alert-info border shadow-sm">
+                <b><i class="fas fa-robot"></i> AI Yorumu:</b> Şirketinizin piyasadan tahsil etmesi gereken toplam <b>${formatMoney(totalAlacak)} ₺</b> alacağı bulunurken, kayıtlı ödenmesi gereken borç yükü <b>${formatMoney(totalBorc)} ₺</b> seviyesindedir. Ayrıca her ay asgari <b>${formatMoney(aylikMaliyet)} ₺</b> personel maliyetiniz bulunmaktadır. ${(totalAlacak > (totalBorc + aylikMaliyet)) ? "Nakit akışınız güvenli bölgede görünüyor; alacaklarınız, borç ve maaş yükümlülüklerinizi karşılamaya fazlasıyla yetiyor." : "Kayıtlı alacaklarınız, borçlar ve aylık personel maliyetini karşılamada ucu ucuna yetiyor veya risk oluşturuyor. Acil tahsilat hızlandırılmalı veya faturasız yeni işler sisteme girilmeli."}
+            </div>`;
+        }
+
+        // ====================================================
+        // 3. FİNANS VE NAKİT AKIŞI RAPORU (YENİ)
+        // ====================================================
+        else if (type === "finans") {
+            let totalAlacak = 0;
+            Object.values(companies).forEach(c => {
+                let bakiye = c.devirBakiye + c.faturaTutar - c.odemeTutar;
+                if(bakiye > 0) totalAlacak += bakiye;
+            });
+
+            let topBekleyen = 0, topGecikmis = 0;
+            agendaPayments.forEach(item => {
+                if(!item.isPaid) {
+                    topBekleyen += item.tutar;
+                    let safeTarih = item.rawTarih || "1900-01-01";
+                    let itemDate = new Date(safeTarih); itemDate.setHours(0,0,0,0);
+                    if((itemDate.getTime() - today.getTime()) < 0) topGecikmis += item.tutar;
+                }
+            });
+
+            let faturasizBekleyen = uninvoicedJobs.reduce((sum, j) => sum + (j.tutar - j.odenen), 0);
+            let netKasaTahmini = (totalAlacak + faturasizBekleyen) - topBekleyen;
+
+            html = `
+            <h5 class="text-success border-bottom pb-2 mb-3"><i class="fas fa-chart-line"></i> Finans ve Nakit Akışı Raporu</h5>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <div class="card p-3 shadow-sm bg-white border-0" style="border-top: 4px solid #1cc88a;">
+                        <h6 class="fw-bold text-success"><i class="fas fa-arrow-down"></i> Gelen / Beklenen Nakit</h6>
+                        <ul class="list-group list-group-flush mt-2 small">
+                            <li class="list-group-item d-flex justify-content-between p-1 border-0"><span>Resmi Cari Alacaklar:</span> <b>${formatMoney(totalAlacak)} ₺</b></li>
+                            <li class="list-group-item d-flex justify-content-between p-1 border-0"><span>Faturasız İş (Hizmet) Alacağı:</span> <b>${formatMoney(faturasizBekleyen)} ₺</b></li>
+                            <li class="list-group-item d-flex justify-content-between p-1 border-0 mt-2 border-top text-dark fw-bold"><span>TOPLAM NAKİT GİRİŞİ:</span> <span class="text-success fs-6">${formatMoney(totalAlacak + faturasizBekleyen)} ₺</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-3 shadow-sm bg-white border-0" style="border-top: 4px solid #e74a3b;">
+                        <h6 class="fw-bold text-danger"><i class="fas fa-arrow-up"></i> Çıkan / Bekleyen Borç (Ajanda)</h6>
+                        <ul class="list-group list-group-flush mt-2 small">
+                            <li class="list-group-item d-flex justify-content-between p-1 border-0"><span>Toplam Bekleyen Ödeme:</span> <b>${formatMoney(topBekleyen)} ₺</b></li>
+                            <li class="list-group-item d-flex justify-content-between p-1 border-0 text-danger"><span>Bunun İçindeki Gecikmiş Borç:</span> <b>${formatMoney(topGecikmis)} ₺</b></li>
+                            <li class="list-group-item d-flex justify-content-between p-1 border-0 mt-2 border-top text-dark fw-bold"><span>TOPLAM NAKİT ÇIKIŞI:</span> <span class="text-danger fs-6">${formatMoney(topBekleyen)} ₺</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="alert ${netKasaTahmini >= 0 ? 'alert-success' : 'alert-danger'} border shadow-sm">
+                <b><i class="fas fa-magic"></i> Nakit Akışı Projeksiyonu:</b> Piyasadan beklenen tüm tahsilatlar (Faturasız işler dahil) yapılıp, ajandadaki tüm borçlar ödendiğinde kasanızda tahmini <b class="fs-5">${formatMoney(netKasaTahmini)} ₺</b> ${netKasaTahmini >= 0 ? "net operasyonel fon (nakit) kalacaktır." : "nakit açığı oluşacaktır."} ${topGecikmis > 0 ? "<br><br><i class='fas fa-exclamation-triangle'></i> <b>Uyarı:</b> Ancak takviminizde vadesi geçmiş <b>" + formatMoney(topGecikmis) + " ₺</b> borcunuz şirket kredibilitesi için risk oluşturmaktadır, en kısa sürede kapatılmalıdır." : ""}
+            </div>`;
+        }
+
+        // ====================================================
+        // 4. PERSONEL VE İK ANALİZİ RAPORU (YENİ)
+        // ====================================================
+        else if (type === "personel") {
+            let activePers = personnelList.filter(p => !p.isFired);
+            let sgkli = 0, kayitdisi = 0;
+            let topNet = 0, topSgk = 0, topVergi = 0, topElden = 0, topMaliyet = 0;
+            
+            activePers.forEach(p => {
+                if(p.isKayitDisi) kayitdisi++; else sgkli++;
+                topNet += (p.net || 0);
+                topElden += p.isKayitDisi ? (p.maliyet || 0) : (p.eldenMesai || 0);
+                topSgk += p.isAuto ? ((p.brut * 0.15) + (p.sgkIsveren || 0)) : (p.sgkIsveren || 0);
+                topVergi += (p.gv || 0) + (p.dv || 0);
+                topMaliyet += (p.maliyet || 0);
+            });
+
+            html = `
+            <h5 class="text-info border-bottom pb-2 mb-3"><i class="fas fa-users"></i> İnsan Kaynakları ve Ücret Raporu</h5>
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <div class="card p-3 text-center border-0 shadow-sm h-100 d-flex justify-content-center" style="background-color: #f8f9fc;">
+                        <h6 class="text-muted mb-1">Aktif Çalışan</h6>
+                        <h2 class="text-dark fw-bold mb-0">${activePers.length}</h2>
+                        <div class="small mt-2 fw-bold"><span class="text-success"><i class="fas fa-check-circle"></i> ${sgkli} SGK</span> <br> <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> ${kayitdisi} Kayıt Dışı</span></div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="row text-center g-2">
+                        <div class="col-md-4 col-6"><div class="border rounded p-2 bg-white shadow-sm h-100"><small class="d-block text-muted mb-1">Toplam Aylık Maliyet</small><b class="text-primary fs-5">${formatMoney(topMaliyet)} ₺</b></div></div>
+                        <div class="col-md-4 col-6"><div class="border rounded p-2 bg-white shadow-sm h-100"><small class="d-block text-muted mb-1">Çalışana Ödenecek Net</small><b class="text-success fs-5">${formatMoney(topNet)} ₺</b></div></div>
+                        <div class="col-md-4 col-12"><div class="border rounded p-2 bg-white shadow-sm h-100"><small class="d-block text-muted mb-1">Elden / KD Çıkış</small><b class="text-warning text-dark fs-5">${formatMoney(topElden)} ₺</b></div></div>
+                        <div class="col-md-6 col-6"><div class="border rounded p-2 bg-white mt-1 shadow-sm"><small class="d-block text-muted mb-1">SGK Kurum Yükü</small><b class="text-danger fs-5">${formatMoney(topSgk)} ₺</b></div></div>
+                        <div class="col-md-6 col-6"><div class="border rounded p-2 bg-white mt-1 shadow-sm"><small class="d-block text-muted mb-1">Vergi Yükü (GV+DV)</small><b class="text-secondary fs-5">${formatMoney(topVergi)} ₺</b></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-light border shadow-sm">
+                <b><i class="fas fa-robot"></i> AI Yorumu:</b> Şirketinizde toplam <b>${activePers.length}</b> personel istihdam edilmekte olup, kişi başı ortalama aylık maliyetiniz <b>${activePers.length > 0 ? formatMoney(topMaliyet / activePers.length) : 0} ₺</b>'dir. Aylık devlet kesintileri (Ödenecek SGK ve Gelir Vergisi) toplamı <b>${formatMoney(topSgk + topVergi)} ₺</b> tutmaktadır. <br><br>Elden verilen mesailer ve SGK'sız personellere ödenen paralar (Toplam: <b>${formatMoney(topElden)} ₺</b>), devlete "Resmi Gider" olarak gösterilemediği için bu tutar şirketinizin kârıymış gibi görünmekte ve %25 Kurumlar Vergisi hesabında size ekstra yaklaşık <b>${formatMoney(topElden * 0.25)} ₺</b> gizli vergi yükü oluşturmaktadır.
+            </div>`;
+        }
+
         contentDiv.innerHTML = html;
     }, 800);
 }
