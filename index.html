@@ -2911,26 +2911,100 @@ function generateAIReport() {
     function renderInvoiceList() {
         const tbody = document.getElementById("invoiceTableBody"); if(!tbody) return; tbody.innerHTML = "";
         let allInvoices = [];
-        
+        let faturaSerileri = { MIA: [], TEM: [] };
+        let faturaSet = new Set();
+        let iptalSet = new Set();
+
+        // 1. İptal edilen fatura numaralarını topla
+        cancelledInvoices.forEach(c => {
+            let match = c.aciklama.match(/(MIA|TEM)(\d{13})/i);
+            if(match) {
+                let seri = match[1].toUpperCase();
+                let fno = seri + match[2];
+                iptalSet.add(fno);
+                faturaSerileri[seri].push(parseInt(match[2], 10));
+            }
+        });
+
+        // 2. Geçerli tüm faturaları topla
         for(let vkn in companies) {
             companies[vkn].hareketler.forEach(h => {
                 if(h.tur === "Fatura") {
-                    allInvoices.push({ vkn: vkn, unvan: companies[vkn].unvan, id: h.id, tarih: h.tarih, aciklama: h.aciklama, tutar: h.tutar });
+                    allInvoices.push({ vkn: vkn, unvan: companies[vkn].unvan, id: h.id, tarih: h.tarih, aciklama: h.aciklama, tutar: h.tutar, isMissing: false });
+                    
+                    let match = h.aciklama.match(/(MIA|TEM)(\d{13})/i);
+                    if(match) {
+                        let seri = match[1].toUpperCase();
+                        let fno = seri + match[2];
+                        faturaSet.add(fno);
+                        faturaSerileri[seri].push(parseInt(match[2], 10));
+                    }
                 }
             });
         }
-        
-        allInvoices.sort((a,b) => parseTRDate(b.tarih) - parseTRDate(a.tarih)).forEach(inv => {
-            tbody.innerHTML += `<tr class="invoice-liste-row" data-search="${normalizeText(inv.unvan)} ${normalizeText(inv.aciklama)}">
-                <td>${inv.tarih}</td>
-                <td class="fw-bold text-secondary">${inv.unvan}</td>
-                <td><small>${inv.aciklama}</small></td>
-                <td class="text-end fw-bold text-danger">${formatMoney(inv.tutar)} ₺</td>
-                <td class="text-center" style="white-space: nowrap;">
-                    <button class="btn btn-sm btn-outline-warning py-0 px-2 text-dark shadow-sm" onclick="editFatura('${inv.vkn}', '${inv.id}')" title="Düzenle"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-outline-danger py-0 px-2 shadow-sm ms-1" onclick="deleteManuelFatura('${inv.vkn}', '${inv.id}')" title="Faturayı Sil"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>`;
+
+        // 3. Seri içindeki atlamaları bul ve listeye 'Eksik' veya 'İptal' olarak ekle
+        ["MIA", "TEM"].forEach(seri => {
+            if(faturaSerileri[seri].length > 0) {
+                let min = Math.min(...faturaSerileri[seri]);
+                let max = Math.max(...faturaSerileri[seri]);
+                
+                for(let i = min; i <= max; i++) {
+                    let numStr = i.toString().padStart(13, '0');
+                    let fno = seri + numStr;
+                    
+                    if(!faturaSet.has(fno)) {
+                        let isIptal = iptalSet.has(fno);
+                        let statusText = isIptal ? "İptal Edilmiş Fatura (İptal Listesinde)" : "Listede atlanmış veya programa aktarılması unutulmuş!";
+                        let rowColorClass = isIptal ? "table-warning text-dark" : "table-danger text-danger";
+                        let icon = isIptal ? "fa-ban text-warning" : "fa-exclamation-triangle text-danger";
+
+                        allInvoices.push({
+                            isMissing: true,
+                            isIptal: isIptal,
+                            fno: fno,
+                            statusText: statusText,
+                            rowColorClass: rowColorClass,
+                            icon: icon
+                        });
+                    }
+                }
+            }
+        });
+
+        // 4. Listeyi Fatura Numarasına göre (Büyükten Küçüğe) sırala, numara yoksa tarihe göre sırala
+        allInvoices.sort((a,b) => {
+            let fnoA = a.isMissing ? a.fno : (a.aciklama.match(/(MIA|TEM)(\d{13})/i) ? a.aciklama.match(/(MIA|TEM)(\d{13})/i)[0].toUpperCase() : "");
+            let fnoB = b.isMissing ? b.fno : (b.aciklama.match(/(MIA|TEM)(\d{13})/i) ? b.aciklama.match(/(MIA|TEM)(\d{13})/i)[0].toUpperCase() : "");
+            
+            if (fnoA && fnoB) return fnoB.localeCompare(fnoA); // Fatura no varsa string bazlı ters sırala
+            
+            let dateA = a.isMissing ? 0 : parseTRDate(a.tarih).getTime();
+            let dateB = b.isMissing ? 0 : parseTRDate(b.tarih).getTime();
+            return dateB - dateA;
+        }).forEach(inv => {
+            if (inv.isMissing) {
+                // Kayıp / İptal Fatura Satırı
+                tbody.innerHTML += `<tr class="invoice-liste-row ${inv.rowColorClass}" data-search="${inv.fno} iptal atlanmış eksik">
+                    <td class="fw-bold">-</td>
+                    <td class="fw-bold"><i class="fas ${inv.icon}"></i> ${inv.isIptal ? "İPTAL EDİLMİŞ" : "DİKKAT! EKSİK FATURA"}</td>
+                    <td><small class="fw-bold">${inv.fno} - ${inv.statusText}</small></td>
+                    <td class="text-end fw-bold">-</td>
+                    <td class="text-center">-</td>
+                </tr>`;
+            } else {
+                // Standart Geçerli Fatura Satırı
+                tbody.innerHTML += `<tr class="invoice-liste-row" data-search="${normalizeText(inv.unvan)} ${normalizeText(inv.aciklama)}">
+                    <td>${inv.tarih}</td>
+                    <td class="fw-bold text-secondary">${inv.unvan}</td>
+                    <td><small>${inv.aciklama}</small></td>
+                    <td class="text-end fw-bold text-danger">${formatMoney(inv.tutar)} ₺</td>
+                    <td class="text-center" style="white-space: nowrap;">
+                        <button class="btn btn-sm btn-outline-warning py-0 px-2 text-dark shadow-sm" onclick="editFatura('${inv.vkn}', '${inv.id}')" title="Düzenle"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2 shadow-sm ms-1" onclick="deleteManuelFatura('${inv.vkn}', '${inv.id}')" title="Faturayı Sil"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
         });
     }
 
