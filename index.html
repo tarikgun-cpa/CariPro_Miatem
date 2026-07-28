@@ -782,6 +782,32 @@
                     </table>
                 </div>
             </div>
+
+            <!-- YENİ: STOK YÖNETİMİ BAŞLANGICI -->
+            <div class="card p-3 border-0 shadow-sm mt-4" style="border-top: 4px solid #17a2b8;">
+                <h5 class="fw-bold text-info mb-3"><i class="fas fa-boxes"></i> Stoklu Malzeme Yönetimi</h5>
+                <div class="row g-2 align-items-end mb-3">
+                    <div class="col-md-2"><label class="small text-muted">Alım Tarihi</label><input type="date" id="stokTarih" class="form-control form-control-sm"></div>
+                    <div class="col-md-2"><label class="small text-muted">Satıcı (Tedarikçi)</label><input type="text" id="stokSatici" class="form-control form-control-sm" placeholder="Kimden alındı?"></div>
+                    <div class="col-md-2"><label class="small text-muted">Cinsi (Örn: Bez, Kimyasal)</label><input type="text" id="stokCinsi" class="form-control form-control-sm" placeholder="Malzeme Türü"></div>
+                    <div class="col-md-3"><label class="small text-muted">Açıklama / Detay</label><input type="text" id="stokAciklama" class="form-control form-control-sm" placeholder="Marka vb."></div>
+                    <div class="col-md-1"><label class="small text-muted">Miktar (Adet)</label><input type="number" id="stokMiktar" class="form-control form-control-sm" placeholder="100"></div>
+                    <div class="col-md-1"><label class="small text-muted">Toplam Alım ₺</label><input type="text" id="stokAlimTutari" class="form-control form-control-sm fw-bold text-danger" placeholder="2500"></div>
+                    <div class="col-md-1 d-flex gap-1">
+                        <button type="button" id="btnCancelStok" class="btn btn-outline-secondary btn-sm shadow-sm" style="display:none;" onclick="cancelEditStok()"><i class="fas fa-times"></i></button>
+                        <button type="button" id="btnSaveStok" class="btn btn-info text-white btn-sm fw-bold w-100 shadow-sm" onclick="saveStok()"><i class="fas fa-save"></i></button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-sm">
+                        <thead class="table-light">
+                            <tr><th>Tarih</th><th>Satıcı</th><th>Cinsi</th><th>Açıklama</th><th class="text-center">Alınan Miktar</th><th class="text-end">Toplam Maliyet</th><th class="text-center">Kalan Stok</th><th class="text-end">Satış Geliri</th><th class="text-center">İşlem</th></tr>
+                        </thead>
+                        <tbody id="stokTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- YENİ: STOK YÖNETİMİ BİTİŞİ -->
         </div>
 
         <div class="tab-pane fade" id="agenda" role="tabpanel">
@@ -1179,7 +1205,7 @@
     // 3. ORTAK DEĞİŞKENLER & BULUT MOTORU
     // ==========================================
     let companies = {}; let unmatchedTransactions = []; let cancelledInvoices = []; let personnelList = [];
-    let uninvoicedJobs = []; let agendaPayments = []; 
+    let uninvoicedJobs = []; let agendaPayments = []; let stokListesi = []; 
     let periodYear = 2026; let globalSonBankaTarihi = ""; let globalSonFaturaNo = ""; let globalMaxBankDateObj = new Date(1900, 0, 1); let currentEkstreVkn = null;
     let globalNotes = []; // YENİ EKLENEN
 
@@ -1189,7 +1215,7 @@
         sgkIsciOran: 0.15, sgkIsverenOran: 0.175, gvOran: 0.15, dvOran: 0.00759, nettenBruteBolen: 0.7149
     };
 
-    function resetLocalMemory() { companies = {}; unmatchedTransactions = []; cancelledInvoices = []; personnelList = []; uninvoicedJobs = []; agendaPayments = []; }
+    function resetLocalMemory() { companies = {}; unmatchedTransactions = []; cancelledInvoices = []; personnelList = []; uninvoicedJobs = []; agendaPayments = []; stokListesi = []; }
 
     // SİSTEM AYARLARINI AÇMA VE KAYDETME FONKSİYONLARI
     function openSettingsModal() {
@@ -1234,6 +1260,7 @@
             unmatchedTransactions: unmatchedTransactions, 
             cancelledInvoices: cancelledInvoices, 
             uninvoicedJobs: uninvoicedJobs, 
+            stokListesi: stokListesi,
             agendaPayments: agendaPayments, 
             globalNotes: globalNotes, // <--- BUNA EKLENECEK
             periodYear: periodYear, 
@@ -1276,6 +1303,7 @@
             unmatchedTransactions = state.unmatchedTransactions || []; 
             cancelledInvoices = state.cancelledInvoices || []; 
             uninvoicedJobs = state.uninvoicedJobs || []; 
+            stokListesi = state.stokListesi || [];
             agendaPayments = state.agendaPayments || []; 
             globalNotes = state.globalNotes || []; // <--- BUNA EKLENECEK
             periodYear = state.periodYear || 2026; 
@@ -1321,6 +1349,7 @@
         try { renderSimpleAnalytics(); } catch(e) {}
         try { filterFirma(); filterCariListe(); } catch(e) {}
         try { renderUninvoiced(); } catch(e) { console.error("Faturasız İşler Render Hatası:", e); }
+        try { renderStok(); } catch(e) { console.error("Stok Render Hatası:", e); }
         try { renderAgenda(); } catch(e) { console.error("Ajanda Render Hatası:", e); }
         try { renderInvoiceList(); } catch(e) {}
         
@@ -3576,6 +3605,7 @@ if (!isFatura) {
             cancelledInvoices: cancelledInvoices,
             personnelList: personnelList,
             uninvoicedJobs: uninvoicedJobs,
+            stokListesi: stokListesi,
             agendaPayments: agendaPayments,
             globalNotes: globalNotes, // <--- İŞTE BURAYI EKLEDİK
             periodYear: periodYear,
@@ -3618,6 +3648,7 @@ if (!isFatura) {
                 cancelledInvoices = state.cancelledInvoices || [];
                 personnelList = state.personnelList || [];
                 uninvoicedJobs = state.uninvoicedJobs || [];
+                stokListesi = state.stokListesi || [];
                 agendaPayments = state.agendaPayments || [];
                 globalNotes = state.globalNotes || []; // <--- İŞTE BURAYI EKLEDİK
                 periodYear = state.periodYear || 2026;
@@ -3797,6 +3828,144 @@ if (!isFatura) {
             // Ekran büyükse boşluk kalmaması için metni bir kez daha tekrarlatıyoruz (görsel hile)
             content.innerHTML = html + html; 
         }
+    }
+    // =====================================
+    // YENİ: STOK YÖNETİMİ MOTORU
+    // =====================================
+    let editingStokId = null;
+
+    function saveStok() {
+        let tarih = document.getElementById("stokTarih").value;
+        let satici = document.getElementById("stokSatici").value;
+        let cinsi = document.getElementById("stokCinsi").value;
+        let aciklama = document.getElementById("stokAciklama").value;
+        let miktar = parseInt(document.getElementById("stokMiktar").value) || 0;
+        let alimTutari = parseAmount(document.getElementById("stokAlimTutari").value);
+
+        if(!satici || !cinsi || miktar <= 0 || alimTutari <= 0) return alert("Satıcı, Cinsi, Miktar ve Alım Tutarı zorunludur.");
+        let trTarih = tarih ? tarih.split("-").reverse().join(".") : "-";
+
+        if(editingStokId) {
+            let s = stokListesi.find(x => x.id === editingStokId);
+            if(s) {
+                s.rawTarih = tarih; s.tarih = trTarih;
+                s.satici = satici; s.cinsi = cinsi; s.aciklama = aciklama;
+                let miktarFarki = miktar - s.miktar;
+                s.miktar = miktar;
+                s.kalanMiktar += miktarFarki;
+                if(s.kalanMiktar < 0) s.kalanMiktar = 0;
+                s.alimTutari = alimTutari;
+            }
+            cancelEditStok();
+            logMessage("Stok güncellendi.", "success");
+        } else {
+            stokListesi.push({
+                id: generateId(), rawTarih: tarih, tarih: trTarih,
+                satici: satici, cinsi: cinsi, aciklama: aciklama,
+                miktar: miktar, kalanMiktar: miktar, alimTutari: alimTutari, satisGeliri: 0
+            });
+            cancelEditStok();
+            logMessage("Yeni stok eklendi.", "success");
+        }
+        updateAllViews();
+    }
+
+    function editStok(id) {
+        let s = stokListesi.find(x => x.id === id); if(!s) return;
+        editingStokId = s.id;
+        document.getElementById("stokTarih").value = s.rawTarih || "";
+        document.getElementById("stokSatici").value = s.satici || "";
+        document.getElementById("stokCinsi").value = s.cinsi || "";
+        document.getElementById("stokAciklama").value = s.aciklama || "";
+        document.getElementById("stokMiktar").value = s.miktar || "";
+        document.getElementById("stokAlimTutari").value = s.alimTutari || "";
+
+        document.getElementById("btnSaveStok").innerHTML = `<i class="fas fa-check"></i>`;
+        document.getElementById("btnCancelStok").style.display = "inline-block";
+    }
+
+    function cancelEditStok() {
+        editingStokId = null;
+        document.getElementById("stokTarih").value = "";
+        document.getElementById("stokSatici").value = "";
+        document.getElementById("stokCinsi").value = "";
+        document.getElementById("stokAciklama").value = "";
+        document.getElementById("stokMiktar").value = "";
+        document.getElementById("stokAlimTutari").value = "";
+
+        document.getElementById("btnSaveStok").innerHTML = `<i class="fas fa-save"></i>`;
+        document.getElementById("btnCancelStok").style.display = "none";
+    }
+
+    function deleteStok(id) {
+        if(confirm("Bu stoku kalıcı olarak silmek istediğinize emin misiniz?")) {
+            stokListesi = stokListesi.filter(x => x.id !== id);
+            updateAllViews();
+        }
+    }
+
+    function sellStok(id) {
+        let s = stokListesi.find(x => x.id === id); if(!s) return;
+        if(s.kalanMiktar <= 0) return alert("Bu stoku tükettiniz!");
+
+        let miktarStr = prompt(`Kaç adet satıldı? (Mevcut Stok: ${s.kalanMiktar})`, "1");
+        if(miktarStr === null) return;
+        let miktar = parseInt(miktarStr);
+        if(isNaN(miktar) || miktar <= 0 || miktar > s.kalanMiktar) return alert("Geçersiz miktar girdiniz!");
+
+        let tutarStr = prompt(`${miktar} adet "${s.cinsi}" için TOPLAM satış tutarı (₺):`);
+        if(tutarStr === null) return;
+        let tutar = parseAmount(tutarStr);
+        if(tutar < 0) return alert("Geçersiz tutar!");
+
+        // Stoku Düş ve Geliri Yaz
+        s.kalanMiktar -= miktar;
+        s.satisGeliri += tutar;
+
+        // Otomatik Faturasız İşler Kasasına Entegre Et
+        let todayStr = new Date().toLocaleDateString('tr-TR');
+        uninvoicedJobs.push({ 
+            id: generateId(), 
+            rawTarih: new Date().toISOString().split('T')[0], 
+            tarih: todayStr, 
+            musteri: `Stok Satışı: ${s.cinsi}`, 
+            aciklama: `${miktar} adet ${s.aciklama} satıldı.`, 
+            tutar: tutar, 
+            gider: 0, 
+            odenen: tutar 
+        });
+
+        updateAllViews();
+        logMessage(`Satış yapıldı. Miktar stoktan düşüldü ve Faturasız İşler kasasına ${formatMoney(tutar)} ₺ gelir işlendi.`, "success");
+    }
+
+    function renderStok() {
+        let tbody = document.getElementById("stokTableBody");
+        if(!tbody) return;
+        tbody.innerHTML = "";
+
+        stokListesi.sort((a,b) => parseTRDate(b.tarih) - parseTRDate(a.tarih)).forEach(s => {
+            let birimMaliyet = s.miktar > 0 ? (s.alimTutari / s.miktar) : 0;
+            let stokDurumClass = s.kalanMiktar === 0 ? "text-danger" : "text-success";
+            let satirClass = s.kalanMiktar === 0 ? "table-light text-muted" : "";
+
+            tbody.innerHTML += `
+            <tr class="${satirClass}">
+                <td>${s.tarih}</td>
+                <td><strong class="text-secondary">${s.satici}</strong></td>
+                <td><span class="badge bg-info text-dark shadow-sm">${s.cinsi}</span></td>
+                <td><small>${s.aciklama}</small></td>
+                <td class="text-center"><strong>${s.miktar}</strong></td>
+                <td class="text-end text-danger fw-bold">${formatMoney(s.alimTutari)} ₺ <br><small class="text-muted fw-normal">(${formatMoney(birimMaliyet)} ₺/br)</small></td>
+                <td class="text-center fw-bold fs-6 ${stokDurumClass}">${s.kalanMiktar}</td>
+                <td class="text-end text-success fw-bold">${formatMoney(s.satisGeliri)} ₺</td>
+                <td class="text-center" style="white-space:nowrap;">
+                    ${s.kalanMiktar > 0 ? `<button class="btn btn-sm btn-success py-0 px-2 shadow-sm" title="Satış Yap" onclick="sellStok('${s.id}')"><i class="fas fa-cart-plus"></i> Sat</button>` : `<span class="badge bg-dark">Tükendi</span>`}
+                    <button class="btn btn-sm btn-outline-warning py-0 px-2 shadow-sm text-dark ms-1" onclick="editStok('${s.id}')" title="Düzenle"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-outline-danger py-0 px-2 shadow-sm ms-1" onclick="deleteStok('${s.id}')" title="Sil"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+        });
     }
 </script>
 </body>
