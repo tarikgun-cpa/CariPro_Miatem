@@ -762,7 +762,7 @@
     </ul>
 
     <div class="tab-content" id="pills-tabContent">
-        <!-- 1. PROJE YÖNETİMİ (MEVCUT) -->
+        <!-- 1. PROJE YÖNETİMİ -->
         <div class="tab-pane fade show active" id="pills-proje" role="tabpanel">
             <div class="row mb-3">
                 <div class="col-md-3"><div class="card summary-card bg-gradient-primary border-0 h-100"><h6 class="text-white fw-bold"><i class="fas fa-briefcase"></i> TOPLAM İŞ HACMİ</h6><h3 class="fw-bold text-white mb-0" id="dashUninvToplam">0,00 ₺</h3></div></div>
@@ -796,60 +796,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- 2. STOK YÖNETİMİ (YENİ VE KAPSAMLI) -->
-        <div class="tab-pane fade" id="pills-stok" role="tabpanel">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-info mb-0"><i class="fas fa-cubes"></i> Stok Kartları (Mevcut Durum)</h5>
-                <button type="button" class="btn btn-info text-white fw-bold shadow-sm btn-sm" onclick="openStokKartiModal()"><i class="fas fa-plus"></i> Yeni Ürün Kartı Aç</button>
-            </div>
-            <div class="card p-3 border-0 shadow-sm mb-4">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle table-sm">
-                        <thead class="table-light">
-                            <tr><th>Ürün Cinsi</th><th>Açıklama / Kategori</th><th class="text-center">Toplam Alınan</th><th class="text-center">Toplam Satılan</th><th class="text-center">Kalan Stok</th><th class="text-end">Ortalama Maliyet</th><th class="text-center">İşlem</th></tr>
-                        </thead>
-                        <tbody id="stokKartlariBody"><tr><td colspan="7" class="text-center text-muted">Lütfen "Yeni Ürün Kartı Aç" butonuna basarak depoya ürün tanımlayın.</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="row">
-                <!-- ALIM LİSTESİ -->
-                <div class="col-lg-6">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold text-danger mb-0"><i class="fas fa-truck-loading"></i> Malzeme Alım Listesi</h6>
-                        <button type="button" class="btn btn-outline-danger fw-bold shadow-sm btn-sm" onclick="openStokAlimModal()"><i class="fas fa-arrow-down"></i> Stok / Alım Ekle</button>
-                    </div>
-                    <div class="card p-2 border-0 shadow-sm" style="border-top: 3px solid #dc3545;">
-                        <div class="table-responsive" style="max-height: 350px;">
-                            <table class="table table-hover align-middle table-sm" style="font-size: 0.85rem;">
-                                <thead class="table-light"><tr><th>Tarih</th><th>Ürün</th><th>Tedarikçi</th><th class="text-center">Adet</th><th class="text-end">Toplam Tutar</th><th class="text-center">İşlem</th></tr></thead>
-                                <tbody id="stokAlimlariBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SATIŞ LİSTESİ -->
-                <div class="col-lg-6">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold text-success mb-0"><i class="fas fa-cash-register"></i> Satış İşlemleri</h6>
-                        <button type="button" class="btn btn-outline-success fw-bold shadow-sm btn-sm" onclick="openStokSatisModal()"><i class="fas fa-arrow-up"></i> Müşteriye Satış Yap</button>
-                    </div>
-                    <div class="card p-2 border-0 shadow-sm" style="border-top: 3px solid #198754;">
-                        <div class="table-responsive" style="max-height: 350px;">
-                            <table class="table table-hover align-middle table-sm" style="font-size: 0.85rem;">
-                                <thead class="table-light"><tr><th>Tarih</th><th>Fiş No</th><th>Alıcı Cari</th><th>Ürün Detayı</th><th class="text-end">Satış Tutarı</th><th class="text-center">İşlem / Tahsilat</th></tr></thead>
-                                <tbody id="stokSatislariBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
         <div class="tab-pane fade" id="agenda" role="tabpanel">
             <div class="row mb-3">
@@ -1182,101 +1128,6 @@
   </div>
 </div>
 
-<!-- ===================================== -->
-<!-- YENİ MODALLAR: STOK YÖNETİMİ BURAYA GELECEK -->
-<!-- ===================================== -->
-
-<!-- 1. Stok Kartı Modalı -->
-<div class="modal fade" id="stokKartiModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-info text-white border-0">
-        <h5 class="modal-title"><i class="fas fa-box"></i> Yeni Stok Kartı Tanımla</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body bg-light">
-        <input type="hidden" id="stokKartiId">
-        <div class="mb-3">
-            <label class="form-label small fw-bold text-muted">Ürün Cinsi / Adı</label>
-            <input type="text" id="stokKartiCinsi" class="form-control shadow-sm border-info" placeholder="Örn: 5LT Yüzey Temizleyici">
-        </div>
-        <div class="mb-2">
-            <label class="form-label small fw-bold text-muted">Kategori / Açıklama (Opsiyonel)</label>
-            <input type="text" id="stokKartiAciklama" class="form-control shadow-sm" placeholder="Örn: Kimyasallar">
-        </div>
-      </div>
-      <div class="modal-footer border-0 bg-white justify-content-between">
-        <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">İptal</button>
-        <button type="button" class="btn btn-info text-white fw-bold px-4" onclick="saveStokKarti()"><i class="fas fa-save"></i> Kartı Kaydet</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 2. Stok Alım Modalı -->
-<div class="modal fade" id="stokAlimModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-danger text-white border-0">
-        <h5 class="modal-title"><i class="fas fa-truck-loading"></i> Depoya Malzeme Alımı İşle</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body bg-light">
-        <div class="row g-2 mb-3">
-            <div class="col-6"><label class="small text-muted fw-bold">Alım Tarihi</label><input type="date" id="stokAlimTarih" class="form-control border-danger shadow-sm"></div>
-            <div class="col-6"><label class="small text-muted fw-bold">Tedarikçi (Satıcı)</label><input type="text" id="stokAlimSatici" class="form-control shadow-sm" placeholder="Kimden alındı?"></div>
-        </div>
-        <div class="mb-3">
-            <label class="form-label small fw-bold text-muted">Depoya Girecek Ürün Seçin</label>
-            <select id="stokAlimStokId" class="form-select border-danger shadow-sm"></select>
-        </div>
-        <div class="row g-2">
-            <div class="col-6"><label class="small text-muted fw-bold">Adet / Miktar</label><input type="number" id="stokAlimMiktar" class="form-control fw-bold shadow-sm" placeholder="Örn: 100"></div>
-            <div class="col-6"><label class="small text-muted fw-bold">Toplam Fatura/Alım Tutarı (₺)</label><input type="text" id="stokAlimTutar" class="form-control fw-bold text-danger shadow-sm" placeholder="Örn: 5.000,00"></div>
-        </div>
-      </div>
-      <div class="modal-footer border-0 bg-white justify-content-between">
-        <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">İptal</button>
-        <button type="button" class="btn btn-danger fw-bold px-4" onclick="saveStokAlim()"><i class="fas fa-save"></i> Stoğa Ekle</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 3. Detaylı Satış Modalı -->
-<div class="modal fade" id="stokSatisModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-success text-white border-0">
-        <h5 class="modal-title"><i class="fas fa-cash-register"></i> Müşteriye Stok Çıkışı (Satış İşlemi)</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body bg-light">
-        <div class="alert alert-success border-success small"><i class="fas fa-info-circle"></i> Bu işlem, seçilen firmanın Cari Hesabına otomatik olarak <b>Fatura / Borç</b> yazacaktır. Ödemeleri Cari Ekstreden takip edebilirsiniz.</div>
-        
-        <div class="row g-2 mb-3 pb-2 border-bottom border-success">
-            <div class="col-md-3"><label class="small text-muted fw-bold">Satış Tarihi</label><input type="date" id="stokSatisTarih" class="form-control border-success shadow-sm"></div>
-            <div class="col-md-3"><label class="small text-muted fw-bold">Satış / Fiş No</label><input type="text" id="stokSatisFisNo" class="form-control shadow-sm" placeholder="STK-001"></div>
-            <div class="col-md-6"><label class="small text-muted fw-bold">Alıcı Firma (Cari Hesap)</label><select id="stokSatisCariVkn" class="form-select border-success shadow-sm"></select></div>
-        </div>
-
-        <h6 class="text-secondary fw-bold mb-2">Satılacak Ürünler <button type="button" class="btn btn-sm btn-outline-success ms-2 py-0 px-2" onclick="addStokSatisRow()"><i class="fas fa-plus"></i> Satır Ekle</button></h6>
-        <div id="stokSatisSatirlari" class="bg-white p-2 rounded border shadow-sm mb-3">
-            <!-- Dinamik satırlar buraya gelecek -->
-        </div>
-        
-        <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded border shadow-sm">
-            <span class="text-secondary fw-bold">Genel Toplam:</span>
-            <h4 class="text-success fw-bold mb-0" id="stokSatisGenelToplam">0,00 ₺</h4>
-        </div>
-      </div>
-      <div class="modal-footer border-0 bg-white justify-content-between">
-        <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">İptal</button>
-        <button type="button" class="btn btn-success fw-bold px-4 shadow-sm" onclick="saveStokSatis()"><i class="fas fa-check-circle"></i> Satışı Tamamla ve Cari'ye İşle</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -3975,7 +3826,7 @@ if (!isFatura) {
         }
     }
     // =====================================
-    // YENİ NESİL DETAYLI STOK & SATIŞ MOTORU
+    // STOK & SATIŞ MOTORU (TEMİZ VE TEK KOPYA)
     // =====================================
     
     function renderStokAll() {
@@ -3984,12 +3835,11 @@ if (!isFatura) {
         renderStokSatislari();
     }
 
-    // --- 1. STOK KARTLARI (ÜRÜN TANIMLAMA) ---
     function openStokKartiModal() {
         document.getElementById("stokKartiId").value = "";
         document.getElementById("stokKartiCinsi").value = "";
         document.getElementById("stokKartiAciklama").value = "";
-        new bootstrap.Modal(document.getElementById('stokKartiModal')).show();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('stokKartiModal')).show();
     }
 
     function saveStokKarti() {
@@ -3997,379 +3847,189 @@ if (!isFatura) {
         let cinsi = document.getElementById("stokKartiCinsi").value.trim();
         let aciklama = document.getElementById("stokKartiAciklama").value.trim();
         if(!cinsi) return alert("Ürün Cinsi zorunludur.");
-        
         let existing = stokKartlari.find(k => k.id === id);
-        if(existing) {
-            existing.cinsi = cinsi; existing.aciklama = aciklama;
-        } else {
-            stokKartlari.push({ id, cinsi, aciklama });
-        }
+        if(existing) { existing.cinsi = cinsi; existing.aciklama = aciklama; } 
+        else { stokKartlari.push({ id, cinsi, aciklama }); }
         
         bootstrap.Modal.getInstance(document.getElementById('stokKartiModal')).hide();
-        updateAllViews();
-        logMessage("Stok kartı kaydedildi.", "success");
+        updateAllViews(); logMessage("Stok kartı kaydedildi.", "success");
     }
 
     function deleteStokKarti(id) {
         if(stokAlimlari.some(a => a.stokId === id) || stokSatislari.some(s => s.detaylar.some(d => d.stokId === id))) {
-            return alert("HATA: Bu ürüne ait alım veya satış geçmişi var! Önce ilgili hareketleri silmelisiniz.");
+            return alert("HATA: Bu ürüne ait alım/satış var! Önce işlemleri silin.");
         }
-        if(confirm("Bu Ürün Kartını tamamen silmek istediğinize emin misiniz?")) {
+        if(confirm("Emin misiniz?")) {
             stokKartlari = stokKartlari.filter(k => k.id !== id); 
-            updateAllViews();
-            logMessage("Stok kartı silindi.", "warning");
+            updateAllViews(); logMessage("Stok kartı silindi.", "warning");
         }
     }
 
-    const stokEkstreModal = new bootstrap.Modal(document.getElementById('stokEkstreModal'));
-    
     function openStokEkstre(id) {
         let k = stokKartlari.find(x => x.id === id);
         if(!k) return;
-        
         document.getElementById("stokEkstreCinsi").innerText = k.cinsi;
         
         let alimlar = stokAlimlari.filter(a => a.stokId === id).map(a => ({...a, tur: "Alım", dateObj: parseTRDate(a.tarih)}));
         let satislar = [];
         stokSatislari.forEach(s => {
             let d = s.detaylar.find(x => x.stokId === id);
-            if(d) {
-                satislar.push({
-                    tarih: s.tarih, rawTarih: s.rawTarih, tur: "Satış", satici: companies[s.cariVkn]?.unvan || "Bilinmeyen Cari", miktar: d.miktar, tutar: d.tutar, dateObj: parseTRDate(s.tarih), fisNo: s.fisNo
-                });
-            }
+            if(d) satislar.push({ tarih: s.tarih, rawTarih: s.rawTarih, tur: "Satış", satici: companies[s.cariVkn]?.unvan || "Bilinmeyen", miktar: d.miktar, tutar: d.tutar, dateObj: parseTRDate(s.tarih), fisNo: s.fisNo });
         });
         
         let hareketler = [...alimlar, ...satislar].sort((a,b) => a.dateObj - b.dateObj);
-        
-        let tbody = document.getElementById("stokEkstreBody");
-        tbody.innerHTML = "";
-        
+        let tbody = document.getElementById("stokEkstreBody"); tbody.innerHTML = "";
         let currentStok = 0; let topAlinan = 0; let topSatilan = 0;
         
         hareketler.forEach(h => {
             let isAlim = h.tur === "Alım";
-            if(isAlim) { currentStok += h.miktar; topAlinan += h.miktar; } 
-            else { currentStok -= h.miktar; topSatilan += h.miktar; }
-            
-            let badge = isAlim 
-                ? `<span class="badge bg-danger"><i class="fas fa-arrow-down"></i> Depo Giriş</span>` 
-                : `<span class="badge bg-success"><i class="fas fa-arrow-up"></i> Çıkış (Satış)</span>`;
-                
+            if(isAlim) { currentStok += h.miktar; topAlinan += h.miktar; } else { currentStok -= h.miktar; topSatilan += h.miktar; }
+            let badge = isAlim ? `<span class="badge bg-danger">Giriş</span>` : `<span class="badge bg-success">Çıkış</span>`;
             let desc = isAlim ? `Tedarikçi: ${h.satici}` : `Alıcı: ${h.satici} (Fiş: ${h.fisNo})`;
-            let miktarRenk = isAlim ? "text-danger" : "text-success";
-            let miktarIsaret = isAlim ? "+" : "-";
+            let mRenk = isAlim ? "text-danger" : "text-success"; let mIsaret = isAlim ? "+" : "-";
             
-            tbody.innerHTML += `<tr>
-                <td class="text-muted" style="white-space: nowrap;">${h.tarih}</td>
-                <td>${badge}</td>
-                <td><small class="fw-bold">${desc}</small></td>
-                <td class="text-center fw-bold ${miktarRenk}">${miktarIsaret}${h.miktar}</td>
-                <td class="text-end">${formatMoney(h.tutar)} ₺</td>
-                <td class="text-center fw-bold text-info">${currentStok}</td>
-            </tr>`;
+            tbody.innerHTML += `<tr><td class="text-muted">${h.tarih}</td><td>${badge}</td><td><small class="fw-bold">${desc}</small></td><td class="text-center fw-bold ${mRenk}">${mIsaret}${h.miktar}</td><td class="text-end">${formatMoney(h.tutar)} ₺</td><td class="text-center fw-bold text-info">${currentStok}</td></tr>`;
         });
         
-        document.getElementById("stokEkstreAlinan").innerText = topAlinan;
-        document.getElementById("stokEkstreSatilan").innerText = topSatilan;
-        document.getElementById("stokEkstreKalan").innerText = currentStok;
-        
-        stokEkstreModal.show();
+        document.getElementById("stokEkstreAlinan").innerText = topAlinan; document.getElementById("stokEkstreSatilan").innerText = topSatilan; document.getElementById("stokEkstreKalan").innerText = currentStok;
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('stokEkstreModal')).show();
     }
 
     function renderStokKartlari() {
-        let container = document.getElementById("stokDashboardContainer"); if(!container) return; 
-        container.innerHTML = "";
-        if(stokKartlari.length === 0) {
-            container.innerHTML = `<div class="col-12"><div class="alert alert-light border text-center text-muted">Lütfen "Yeni Ürün Kartı Aç" butonuna basarak sisteme malzeme tanımlayın.</div></div>`;
-            return;
-        }
+        let container = document.getElementById("stokDashboardContainer"); if(!container) return; container.innerHTML = "";
+        if(stokKartlari.length === 0) { container.innerHTML = `<div class="col-12"><div class="alert alert-light border text-center text-muted">Stok Kartı Yok.</div></div>`; return; }
 
         stokKartlari.forEach(k => {
             let alimlar = stokAlimlari.filter(a => a.stokId === k.id);
             let satislar = stokSatislari.flatMap(s => s.detaylar.filter(d => d.stokId === k.id));
+            let tAlim = alimlar.reduce((sum, a) => sum + a.miktar, 0); let tAlimTutar = alimlar.reduce((sum, a) => sum + a.tutar, 0);
+            let tSatis = satislar.reduce((sum, s) => sum + s.miktar, 0);
+            let kalan = tAlim - tSatis; let ortMaliyet = tAlim > 0 ? (tAlimTutar / tAlim) : 0;
             
-            let toplamAlimMiktar = alimlar.reduce((sum, a) => sum + a.miktar, 0);
-            let toplamAlimTutar = alimlar.reduce((sum, a) => sum + a.tutar, 0);
-            let toplamSatisMiktar = satislar.reduce((sum, s) => sum + s.miktar, 0);
-            let kalan = toplamAlimMiktar - toplamSatisMiktar;
-            let ortMaliyet = toplamAlimMiktar > 0 ? (toplamAlimTutar / toplamAlimMiktar) : 0;
-            
-            let badgeClass = kalan > 0 ? "credit" : "debt";
             let colorText = kalan > 0 ? "text-pastel-success" : "text-pastel-danger";
             
             container.innerHTML += `<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 position-relative mb-3">
-                <div class="company-badge ${badgeClass} shadow-sm" onclick="openStokEkstre('${k.id}')" style="min-height: 100px;">
+                <div class="company-badge shadow-sm" style="border-left-color: ${kalan > 0 ? '#42e695' : '#e74a3b'};" onclick="openStokEkstre('${k.id}')">
                     <div class="d-flex justify-content-between align-items-start mb-1">
-                        <strong class="text-truncate w-75" style="font-size: 0.90rem; color: #555;" title="${k.cinsi}">${k.cinsi}</strong>
-                        <button class="btn btn-sm text-danger py-0 px-1 no-print" onclick="event.stopPropagation(); deleteStokKarti('${k.id}')" title="Sil"><i class="fas fa-trash"></i></button>
+                        <strong class="text-truncate w-75" style="font-size: 0.90rem; color: #555;">${k.cinsi}</strong>
+                        <button class="btn btn-sm text-danger py-0 px-1 no-print" onclick="event.stopPropagation(); deleteStokKarti('${k.id}')"><i class="fas fa-trash"></i></button>
                     </div>
                     <div><small class="text-muted"><i class="fas fa-tag"></i> ${k.aciklama || 'Kategori Yok'}</small></div>
                     <div class="mt-3 d-flex justify-content-between align-items-end border-top pt-2">
-                        <div>
-                            <span style="font-size: 0.70rem;" class="text-muted">Kalan Stok:</span><br>
-                            <h5 class="mb-0 fw-bold ${colorText}">${kalan} <small style="font-size:0.6em;" class="text-dark">Adet</small></h5>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge bg-light text-muted border shadow-sm" style="font-size: 0.65rem;">Ort: ${formatMoney(ortMaliyet)} ₺</span>
-                        </div>
+                        <div><span style="font-size: 0.70rem;" class="text-muted">Kalan Stok:</span><br><h5 class="mb-0 fw-bold ${colorText}">${kalan} <small style="font-size:0.6em;" class="text-dark">Adet</small></h5></div>
+                        <div class="text-end"><span class="badge bg-light text-muted border shadow-sm" style="font-size: 0.65rem;">Ort: ${formatMoney(ortMaliyet)} ₺</span></div>
                     </div>
                 </div>
             </div>`;
         });
     }
 
-    // --- 2. DEPOYA MALZEME ALIMI (TEDARİK) ---
     function openStokAlimModal() {
-        if(stokKartlari.length === 0) return alert("Lütfen önce yukarıdan Stok Kartı tanımlayınız.");
-        
-        document.getElementById("stokAlimTarih").valueAsDate = new Date();
-        document.getElementById("stokAlimSatici").value = "";
-        document.getElementById("stokAlimMiktar").value = "";
-        document.getElementById("stokAlimTutar").value = "";
-        
-        let sel = document.getElementById("stokAlimStokId");
-        sel.innerHTML = `<option value="">-- Depoya Girecek Ürünü Seç --</option>` + stokKartlari.map(k => `<option value="${k.id}">${k.cinsi}</option>`).join("");
-        
-        new bootstrap.Modal(document.getElementById('stokAlimModal')).show();
+        if(stokKartlari.length === 0) return alert("Önce Stok Kartı tanımlayınız.");
+        document.getElementById("stokAlimTarih").valueAsDate = new Date(); document.getElementById("stokAlimSatici").value = ""; document.getElementById("stokAlimMiktar").value = ""; document.getElementById("stokAlimTutar").value = "";
+        document.getElementById("stokAlimStokId").innerHTML = `<option value="">-- Ürün Seç --</option>` + stokKartlari.map(k => `<option value="${k.id}">${k.cinsi}</option>`).join("");
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('stokAlimModal')).show();
     }
 
     function saveStokAlim() {
-        let tarih = document.getElementById("stokAlimTarih").value;
-        let stokId = document.getElementById("stokAlimStokId").value;
+        let tarih = document.getElementById("stokAlimTarih").value; let stokId = document.getElementById("stokAlimStokId").value;
         let satici = document.getElementById("stokAlimSatici").value.trim() || "Bilinmeyen Tedarikçi";
-        let miktar = parseInt(document.getElementById("stokAlimMiktar").value) || 0;
-        let tutar = parseAmount(document.getElementById("stokAlimTutar").value);
-        
-        if(!stokId || miktar <= 0 || tutar <= 0) return alert("Ürün, miktar ve fatura tutarı zorunludur.");
-        
+        let miktar = parseInt(document.getElementById("stokAlimMiktar").value) || 0; let tutar = parseAmount(document.getElementById("stokAlimTutar").value);
+        if(!stokId || miktar <= 0 || tutar <= 0) return alert("Hatalı giriş.");
         let p = tarih ? tarih.split("-") : []; let trTarih = p.length===3 ? `${p[2]}.${p[1]}.${p[0]}` : "-";
-        
         stokAlimlari.push({ id: generateId(), stokId, satici, miktar, tutar, tarih: trTarih, rawTarih: tarih });
-        
-        bootstrap.Modal.getInstance(document.getElementById('stokAlimModal')).hide(); 
-        updateAllViews();
-        logMessage(`Depoya ${miktar} adet ürün girişi yapıldı.`, "success");
+        bootstrap.Modal.getInstance(document.getElementById('stokAlimModal')).hide(); updateAllViews();
     }
 
-    function deleteStokAlim(id) { 
-        if(confirm("Depo giriş kaydını (Tedarik) iptal etmek istediğinize emin misiniz?")) { 
-            stokAlimlari = stokAlimlari.filter(a => a.id !== id); 
-            updateAllViews(); 
-        } 
-    }
+    function deleteStokAlim(id) { if(confirm("Alım iptal edilsin mi?")) { stokAlimlari = stokAlimlari.filter(a => a.id !== id); updateAllViews(); } }
 
     function renderStokAlimlari() {
         let tbody = document.getElementById("stokAlimlariBody"); if(!tbody) return; tbody.innerHTML = "";
-        if(stokAlimlari.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted small">Alım kaydı yok.</td></tr>`; return; }
-        
         stokAlimlari.sort((a,b)=> parseTRDate(b.tarih) - parseTRDate(a.tarih)).forEach(a => {
-            let k = stokKartlari.find(x => x.id === a.stokId);
-            let cinsi = k ? k.cinsi : "Silinmiş Ürün";
-            let birim = a.tutar / a.miktar;
-            
-            tbody.innerHTML += `<tr>
-                <td class="text-muted">${a.tarih}</td>
-                <td><span class="badge bg-info text-dark shadow-sm">${cinsi}</span></td>
-                <td><strong>${a.satici}</strong></td>
-                <td class="text-center fw-bold">${a.miktar}</td>
-                <td class="text-end fw-bold text-danger">${formatMoney(a.tutar)} ₺ <br><small class="text-muted fw-normal">(${formatMoney(birim)} ₺/b)</small></td>
-                <td class="text-center"><button class="btn btn-sm btn-outline-danger py-0 px-2 shadow-sm" onclick="deleteStokAlim('${a.id}')"><i class="fas fa-times"></i></button></td>
-            </tr>`;
+            let k = stokKartlari.find(x => x.id === a.stokId); let cinsi = k ? k.cinsi : "Silinmiş"; let birim = a.tutar / a.miktar;
+            tbody.innerHTML += `<tr><td class="text-muted">${a.tarih}</td><td><span class="badge bg-info text-dark">${cinsi}</span></td><td><strong>${a.satici}</strong></td><td class="text-center fw-bold">${a.miktar}</td><td class="text-end fw-bold text-danger">${formatMoney(a.tutar)} ₺ <br><small class="text-muted fw-normal">(${formatMoney(birim)} ₺/b)</small></td><td class="text-center"><button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteStokAlim('${a.id}')"><i class="fas fa-times"></i></button></td></tr>`;
         });
     }
 
-    // --- 3. MÜŞTERİYE SATIŞ VE CARİ ENTEGRASYONU ---
     function openStokSatisModal() {
-        if(stokKartlari.length === 0) return alert("Lütfen önce Stok Kartı tanımlayınız.");
-        if(Object.keys(companies).length === 0) return alert("HATA: Hiç kayıtlı Müşteri/Cari hesabınız yok. Lütfen Cari Liste ekranından Cari Firma ekleyiniz.");
-        
-        document.getElementById("stokSatisTarih").valueAsDate = new Date();
-        document.getElementById("stokSatisFisNo").value = "STK-" + Math.floor(1000 + Math.random()*9000);
-        
-        let cariSel = document.getElementById("stokSatisCariVkn");
-        cariSel.innerHTML = `<option value="">-- Alıcı Firma Seçiniz --</option>` + Object.values(companies).sort((a,b)=>a.unvan.localeCompare(b.unvan)).map(c => `<option value="${c.vkn}">${c.unvan}</option>`).join("");
-        
-        document.getElementById("stokSatisSatirlari").innerHTML = "";
-        addStokSatisRow(); // İlk boş satırı ekle
-        calculateStokSatisTotal();
-        
-        new bootstrap.Modal(document.getElementById('stokSatisModal')).show();
+        if(stokKartlari.length === 0 || Object.keys(companies).length === 0) return alert("Stok ve Cari zorunludur.");
+        document.getElementById("stokSatisTarih").valueAsDate = new Date(); document.getElementById("stokSatisFisNo").value = "STK-" + Math.floor(1000 + Math.random()*9000);
+        document.getElementById("stokSatisCariVkn").innerHTML = `<option value="">-- Alıcı Firma Seçiniz --</option>` + Object.values(companies).sort((a,b)=>a.unvan.localeCompare(b.unvan)).map(c => `<option value="${c.vkn}">${c.unvan}</option>`).join("");
+        document.getElementById("stokSatisSatirlari").innerHTML = ""; addStokSatisRow(); calculateStokSatisTotal();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('stokSatisModal')).show();
     }
 
     function addStokSatisRow() {
-        let container = document.getElementById("stokSatisSatirlari");
-        let row = document.createElement("div"); 
-        row.className = "row g-2 mb-2 align-items-center stok-satis-row pb-2 border-bottom";
-        
         let opts = `<option value="">-- Ürün Seç --</option>` + stokKartlari.map(k => {
-            // İsteğe bağlı: Ekranda ürün seçerken anlık kalan stoğu göstermek
-            let alilan = stokAlimlari.filter(a => a.stokId === k.id).reduce((sum, a)=>sum+a.miktar,0);
-            let satilan = stokSatislari.flatMap(s => s.detaylar.filter(d => d.stokId === k.id)).reduce((sum, s)=>sum+s.miktar,0);
-            return `<option value="${k.id}">${k.cinsi} (Stok: ${alilan - satilan})</option>`;
+            let kalan = stokAlimlari.filter(a => a.stokId === k.id).reduce((sum, a)=>sum+a.miktar,0) - stokSatislari.flatMap(s => s.detaylar.filter(d => d.stokId === k.id)).reduce((sum, s)=>sum+s.miktar,0);
+            return `<option value="${k.id}">${k.cinsi} (Stok: ${kalan})</option>`;
         }).join("");
-
-        row.innerHTML = `
-            <div class="col-4"><select class="form-select form-select-sm s-stokId border-info shadow-sm">${opts}</select></div>
-            <div class="col-2"><input type="number" class="form-control form-control-sm s-miktar shadow-sm" placeholder="Adet" onkeyup="calculateStokSatisTotal()" onchange="calculateStokSatisTotal()"></div>
-            <div class="col-3"><input type="text" class="form-control form-control-sm s-fiyat shadow-sm" placeholder="Birim Satış Fiyatı (₺)" onkeyup="calculateStokSatisTotal()"></div>
-            <div class="col-2"><input type="text" class="form-control form-control-sm s-tutar text-end fw-bold text-success border-success bg-white shadow-sm" readonly placeholder="0,00 ₺"></div>
-            <div class="col-1"><button type="button" class="btn btn-sm btn-danger w-100 shadow-sm" onclick="this.parentElement.parentElement.remove(); calculateStokSatisTotal()"><i class="fas fa-trash"></i></button></div>
-        `;
-        container.appendChild(row);
+        let row = document.createElement("div"); row.className = "row g-2 mb-2 align-items-center stok-satis-row pb-2 border-bottom";
+        row.innerHTML = `<div class="col-4"><select class="form-select form-select-sm s-stokId border-info">${opts}</select></div><div class="col-2"><input type="number" class="form-control form-control-sm s-miktar" placeholder="Adet" onkeyup="calculateStokSatisTotal()" onchange="calculateStokSatisTotal()"></div><div class="col-3"><input type="text" class="form-control form-control-sm s-fiyat" placeholder="Fiyat" onkeyup="calculateStokSatisTotal()"></div><div class="col-2"><input type="text" class="form-control form-control-sm s-tutar text-end fw-bold text-success" readonly placeholder="0,00"></div><div class="col-1"><button type="button" class="btn btn-sm btn-danger w-100" onclick="this.parentElement.parentElement.remove(); calculateStokSatisTotal()"><i class="fas fa-trash"></i></button></div>`;
+        document.getElementById("stokSatisSatirlari").appendChild(row);
     }
 
     function calculateStokSatisTotal() {
         let genel = 0;
-        document.querySelectorAll(".stok-satis-row").forEach(row => {
-            let miktar = parseInt(row.querySelector(".s-miktar").value) || 0;
-            let fiyat = parseAmount(row.querySelector(".s-fiyat").value);
-            let tutar = miktar * fiyat;
-            row.querySelector(".s-tutar").value = formatMoney(tutar) + " ₺";
-            genel += tutar;
-        });
+        document.querySelectorAll(".stok-satis-row").forEach(r => { let m = parseInt(r.querySelector(".s-miktar").value)||0; let f = parseAmount(r.querySelector(".s-fiyat").value); let t = m*f; r.querySelector(".s-tutar").value = formatMoney(t); genel += t; });
         document.getElementById("stokSatisGenelToplam").innerText = formatMoney(genel) + " ₺";
     }
 
     function saveStokSatis() {
-        let tarih = document.getElementById("stokSatisTarih").value;
-        let fisNo = document.getElementById("stokSatisFisNo").value.trim() || "-";
-        let cariVkn = document.getElementById("stokSatisCariVkn").value;
-        if(!cariVkn) return alert("Lütfen Alıcı Firma / Cari seçiniz!");
-        
+        let tarih = document.getElementById("stokSatisTarih").value; let fisNo = document.getElementById("stokSatisFisNo").value.trim() || "-"; let cariVkn = document.getElementById("stokSatisCariVkn").value;
+        if(!cariVkn) return alert("Cari seçiniz!");
         let p = tarih ? tarih.split("-") : []; let trTarih = p.length===3 ? `${p[2]}.${p[1]}.${p[0]}` : "-";
-        
-        let detaylar = [];
-        let genelToplam = 0;
-        let valid = true;
-        let errorMsg = "";
-
-        document.querySelectorAll(".stok-satis-row").forEach(row => {
-            let stokId = row.querySelector(".s-stokId").value;
-            let miktar = parseInt(row.querySelector(".s-miktar").value) || 0;
-            let fiyat = parseAmount(row.querySelector(".s-fiyat").value);
-            let tutar = miktar * fiyat;
-            
-            if(stokId && miktar > 0 && fiyat > 0) {
-                // Eksi Stok Kontrolü
-                let alimlar = stokAlimlari.filter(a => a.stokId === stokId).reduce((sum, a)=>sum+a.miktar,0);
-                let satislar = stokSatislari.flatMap(s => s.detaylar.filter(d => d.stokId === stokId)).reduce((sum, s)=>sum+s.miktar,0);
-                let kalan = alimlar - satislar;
-                if(miktar > kalan) { valid = false; errorMsg = "Depodaki stoğunuzdan daha fazlasını satmaya çalışıyorsunuz!"; }
-
-                detaylar.push({ stokId, miktar, birimFiyat: fiyat, tutar });
-                genelToplam += tutar;
+        let detaylar = []; let genelToplam = 0; let valid = true;
+        document.querySelectorAll(".stok-satis-row").forEach(r => {
+            let sid = r.querySelector(".s-stokId").value; let m = parseInt(r.querySelector(".s-miktar").value)||0; let f = parseAmount(r.querySelector(".s-fiyat").value);
+            if(sid && m > 0 && f > 0) {
+                let kalan = stokAlimlari.filter(a => a.stokId === sid).reduce((sum, a)=>sum+a.miktar,0) - stokSatislari.flatMap(s => s.detaylar.filter(d => d.stokId === sid)).reduce((sum, s)=>sum+s.miktar,0);
+                if(m > kalan) valid = false;
+                detaylar.push({ stokId: sid, miktar: m, birimFiyat: f, tutar: m*f }); genelToplam += m*f;
             }
         });
-
-        if(!valid && !confirm(errorMsg + " Yine de eksi stoğa düşerek satışı kaydetmek istiyor musunuz?")) return;
-        if(detaylar.length === 0) return alert("Lütfen satılacak ürünleri ve fiyatlarını doğru giriniz.");
-
-        let satisId = "STKS-" + generateId(); // Özel prefix ile ayırdık
-        stokSatislari.push({ id: satisId, tarih: trTarih, rawTarih: tarih, fisNo, cariVkn, detaylar, genelToplam });
-
-        // HARİKA KISIM: MÜŞTERİ CARİSİNE FATURA (BORÇ) OLARAK YAZILIYOR!
-        let c = companies[cariVkn];
-        let urunIsimleri = detaylar.map(d => { let kart = stokKartlari.find(x => x.id === d.stokId); return kart ? kart.cinsi : ""; }).join(", ");
-        let aciklama = `Malzeme Satışı (Fiş: ${fisNo}) - ${urunIsimleri}`;
+        if(!valid && !confirm("Eksi stok! Yine de kaydedilsin mi?")) return;
+        if(detaylar.length === 0) return alert("Ürün girin.");
         
-        c.faturaTutar += genelToplam;
-        c.hareketler.push({ id: satisId, tur: "Fatura", tarih: trTarih, aciklama: aciklama, tutar: genelToplam, orjTutar: genelToplam });
-
-        bootstrap.Modal.getInstance(document.getElementById('stokSatisModal')).hide(); 
-        updateAllViews();
-        logMessage(`Satış tamamlandı. Cari hesaba ${formatMoney(genelToplam)} ₺ borç yazıldı.`, "success");
+        let satisId = "STKS-" + generateId();
+        stokSatislari.push({ id: satisId, tarih: trTarih, rawTarih: tarih, fisNo, cariVkn, detaylar, genelToplam });
+        
+        let c = companies[cariVkn]; let uIsimler = detaylar.map(d => { let k = stokKartlari.find(x => x.id === d.stokId); return k ? k.cinsi : ""; }).join(", ");
+        c.faturaTutar += genelToplam; c.hareketler.push({ id: satisId, tur: "Fatura", tarih: trTarih, aciklama: `Malzeme Satışı (Fiş: ${fisNo}) - ${uIsimler}`, tutar: genelToplam, orjTutar: genelToplam });
+        
+        bootstrap.Modal.getInstance(document.getElementById('stokSatisModal')).hide(); updateAllViews();
     }
 
     function deleteStokSatis(id) {
-        if(!confirm("Bu satışı iptal etmek ve müşteri cari borcunu sıfırlamak istediğinize emin misiniz?")) return;
-        
+        if(!confirm("İptal edilsin mi? Cari hesap bakiyesi de düşecek.")) return;
         let sIndex = stokSatislari.findIndex(s => s.id === id);
         if(sIndex > -1) {
-            let s = stokSatislari[sIndex];
-            
-            // Müşterinin bakiyesinden (faturasından) geri düşüyoruz
-            let c = companies[s.cariVkn];
-            if(c) {
-                c.faturaTutar -= s.genelToplam;
-                c.hareketler = c.hareketler.filter(h => h.id !== id);
-            }
-            
-            stokSatislari.splice(sIndex, 1);
-            updateAllViews();
-            logMessage("Satış iptal edildi ve Cari bakiye düzeltildi.", "warning");
+            let s = stokSatislari[sIndex]; let c = companies[s.cariVkn];
+            if(c) { c.faturaTutar -= s.genelToplam; c.hareketler = c.hareketler.filter(h => h.id !== id); }
+            stokSatislari.splice(sIndex, 1); updateAllViews();
         }
     }
 
     function renderStokSatislari() {
         let tbody = document.getElementById("stokSatislariBody"); if(!tbody) return; tbody.innerHTML = "";
-        if(stokSatislari.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted small">Henüz satış yapılmadı.</td></tr>`; return; }
-
         stokSatislari.sort((a,b)=> parseTRDate(b.tarih) - parseTRDate(a.tarih)).forEach(s => {
-            let cariAd = companies[s.cariVkn] ? companies[s.cariVkn].unvan : "Silinmiş Cari";
-            
-            let detayHtml = s.detaylar.map(d => {
-                let k = stokKartlari.find(x => x.id === d.stokId);
-                let cinsi = k ? k.cinsi : "Bilinmeyen Ürün";
-                return `• ${d.miktar} Adet ${cinsi} (${formatMoney(d.birimFiyat)} ₺)`;
-            }).join("<br>");
-
-            tbody.innerHTML += `<tr>
-                <td class="text-muted">${s.tarih}</td>
-                <td><span class="badge bg-secondary shadow-sm">${s.fisNo}</span></td>
-                <td><strong class="text-primary" style="cursor:pointer;" onclick="openEkstre('${s.cariVkn}')" title="Cari Ekstreyi Aç">${cariAd}</strong></td>
-                <td><small>${detayHtml}</small></td>
-                <td class="text-end fw-bold text-success fs-6">${formatMoney(s.genelToplam)} ₺</td>
-                <td class="text-center" style="white-space:nowrap;">
-                    <button class="btn btn-sm btn-outline-info py-0 px-2 shadow-sm" onclick="openEkstre('${s.cariVkn}')" title="Müşteri Cari Ekstresi ve Tahsilat İşlemi"><i class="fas fa-wallet"></i> Tahsilat</button>
-                    <button class="btn btn-sm btn-outline-danger py-0 px-2 shadow-sm ms-1" onclick="deleteStokSatis('${s.id}')" title="Satışı İptal Et"><i class="fas fa-times"></i></button>
-                </td>
-            </tr>`;
+            let cariAd = companies[s.cariVkn] ? companies[s.cariVkn].unvan : "Silinmiş";
+            let dHtml = s.detaylar.map(d => `• ${d.miktar}x ${stokKartlari.find(x => x.id === d.stokId)?.cinsi||'Bilinmeyen'} (${formatMoney(d.birimFiyat)} ₺)`).join("<br>");
+            tbody.innerHTML += `<tr><td class="text-muted">${s.tarih}</td><td><span class="badge bg-secondary">${s.fisNo}</span></td><td><strong class="text-primary" style="cursor:pointer;" onclick="openEkstre('${s.cariVkn}')">${cariAd}</strong></td><td><small>${dHtml}</small></td><td class="text-end fw-bold text-success">${formatMoney(s.genelToplam)} ₺</td><td class="text-center"><button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteStokSatis('${s.id}')"><i class="fas fa-times"></i></button></td></tr>`;
         });
     }
 
     function printStokAlim() {
-        let html = `
-        <div style="max-width: 900px; margin: 0 auto; font-family: sans-serif;">
-            <div style="text-align: center; margin-bottom: 20px;" class="no-print">
-                <button onclick="window.print()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; font-weight: bold;">🖨️ Yazdır</button>
-            </div>
-            <h2 style="text-align:center; border-bottom: 2px solid #333; padding-bottom: 10px;">Malzeme Alım (Depo Giriş) Listesi</h2>
-            <table border="1" width="100%" cellpadding="8" style="border-collapse:collapse; text-align:left; font-size: 14px;">
-                <tr style="background:#f8f9fa;"><th>Tarih</th><th>Ürün</th><th>Tedarikçi</th><th style="text-align:center;">Miktar</th><th style="text-align:right;">Tutar (₺)</th></tr>`;
-        let totalTutar = 0;
-        stokAlimlari.sort((a,b)=> parseTRDate(b.tarih) - parseTRDate(a.tarih)).forEach(a => {
-            let k = stokKartlari.find(x => x.id === a.stokId);
-            let cinsi = k ? k.cinsi : "Silinmiş Ürün";
-            totalTutar += a.tutar;
-            html += `<tr><td>${a.tarih}</td><td>${cinsi}</td><td>${a.satici}</td><td align="center"><b>${a.miktar}</b></td><td align="right">${formatMoney(a.tutar)}</td></tr>`;
-        });
-        html += `<tr style="background:#f1f5f9; font-weight:bold;"><td colspan="4" align="right">GENEL TOPLAM:</td><td align="right" style="color:#dc3545; font-size:16px;">${formatMoney(totalTutar)} ₺</td></tr>`;
-        html += `</table></div><style>@media print { .no-print { display: none !important; } }</style>`;
+        let html = `<div style="max-width:900px; margin:0 auto; font-family:sans-serif;"><div class="no-print text-center mb-3"><button onclick="window.print()" style="padding:10px; background:#dc3545; color:#fff; border:none; border-radius:5px; cursor:pointer;">Yazdır</button></div><h2 style="text-align:center;">Depo Alım Listesi</h2><table border="1" width="100%" cellpadding="8" style="border-collapse:collapse; font-size:14px;"><tr style="background:#f8f9fa;"><th>Tarih</th><th>Ürün</th><th>Tedarikçi</th><th>Miktar</th><th align="right">Tutar</th></tr>`;
+        let t = 0; stokAlimlari.forEach(a => { let c = stokKartlari.find(x => x.id === a.stokId)?.cinsi; t += a.tutar; html += `<tr><td>${a.tarih}</td><td>${c}</td><td>${a.satici}</td><td>${a.miktar}</td><td align="right">${formatMoney(a.tutar)}</td></tr>`; });
+        html += `<tr><th colspan="4" align="right">TOPLAM:</th><th align="right" style="color:red;">${formatMoney(t)} ₺</th></tr></table></div><style>@media print{.no-print{display:none;}}</style>`;
         let w = window.open('','_blank'); w.document.write(html); w.document.close();
     }
 
     function printStokSatis() {
-        let html = `
-        <div style="max-width: 900px; margin: 0 auto; font-family: sans-serif;">
-            <div style="text-align: center; margin-bottom: 20px;" class="no-print">
-                <button onclick="window.print()" style="background: #198754; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; font-weight: bold;">🖨️ Yazdır</button>
-            </div>
-            <h2 style="text-align:center; border-bottom: 2px solid #333; padding-bottom: 10px;">Stok Satış İşlemleri Listesi</h2>
-            <table border="1" width="100%" cellpadding="8" style="border-collapse:collapse; text-align:left; font-size: 14px;">
-                <tr style="background:#f8f9fa;"><th>Tarih</th><th>Fiş No</th><th>Alıcı Cari</th><th>Ürün Detayı</th><th style="text-align:right;">Satış Tutarı (₺)</th></tr>`;
-        let totalSatis = 0;
-        stokSatislari.sort((a,b)=> parseTRDate(b.tarih) - parseTRDate(a.tarih)).forEach(s => {
-            let cariAd = companies[s.cariVkn] ? companies[s.cariVkn].unvan : "Silinmiş Cari";
-            let detayStr = s.detaylar.map(d => {
-                let k = stokKartlari.find(x => x.id === d.stokId);
-                return `<b>${d.miktar}x</b> ${k ? k.cinsi : 'Bilinmeyen'} (${formatMoney(d.birimFiyat)} ₺)`;
-            }).join("<br>");
-            totalSatis += s.genelToplam;
-            html += `<tr><td valign="top">${s.tarih}</td><td valign="top">${s.fisNo}</td><td valign="top"><b>${cariAd}</b></td><td valign="top">${detayStr}</td><td align="right" valign="top"><b>${formatMoney(s.genelToplam)}</b></td></tr>`;
-        });
-        html += `<tr style="background:#f1f5f9; font-weight:bold;"><td colspan="4" align="right">GENEL TOPLAM:</td><td align="right" style="color:#198754; font-size:16px;">${formatMoney(totalSatis)} ₺</td></tr>`;
-        html += `</table></div><style>@media print { .no-print { display: none !important; } }</style>`;
+        let html = `<div style="max-width:900px; margin:0 auto; font-family:sans-serif;"><div class="no-print text-center mb-3"><button onclick="window.print()" style="padding:10px; background:#198754; color:#fff; border:none; border-radius:5px; cursor:pointer;">Yazdır</button></div><h2 style="text-align:center;">Satış İşlemleri</h2><table border="1" width="100%" cellpadding="8" style="border-collapse:collapse; font-size:14px;"><tr style="background:#f8f9fa;"><th>Tarih</th><th>Fiş No</th><th>Cari</th><th>Detay</th><th align="right">Tutar</th></tr>`;
+        let t = 0; stokSatislari.forEach(s => { let c = companies[s.cariVkn]?.unvan; let d = s.detaylar.map(x=>`${x.miktar}x ${stokKartlari.find(k=>k.id===x.stokId)?.cinsi}`).join(', '); t += s.genelToplam; html += `<tr><td>${s.tarih}</td><td>${s.fisNo}</td><td>${c}</td><td>${d}</td><td align="right">${formatMoney(s.genelToplam)}</td></tr>`; });
+        html += `<tr><th colspan="4" align="right">TOPLAM:</th><th align="right" style="color:green;">${formatMoney(t)} ₺</th></tr></table></div><style>@media print{.no-print{display:none;}}</style>`;
         let w = window.open('','_blank'); w.document.write(html); w.document.close();
     }
 </script>
