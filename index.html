@@ -4106,7 +4106,7 @@ if (!isFatura) {
         return; 
     }
 
-    // 1. ÖNCE HESAPLAMA YAP: Kalan stoklara göre sıralayabilmek için değerleri önceden hesaplayıp diziye ekliyoruz
+    // 1. ÖNCE HESAPLAMA YAP: Hem kartlar hem de genel özet için
     let hesaplanmisKartlar = stokKartlari.map(k => {
         let alimlar = stokAlimlari.filter(a => a.stokId === k.id);
         let satislar = stokSatislari.flatMap(s => s.detaylar.filter(d => d.stokId === k.id));
@@ -4121,21 +4121,48 @@ if (!isFatura) {
         return { ...k, tAlim, tAlimTutar, tSatis, kalan, ortMaliyet };
     });
 
-    // 2. SIRALAMA: Kalan stoğu en çok olandan en az olana (büyükten küçüğe) doğru sırala
+    // 2. GENEL DEPO ÖZETİ HESAPLAMASI (Yeni Eklenen Kısım)
+    let genelToplamAdet = 0;
+    let genelToplamTutar = 0;
+    
+    hesaplanmisKartlar.forEach(k => {
+        if (k.kalan > 0) { // Eksiye düşen hatalı stokları depo değerinden düşmemek için
+            genelToplamAdet += k.kalan;
+            genelToplamTutar += (k.kalan * k.ortMaliyet);
+        }
+    });
+
+    // 3. ÖZET BİLGİ PANELİNİ EKRANA BAS (Kartların Üstüne)
+    container.innerHTML += `
+    <div class="col-12 mb-3 no-print">
+        <div class="d-flex flex-wrap justify-content-around align-items-center bg-white border-start border-4 border-info rounded p-3 shadow-sm">
+            <div class="text-center px-3 border-end flex-fill">
+                <h6 class="text-muted mb-1 fw-bold" style="font-size: 0.85rem;"><i class="fas fa-tags text-info"></i> Toplam Ürün Çeşidi</h6>
+                <h4 class="text-dark fw-bold mb-0">${hesaplanmisKartlar.length}</h4>
+            </div>
+            <div class="text-center px-3 border-end flex-fill">
+                <h6 class="text-muted mb-1 fw-bold" style="font-size: 0.85rem;"><i class="fas fa-cubes text-success"></i> Depodaki Toplam Adet</h6>
+                <h4 class="text-success fw-bold mb-0">${genelToplamAdet}</h4>
+            </div>
+            <div class="text-center px-3 flex-fill">
+                <h6 class="text-muted mb-1 fw-bold" style="font-size: 0.85rem;"><i class="fas fa-lira-sign text-danger"></i> Mevcut Depo Stok Değeri</h6>
+                <h4 class="text-danger fw-bold mb-0">${formatMoney(genelToplamTutar)} ₺</h4>
+            </div>
+        </div>
+    </div>`;
+
+    // 4. KARTLARI SIRALA VE EKRANA ÇİZ
     hesaplanmisKartlar.sort((a, b) => b.kalan - a.kalan);
 
-    // 3. EKRANA ÇİZME: Sıralanmış ve hesaplanmış yeni dizi üzerinden döngü kuruyoruz
     hesaplanmisKartlar.forEach(k => {
         let colorText = k.kalan > 0 ? "text-pastel-success" : "text-pastel-danger";
         let searchString = normalizeText(k.cinsi + " " + (k.aciklama || 'Kategori Yok'));
         
-        // col-xl-3 (yan yana 4 kart) yerine col-xl-2 (yan yana 6 kart) yapıldı
         container.innerHTML += `<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 position-relative mb-3 stok-karti-row" data-search="${searchString}">
             <div class="company-badge shadow-sm" style="border-left-color: ${k.kalan > 0 ? '#42e695' : '#e74a3b'};" onclick="openStokEkstre('${k.id}')">
                 <div class="d-flex justify-content-between align-items-start mb-1">
-                    <strong class="text-truncate w-75" style="font-size: 0.90rem; color: #555;">${k.cinsi}</strong>
+                    <strong class="text-truncate w-75" style="font-size: 0.90rem; color: #555;" title="${k.cinsi}">${k.cinsi}</strong>
                     <div class="no-print" style="white-space: nowrap;">
-                        <!-- DEĞİŞTİR VE SİL BUTONLARI YAN YANA -->
                         <button class="btn btn-sm text-warning py-0 px-1" onclick="event.stopPropagation(); editStokKarti('${k.id}')" title="Düzenle"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-sm text-danger py-0 px-1" onclick="event.stopPropagation(); deleteStokKarti('${k.id}')" title="Sil"><i class="fas fa-trash"></i></button>
                     </div>
