@@ -437,7 +437,7 @@
         <li class="nav-item" role="presentation"><button class="nav-link" id="unmatched-tab" data-bs-toggle="tab" data-bs-target="#unmatched" type="button" role="tab"><i class="fas fa-exclamation-triangle"></i> 5. Eşleşmeyenler <span id="unmatched-count" class="badge bg-danger rounded-pill">0</span></button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" id="cancelled-tab" data-bs-toggle="tab" data-bs-target="#cancelled" type="button" role="tab"><i class="fas fa-ban text-warning"></i> 6. İptaller <span id="cancelled-count" class="badge bg-warning text-dark rounded-pill">0</span></button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" id="personnel-tab" data-bs-toggle="tab" data-bs-target="#personnel" type="button" role="tab"><i class="fas fa-id-badge" style="color: #667eea;"></i> 7. Personel</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="uninvoiced-tab" data-bs-toggle="tab" data-bs-target="#uninvoiced" type="button" role="tab"><i class="fas fa-broom text-secondary"></i> 8. Faturasız</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" id="uninvoiced-tab" data-bs-toggle="tab" data-bs-target="#uninvoiced" type="button" role="tab"><i class="fas fa-broom text-secondary"></i> 8. Stok</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" id="agenda-tab" data-bs-toggle="tab" data-bs-target="#agenda" type="button" role="tab"><i class="fas fa-calendar-alt text-danger"></i> 9. Ödeme Ajandası</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab"><i class="fas fa-robot" style="color: #8e44ad;"></i> 10. AI Raporlar</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" id="invoices-tab" data-bs-toggle="tab" data-bs-target="#invoices" type="button" role="tab"><i class="fas fa-file-invoice" style="color: #ff9800;"></i> 11. Faturalar</button></li>
@@ -808,10 +808,20 @@
             <div class="tab-content" id="stokSubTabContent">
                 <!-- 1. STOK KARTLARI -->
                 <div class="tab-pane fade show active" id="stok-mevcut" role="tabpanel">
-                    <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
-                        <h5 class="fw-bold text-info mb-0"><i class="fas fa-cubes"></i> Stok Kartları Paneli</h5>
-                        <button type="button" class="btn btn-info text-white fw-bold shadow-sm btn-sm" onclick="openStokKartiModal()"><i class="fas fa-plus"></i> Yeni Ürün Kartı Aç</button>
-                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 mt-3 flex-wrap gap-2">
+    <h5 class="fw-bold text-info mb-0"><i class="fas fa-cubes"></i> Stok Kartları Paneli</h5>
+    <div class="d-flex align-items-center gap-2">
+        <!-- Arama Çubuğu -->
+        <div class="input-group input-group-sm shadow-sm" style="width: 250px;">
+            <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-search"></i></span>
+            <input type="text" id="stokKartiAraInput" class="form-control border-start-0 ps-0 border-info" placeholder="Ürün veya Kategori Ara..." onkeyup="filterStokKartlari()">
+        </div>
+        <!-- Yazdır Butonu -->
+        <button type="button" class="btn btn-outline-dark fw-bold shadow-sm btn-sm no-print" onclick="printStokKartlari()"><i class="fas fa-print"></i> Yazdır</button>
+        <!-- Yeni Ekle Butonu -->
+        <button type="button" class="btn btn-info text-white fw-bold shadow-sm btn-sm" onclick="openStokKartiModal()"><i class="fas fa-plus"></i> Yeni Ürün Kartı Aç</button>
+    </div>
+</div>
                     <div class="row g-3" id="stokDashboardContainer"></div>
                 </div>
 
@@ -4074,33 +4084,37 @@ if (!isFatura) {
     }
 
     function renderStokKartlari() {
-        let container = document.getElementById("stokDashboardContainer"); if(!container) return; container.innerHTML = "";
-        if(stokKartlari.length === 0) { container.innerHTML = `<div class="col-12"><div class="alert alert-light border text-center text-muted">Stok Kartı Yok.</div></div>`; return; }
+    let container = document.getElementById("stokDashboardContainer"); if(!container) return; container.innerHTML = "";
+    if(stokKartlari.length === 0) { container.innerHTML = `<div class="col-12"><div class="alert alert-light border text-center text-muted">Stok Kartı Yok.</div></div>`; return; }
 
-        stokKartlari.forEach(k => {
-            let alimlar = stokAlimlari.filter(a => a.stokId === k.id);
-            let satislar = stokSatislari.flatMap(s => s.detaylar.filter(d => d.stokId === k.id));
-            let tAlim = alimlar.reduce((sum, a) => sum + a.miktar, 0); let tAlimTutar = alimlar.reduce((sum, a) => sum + a.tutar, 0);
-            let tSatis = satislar.reduce((sum, s) => sum + s.miktar, 0);
-            let kalan = tAlim - tSatis; let ortMaliyet = tAlim > 0 ? (tAlimTutar / tAlim) : 0;
-            
-            let colorText = kalan > 0 ? "text-pastel-success" : "text-pastel-danger";
-            
-            container.innerHTML += `<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 position-relative mb-3">
-                <div class="company-badge shadow-sm" style="border-left-color: ${kalan > 0 ? '#42e695' : '#e74a3b'};" onclick="openStokEkstre('${k.id}')">
-                    <div class="d-flex justify-content-between align-items-start mb-1">
-                        <strong class="text-truncate w-75" style="font-size: 0.90rem; color: #555;">${k.cinsi}</strong>
-                        <button class="btn btn-sm text-danger py-0 px-1 no-print" onclick="event.stopPropagation(); deleteStokKarti('${k.id}')"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div><small class="text-muted"><i class="fas fa-tag"></i> ${k.aciklama || 'Kategori Yok'}</small></div>
-                    <div class="mt-3 d-flex justify-content-between align-items-end border-top pt-2">
-                        <div><span style="font-size: 0.70rem;" class="text-muted">Kalan Stok:</span><br><h5 class="mb-0 fw-bold ${colorText}">${kalan} <small style="font-size:0.6em;" class="text-dark">Adet</small></h5></div>
-                        <div class="text-end"><span class="badge bg-light text-muted border shadow-sm" style="font-size: 0.65rem;">Ort: ${formatMoney(ortMaliyet)} ₺</span></div>
-                    </div>
+    stokKartlari.forEach(k => {
+        let alimlar = stokAlimlari.filter(a => a.stokId === k.id);
+        let satislar = stokSatislari.flatMap(s => s.detaylar.filter(d => d.stokId === k.id));
+        let tAlim = alimlar.reduce((sum, a) => sum + a.miktar, 0); let tAlimTutar = alimlar.reduce((sum, a) => sum + a.tutar, 0);
+        let tSatis = satislar.reduce((sum, s) => sum + s.miktar, 0);
+        let kalan = tAlim - tSatis; let ortMaliyet = tAlim > 0 ? (tAlimTutar / tAlim) : 0;
+        
+        let colorText = kalan > 0 ? "text-pastel-success" : "text-pastel-danger";
+        
+        // ARAMA İÇİN: Aranacak metni oluşturuyoruz
+        let searchString = normalizeText(k.cinsi + " " + (k.aciklama || 'Kategori Yok'));
+        
+        // DİV İÇİNE stok-karti-row sınıfını ve data-search attribute'unu ekledik
+        container.innerHTML += `<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 position-relative mb-3 stok-karti-row" data-search="${searchString}">
+            <div class="company-badge shadow-sm" style="border-left-color: ${kalan > 0 ? '#42e695' : '#e74a3b'};" onclick="openStokEkstre('${k.id}')">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <strong class="text-truncate w-75" style="font-size: 0.90rem; color: #555;">${k.cinsi}</strong>
+                    <button class="btn btn-sm text-danger py-0 px-1 no-print" onclick="event.stopPropagation(); deleteStokKarti('${k.id}')"><i class="fas fa-trash"></i></button>
                 </div>
-            </div>`;
-        });
-    }
+                <div><small class="text-muted"><i class="fas fa-tag"></i> ${k.aciklama || 'Kategori Yok'}</small></div>
+                <div class="mt-3 d-flex justify-content-between align-items-end border-top pt-2">
+                    <div><span style="font-size: 0.70rem;" class="text-muted">Kalan Stok:</span><br><h5 class="mb-0 fw-bold ${colorText}">${kalan} <small style="font-size:0.6em;" class="text-dark">Adet</small></h5></div>
+                    <div class="text-end"><span class="badge bg-light text-muted border shadow-sm" style="font-size: 0.65rem;">Ort: ${formatMoney(ortMaliyet)} ₺</span></div>
+                </div>
+            </div>
+        </div>`;
+    });
+}
 
     // --- ALIM İŞLEMLERİ (YENİ: DÜZENLEME VE YAZDIRMA) ---
 
@@ -4380,6 +4394,79 @@ if (!isFatura) {
         html += `<tr><th colspan="4" align="right">TOPLAM:</th><th align="right" style="color:green;">${formatMoney(t)} ₺</th></tr></table></div><style>@media print{.no-print{display:none;}}</style>`;
         let w = window.open('','_blank'); w.document.write(html); w.document.close();
     }
+
+    // STOK KARTLARI ARAMA FONKSİYONU
+function filterStokKartlari() {
+    let inputVal = normalizeText(document.getElementById("stokKartiAraInput").value);
+    let cards = document.querySelectorAll(".stok-karti-row");
+    
+    cards.forEach(card => {
+        let searchData = card.getAttribute("data-search");
+        if (searchData.includes(inputVal)) {
+            card.classList.remove("hidden");
+        } else {
+            card.classList.add("hidden");
+        }
+    });
+}
+
+// STOK KARTLARI YAZDIRMA FONKSİYONU
+function printStokKartlari() {
+    let html = `
+    <div style="max-width:1000px; margin:0 auto; font-family:sans-serif;">
+        <div class="no-print text-center mb-3">
+            <button onclick="window.print()" style="padding:10px 20px; background:#0dcaf0; color:#fff; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">🖨️ Yazdır</button>
+        </div>
+        <h2 style="text-align:center; color:#0dcaf0; margin-bottom:5px;">STOK KARTLARI PANELİ</h2>
+        <p style="text-align:center; color:#555; font-size:14px; margin-top:0;">(Mevcut Depo Durumu)</p>
+        
+        <table border="1" width="100%" cellpadding="8" style="border-collapse:collapse; font-size:14px; margin-top:20px;">
+            <tr style="background:#f8f9fa;">
+                <th align="left">Ürün Cinsi / Adı</th>
+                <th align="left">Kategori / Açıklama</th>
+                <th align="center">Toplam Alım</th>
+                <th align="center">Toplam Çıkış</th>
+                <th align="center">Kalan Stok</th>
+                <th align="right">Ortalama Maliyet</th>
+            </tr>`;
+
+    if (stokKartlari.length === 0) {
+        html += `<tr><td colspan="6" align="center" style="color:#777;">Henüz kayıtlı stok kartı bulunmuyor.</td></tr>`;
+    } else {
+        stokKartlari.forEach(k => {
+            let alimlar = stokAlimlari.filter(a => a.stokId === k.id);
+            let satislar = stokSatislari.flatMap(s => s.detaylar.filter(d => d.stokId === k.id));
+            
+            let tAlim = alimlar.reduce((sum, a) => sum + a.miktar, 0);
+            let tAlimTutar = alimlar.reduce((sum, a) => sum + a.tutar, 0);
+            let tSatis = satislar.reduce((sum, s) => sum + s.miktar, 0);
+            let kalan = tAlim - tSatis;
+            let ortMaliyet = tAlim > 0 ? (tAlimTutar / tAlim) : 0;
+            
+            let kalanRenk = kalan > 0 ? "color:#198754;" : "color:#dc3545;";
+            
+            html += `<tr>
+                <td><strong>${k.cinsi}</strong></td>
+                <td><small>${k.aciklama || '-'}</small></td>
+                <td align="center">${tAlim}</td>
+                <td align="center">${tSatis}</td>
+                <td align="center"><strong style="${kalanRenk} font-size:16px;">${kalan}</strong></td>
+                <td align="right">${formatMoney(ortMaliyet)} ₺</td>
+            </tr>`;
+        });
+    }
+
+    html += `</table>
+        <div style="margin-top:30px; text-align:right; font-size:13px; color:#555;">
+            Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')}
+        </div>
+    </div>
+    <style>@media print{.no-print{display:none;}}</style>`;
+
+    let w = window.open('', '_blank');
+    w.document.write(html);
+    w.document.close();
+}
 </script>
 </body>
 </html>
