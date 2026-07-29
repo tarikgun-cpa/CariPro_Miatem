@@ -4030,6 +4030,19 @@ if (!isFatura) {
         bootstrap.Modal.getOrCreateInstance(document.getElementById('stokKartiModal')).show();
     }
 
+    function editStokKarti(id) {
+    let k = stokKartlari.find(x => x.id === id);
+    if(!k) return;
+    
+    // Değerleri modal içindeki inputlara doldur
+    document.getElementById("stokKartiId").value = k.id;
+    document.getElementById("stokKartiCinsi").value = k.cinsi;
+    document.getElementById("stokKartiAciklama").value = k.aciklama || "";
+    
+    // Modalı aç
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('stokKartiModal')).show();
+}
+
     function saveStokKarti() {
         let id = document.getElementById("stokKartiId").value || generateId();
         let cinsi = document.getElementById("stokKartiCinsi").value.trim();
@@ -4084,32 +4097,53 @@ if (!isFatura) {
     }
 
     function renderStokKartlari() {
-    let container = document.getElementById("stokDashboardContainer"); if(!container) return; container.innerHTML = "";
-    if(stokKartlari.length === 0) { container.innerHTML = `<div class="col-12"><div class="alert alert-light border text-center text-muted">Stok Kartı Yok.</div></div>`; return; }
+    let container = document.getElementById("stokDashboardContainer"); 
+    if(!container) return; 
+    container.innerHTML = "";
+    
+    if(stokKartlari.length === 0) { 
+        container.innerHTML = `<div class="col-12"><div class="alert alert-light border text-center text-muted">Stok Kartı Yok.</div></div>`; 
+        return; 
+    }
 
-    stokKartlari.forEach(k => {
+    // 1. ÖNCE HESAPLAMA YAP: Kalan stoklara göre sıralayabilmek için değerleri önceden hesaplayıp diziye ekliyoruz
+    let hesaplanmisKartlar = stokKartlari.map(k => {
         let alimlar = stokAlimlari.filter(a => a.stokId === k.id);
         let satislar = stokSatislari.flatMap(s => s.detaylar.filter(d => d.stokId === k.id));
-        let tAlim = alimlar.reduce((sum, a) => sum + a.miktar, 0); let tAlimTutar = alimlar.reduce((sum, a) => sum + a.tutar, 0);
+        
+        let tAlim = alimlar.reduce((sum, a) => sum + a.miktar, 0); 
+        let tAlimTutar = alimlar.reduce((sum, a) => sum + a.tutar, 0);
         let tSatis = satislar.reduce((sum, s) => sum + s.miktar, 0);
-        let kalan = tAlim - tSatis; let ortMaliyet = tAlim > 0 ? (tAlimTutar / tAlim) : 0;
         
-        let colorText = kalan > 0 ? "text-pastel-success" : "text-pastel-danger";
+        let kalan = tAlim - tSatis; 
+        let ortMaliyet = tAlim > 0 ? (tAlimTutar / tAlim) : 0;
         
-        // ARAMA İÇİN: Aranacak metni oluşturuyoruz
+        return { ...k, tAlim, tAlimTutar, tSatis, kalan, ortMaliyet };
+    });
+
+    // 2. SIRALAMA: Kalan stoğu en çok olandan en az olana (büyükten küçüğe) doğru sırala
+    hesaplanmisKartlar.sort((a, b) => b.kalan - a.kalan);
+
+    // 3. EKRANA ÇİZME: Sıralanmış ve hesaplanmış yeni dizi üzerinden döngü kuruyoruz
+    hesaplanmisKartlar.forEach(k => {
+        let colorText = k.kalan > 0 ? "text-pastel-success" : "text-pastel-danger";
         let searchString = normalizeText(k.cinsi + " " + (k.aciklama || 'Kategori Yok'));
         
-        // DİV İÇİNE stok-karti-row sınıfını ve data-search attribute'unu ekledik
-        container.innerHTML += `<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 position-relative mb-3 stok-karti-row" data-search="${searchString}">
-            <div class="company-badge shadow-sm" style="border-left-color: ${kalan > 0 ? '#42e695' : '#e74a3b'};" onclick="openStokEkstre('${k.id}')">
+        // col-xl-3 (yan yana 4 kart) yerine col-xl-2 (yan yana 6 kart) yapıldı
+        container.innerHTML += `<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 position-relative mb-3 stok-karti-row" data-search="${searchString}">
+            <div class="company-badge shadow-sm" style="border-left-color: ${k.kalan > 0 ? '#42e695' : '#e74a3b'};" onclick="openStokEkstre('${k.id}')">
                 <div class="d-flex justify-content-between align-items-start mb-1">
                     <strong class="text-truncate w-75" style="font-size: 0.90rem; color: #555;">${k.cinsi}</strong>
-                    <button class="btn btn-sm text-danger py-0 px-1 no-print" onclick="event.stopPropagation(); deleteStokKarti('${k.id}')"><i class="fas fa-trash"></i></button>
+                    <div class="no-print" style="white-space: nowrap;">
+                        <!-- DEĞİŞTİR VE SİL BUTONLARI YAN YANA -->
+                        <button class="btn btn-sm text-warning py-0 px-1" onclick="event.stopPropagation(); editStokKarti('${k.id}')" title="Düzenle"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm text-danger py-0 px-1" onclick="event.stopPropagation(); deleteStokKarti('${k.id}')" title="Sil"><i class="fas fa-trash"></i></button>
+                    </div>
                 </div>
                 <div><small class="text-muted"><i class="fas fa-tag"></i> ${k.aciklama || 'Kategori Yok'}</small></div>
                 <div class="mt-3 d-flex justify-content-between align-items-end border-top pt-2">
-                    <div><span style="font-size: 0.70rem;" class="text-muted">Kalan Stok:</span><br><h5 class="mb-0 fw-bold ${colorText}">${kalan} <small style="font-size:0.6em;" class="text-dark">Adet</small></h5></div>
-                    <div class="text-end"><span class="badge bg-light text-muted border shadow-sm" style="font-size: 0.65rem;">Ort: ${formatMoney(ortMaliyet)} ₺</span></div>
+                    <div><span style="font-size: 0.70rem;" class="text-muted">Kalan Stok:</span><br><h5 class="mb-0 fw-bold ${colorText}">${k.kalan} <small style="font-size:0.6em;" class="text-dark">Adet</small></h5></div>
+                    <div class="text-end"><span class="badge bg-light text-muted border shadow-sm" style="font-size: 0.65rem;">Ort: ${formatMoney(k.ortMaliyet)} ₺</span></div>
                 </div>
             </div>
         </div>`;
